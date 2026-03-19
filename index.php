@@ -1,4 +1,14 @@
-<?php
-$active_page = 'home';
-include 'navbaar.php';
-?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComfyGo</title>
+</head>
+<body>
+    <?php
+    $active_page = $active_page ?? 'home';
+    include 'navbaar.php';
+    ?>
+</body>
+</html>
