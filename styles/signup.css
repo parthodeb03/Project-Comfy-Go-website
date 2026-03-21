@@ -92,8 +92,6 @@ body {
   cursor: pointer;
   transition: all 0.22s;
   text-align: center;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
 }
 
 .role_card input[type="radio"] {
@@ -132,8 +130,7 @@ body {
   border-top: 3px solid #43a856;
   border-radius: 20px;
   padding: 36px 34px;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+
   box-shadow:
     0 8px 40px rgba(56, 142, 60, 0.12),
     0 2px 8px rgba(0, 0, 0, 0.05);
@@ -217,7 +214,6 @@ body {
   align-items: center;
   gap: 10px;
   cursor: pointer;
-  user-select: none;
 }
 
 #terms_check {
