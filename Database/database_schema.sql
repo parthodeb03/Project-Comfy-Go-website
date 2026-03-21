@@ -21,6 +21,8 @@ hotel_rating VARCHAR(50)
 CREATE TABLE Manager(
 manager_ID VARCHAR(100) PRIMARY KEY,
 manager_name VARCHAR(100),
+manager_email VARCHAR(100),
+manager_mobile VARCHAR(20),
 hotel_registration_number VARCHAR(100),
 FOREIGN KEY (hotel_registration_number)
 REFERENCES Hotels(hotel_registration_number)
