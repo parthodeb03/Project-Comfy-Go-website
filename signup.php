@@ -1,294 +1,289 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register — ComfyGo</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles/signup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register — ComfyGo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="styles/signup.css">
 </head>
+
 <body>
 
-<?php
-$active_page = '';
-include 'navbaar.php';
+    <?php
+    $active_page = '';
+    include 'navbaar.php';
 
-session_start();
+    session_start();
 
-$error   = '';
-$success = '';
+    $error = '';
+    $success = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    require_once 'db.php';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        require_once 'db.php';
 
-    $role = $_POST['role'] ?? 'tourist';
+        $role = $_POST['role'] ?? 'tourist';
 
-    if ($role === 'tourist') {
-        $user_ID    = trim($_POST['user_ID']    ?? '');
-        $user_name  = trim($_POST['user_name']  ?? '');
-        $user_email = trim($_POST['user_email'] ?? '');
-        $user_phone = trim($_POST['user_phone'] ?? '');
-        $password   = trim($_POST['password']   ?? '');
-        $confirm    = trim($_POST['confirm_password'] ?? '');
+        if ($role === 'tourist') {
+            $user_ID = trim($_POST['user_ID'] ?? '');
+            $user_name = trim($_POST['user_name'] ?? '');
+            $user_email = trim($_POST['user_email'] ?? '');
+            $user_phone = trim($_POST['user_phone'] ?? '');
+            $password = trim($_POST['password'] ?? '');
+            $confirm = trim($_POST['confirm_password'] ?? '');
 
-        if (!$user_ID || !$user_name || !$user_email || !$user_phone || !$password || !$confirm) {
-            $error = 'Please fill in all fields.';
-        } elseif (!filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
-        } elseif ($password !== $confirm) {
-            $error = 'Passwords do not match.';
-        } elseif (strlen($password) < 6) {
-            $error = 'Password must be at least 6 characters.';
-        } else {
-            $check = $pdo->prepare("SELECT user_ID FROM Users WHERE user_ID = ? OR user_email = ? LIMIT 1");
-            $check->execute([$user_ID, $user_email]);
-            if ($check->fetch()) {
-                $error = 'User ID or email already exists. Please choose a different one.';
+            if (!$user_ID || !$user_name || !$user_email || !$user_phone || !$password || !$confirm) {
+                $error = 'Please fill in all fields.';
+            } elseif (!filter_var($user_email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
+            } elseif ($password !== $confirm) {
+                $error = 'Passwords do not match.';
+            } elseif (strlen($password) < 6) {
+                $error = 'Password must be at least 6 characters.';
             } else {
-                $hashed = password_hash($password, PASSWORD_DEFAULT);
-                $stmt = $pdo->prepare("INSERT INTO Users (user_ID, user_email, user_name, user_phone, password) VALUES (?, ?, ?, ?, ?)");
-                $stmt->execute([$user_ID, $user_email, $user_name, $user_phone, $hashed]);
-                $success = 'Account created successfully! You can now sign in.';
+                $check = $pdo->prepare("SELECT user_ID FROM Users WHERE user_ID = ? OR user_email = ? LIMIT 1");
+                $check->execute([$user_ID, $user_email]);
+                if ($check->fetch()) {
+                    $error = 'User ID or email already exists. Please choose a different one.';
+                } else {
+                    $hashed = password_hash($password, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("INSERT INTO Users (user_ID, user_email, user_name, user_phone, password) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->execute([$user_ID, $user_email, $user_name, $user_phone, $hashed]);
+                    $success = 'Account created successfully! You can now sign in.';
+                }
             }
-        }
 
-    } elseif ($role === 'guide') {
-        $guide_NID      = trim($_POST['guide_NID']      ?? '');
-        $guide_name     = trim($_POST['guide_name']     ?? '');
-        $guide_email    = trim($_POST['guide_email']    ?? '');
-        $guide_mobile   = trim($_POST['guide_mobile']   ?? '');
-        $guide_division = trim($_POST['guide_division'] ?? '');
-        $guide_district = trim($_POST['guide_district'] ?? '');
+        } elseif ($role === 'guide') {
+            $guide_NID = trim($_POST['guide_NID'] ?? '');
+            $guide_name = trim($_POST['guide_name'] ?? '');
+            $guide_email = trim($_POST['guide_email'] ?? '');
+            $guide_mobile = trim($_POST['guide_mobile'] ?? '');
+            $guide_division = trim($_POST['guide_division'] ?? '');
+            $guide_district = trim($_POST['guide_district'] ?? '');
 
-        if (!$guide_NID || !$guide_name || !$guide_email || !$guide_mobile || !$guide_division || !$guide_district) {
-            $error = 'Please fill in all fields.';
-        } elseif (!filter_var($guide_email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
-        } else {
-            $check = $pdo->prepare("SELECT guide_NID FROM Guide WHERE guide_NID = ? LIMIT 1");
-            $check->execute([$guide_NID]);
-            if ($check->fetch()) {
-                $error = 'A guide with this NID already exists.';
+            if (!$guide_NID || !$guide_name || !$guide_email || !$guide_mobile || !$guide_division || !$guide_district) {
+                $error = 'Please fill in all fields.';
+            } elseif (!filter_var($guide_email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
             } else {
-                $stmt = $pdo->prepare("INSERT INTO Guide (guide_NID, guide_name, guide_email, guide_mobile, guide_division, guide_district) VALUES (?, ?, ?, ?, ?, ?)");
-                $stmt->execute([$guide_NID, $guide_name, $guide_email, $guide_mobile, $guide_division, $guide_district]);
-                $success = 'Guide account created successfully!';
+                $check = $pdo->prepare("SELECT guide_NID FROM Guide WHERE guide_NID = ? LIMIT 1");
+                $check->execute([$guide_NID]);
+                if ($check->fetch()) {
+                    $error = 'A guide with this NID already exists.';
+                } else {
+                    $stmt = $pdo->prepare("INSERT INTO Guide (guide_NID, guide_name, guide_email, guide_mobile, guide_division, guide_district) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->execute([$guide_NID, $guide_name, $guide_email, $guide_mobile, $guide_division, $guide_district]);
+                    $success = 'Guide account created successfully!';
+                }
             }
-        }
 
-    } elseif ($role === 'manager') {
-        $manager_ID   = trim($_POST['manager_ID']   ?? '');
-        $manager_name = trim($_POST['manager_name'] ?? '');
-        $manager_email  = trim($_POST['manager_email']  ?? '');
-        $manager_mobile = trim($_POST['manager_mobile'] ?? '');
-        $hotel_reg      = trim($_POST['hotel_registration_number'] ?? '');
+        } elseif ($role === 'manager') {
+            $manager_ID = trim($_POST['manager_ID'] ?? '');
+            $manager_name = trim($_POST['manager_name'] ?? '');
+            $manager_email = trim($_POST['manager_email'] ?? '');
+            $manager_mobile = trim($_POST['manager_mobile'] ?? '');
+            $hotel_reg = trim($_POST['hotel_registration_number'] ?? '');
 
-        if (!$manager_ID || !$manager_name || !$manager_email || !$manager_mobile || !$hotel_reg) {
-            $error = 'Please fill in all fields.';
-        } elseif (!filter_var($manager_email, FILTER_VALIDATE_EMAIL)) {
-            $error = 'Please enter a valid email address.';
-        } else {
-            $check = $pdo->prepare("SELECT manager_ID FROM Manager WHERE manager_ID = ? OR manager_email = ? LIMIT 1");
-            $check->execute([$manager_ID, $manager_email]);
-            if ($check->fetch()) {
-                $error = 'Manager ID or email already exists.';
+            if (!$manager_ID || !$manager_name || !$manager_email || !$manager_mobile || !$hotel_reg) {
+                $error = 'Please fill in all fields.';
+            } elseif (!filter_var($manager_email, FILTER_VALIDATE_EMAIL)) {
+                $error = 'Please enter a valid email address.';
             } else {
+                $check = $pdo->prepare("SELECT manager_ID FROM Manager WHERE manager_ID = ? OR manager_email = ? LIMIT 1");
+                $check->execute([$manager_ID, $manager_email]);
+                if ($check->fetch()) {
+                    $error = 'Manager ID or email already exists.';
+                } else {
                 $stmt = $pdo->prepare("INSERT INTO Manager (manager_ID, manager_name, manager_email, manager_mobile, hotel_registration_number) VALUES (?, ?, ?, ?, ?)");
                 $stmt->execute([$manager_ID, $manager_name, $manager_email, $manager_mobile, $hotel_reg]);
                 $success = 'Manager account created successfully!';
+                }
             }
         }
     }
-}
-?>
+    ?>
+    <div id="register_page_bg">
+        <div id="register_hero">
+            <p id="register_tag">Join ComfyGo</p>
+            <h1 id="register_title">Create your <em>account</em></h1>
+            <p id="register_sub">Tell us who you are to get started.</p>
+        </div>
+        <div id="register_wrapper">
+            <div id="role_selector">
+                <p id="role_label">I am a...</p>
+                <div id="role_cards">
+                    <label
+                        class="role_card <?= (!isset($_POST['role']) || $_POST['role'] === 'tourist') ? 'active' : '' ?>"
+                        id="role_tourist_card">
+                        <input type="radio" name="role" value="tourist" id="role_tourist" <?= (!isset($_POST['role']) || $_POST['role'] === 'tourist') ? 'checked' : '' ?> form="register_form">
+                        <span class="role_title">Tourist</span>
+                        <span class="role_desc">I want to explore Bangladesh</span>
+                    </label>
+                    <label
+                        class="role_card <?= (isset($_POST['role']) && $_POST['role'] === 'guide') ? 'active' : '' ?>"
+                        id="role_guide_card">
+                        <input type="radio" name="role" value="guide" id="role_guide" <?= (isset($_POST['role']) && $_POST['role'] === 'guide') ? 'checked' : '' ?> form="register_form">
+                        <span class="role_title">Guide</span>
+                        <span class="role_desc">I lead tours and experiences</span>
+                    </label>
+                    <label
+                        class="role_card <?= (isset($_POST['role']) && $_POST['role'] === 'manager') ? 'active' : '' ?>"
+                        id="role_manager_card">
+                        <input type="radio" name="role" value="manager" id="role_manager" <?= (isset($_POST['role']) && $_POST['role'] === 'manager') ? 'checked' : '' ?> form="register_form">
+                        <span class="role_title">Hotel Manager</span>
+                        <span class="role_desc">I manage a certified hotel</span>
+                    </label>
+                </div>
+            </div>
 
-<div id="register_page_bg">
+            <div id="register_card">
 
-  <div id="register_hero">
-    <p id="register_tag">Join ComfyGo</p>
-    <h1 id="register_title">Create your <em>account</em></h1>
-    <p id="register_sub">Tell us who you are to get started.</p>
-  </div>
+                <?php if ($error): ?>
+                    <div id="form_error"><?= htmlspecialchars($error) ?></div>
+                <?php endif; ?>
 
-  <div id="register_wrapper">
+                <?php if ($success): ?>
+                    <div id="form_success"><?= htmlspecialchars($success) ?></div>
+                <?php endif; ?>
 
-    <div id="role_selector">
-      <p id="role_label">I am a...</p>
-      <div id="role_cards">
-        <label class="role_card <?= (!isset($_POST['role']) || $_POST['role'] === 'tourist') ? 'active' : '' ?>" id="role_tourist_card">
-          <input type="radio" name="role" value="tourist" id="role_tourist" <?= (!isset($_POST['role']) || $_POST['role'] === 'tourist') ? 'checked' : '' ?> form="register_form">
-          <span class="role_title">Tourist</span>
-          <span class="role_desc">I want to explore Bangladesh</span>
-        </label>
-        <label class="role_card <?= (isset($_POST['role']) && $_POST['role'] === 'guide') ? 'active' : '' ?>" id="role_guide_card">
-          <input type="radio" name="role" value="guide" id="role_guide" <?= (isset($_POST['role']) && $_POST['role'] === 'guide') ? 'checked' : '' ?> form="register_form">
-          <span class="role_title">Guide</span>
-          <span class="role_desc">I lead tours and experiences</span>
-        </label>
-        <label class="role_card <?= (isset($_POST['role']) && $_POST['role'] === 'manager') ? 'active' : '' ?>" id="role_manager_card">
-          <input type="radio" name="role" value="manager" id="role_manager" <?= (isset($_POST['role']) && $_POST['role'] === 'manager') ? 'checked' : '' ?> form="register_form">
-          <span class="role_title">Hotel Manager</span>
-          <span class="role_desc">I manage a certified hotel</span>
-        </label>
-      </div>
+                <form method="POST" action="register.php" id="register_form">
+
+                    <input type="hidden" name="role" id="role_input"
+                        value="<?= htmlspecialchars($_POST['role'] ?? 'tourist') ?>">
+
+                    <?php $role = $_POST['role'] ?? 'tourist'; ?>
+
+                    <div id="form_tourist" class="role_form" <?= $role !== 'tourist' ? 'style="display:none;"' : '' ?>>
+                        <div class="reg_field">
+                            <label for="user_ID">User ID</label>
+                            <input type="text" id="user_ID" name="user_ID" placeholder="Choose a unique user ID"
+                                value="<?= htmlspecialchars($_POST['user_ID'] ?? '') ?>" required>
+                        </div>
+                        <div class="reg_field">
+                            <label for="user_name">Full Name</label>
+                            <input type="text" id="user_name" name="user_name" placeholder="Your full name"
+                                value="<?= htmlspecialchars($_POST['user_name'] ?? '') ?>" required autocomplete="name">
+                        </div>
+                        <div class="reg_field">
+                            <label for="user_email">Email Address</label>
+                            <input type="email" id="user_email" name="user_email" placeholder="you@example.com"
+                                value="<?= htmlspecialchars($_POST['user_email'] ?? '') ?>" required
+                                autocomplete="email">
+                        </div>
+                        <div class="reg_field">
+                            <label for="user_phone">Phone Number</label>
+                            <input type="tel" id="user_phone" name="user_phone" placeholder="+880 1XXX XXXXXX"
+                                value="<?= htmlspecialchars($_POST['user_phone'] ?? '') ?>" required autocomplete="tel">
+                        </div>
+                        <div class="reg_field">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" placeholder="Create a password"
+                                required autocomplete="new-password">
+                        </div>
+                        <div class="reg_field">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" id="confirm_password" name="confirm_password"
+                                placeholder="Repeat your password" required autocomplete="new-password">
+                        </div>
+                    </div>
+
+                    <div id="form_guide" class="role_form" <?= $role !== 'guide' ? 'style="display:none;"' : '' ?>>
+                        <div class="reg_field">
+                            <label for="guide_NID">National ID (NID)</label>
+                            <input type="text" id="guide_NID" name="guide_NID" placeholder="Your NID number"
+                                value="<?= htmlspecialchars($_POST['guide_NID'] ?? '') ?>">
+                        </div>
+                        <div class="reg_field">
+                            <label for="guide_name">Full Name</label>
+                            <input type="text" id="guide_name" name="guide_name" placeholder="Your full name"
+                                value="<?= htmlspecialchars($_POST['guide_name'] ?? '') ?>" autocomplete="name">
+                        </div>
+                        <div class="reg_field">
+                            <label for="guide_email">Email Address</label>
+                            <input type="email" id="guide_email" name="guide_email" placeholder="you@example.com"
+                                value="<?= htmlspecialchars($_POST['guide_email'] ?? '') ?>" autocomplete="email">
+                        </div>
+                        <div class="reg_field">
+                            <label for="guide_mobile">Mobile Number</label>
+                            <input type="tel" id="guide_mobile" name="guide_mobile" placeholder="+880 1XXX XXXXXX"
+                                value="<?= htmlspecialchars($_POST['guide_mobile'] ?? '') ?>" autocomplete="tel">
+                        </div>
+                        <div class="reg_field">
+                            <label for="guide_division">Division</label>
+                            <input type="text" id="guide_division" name="guide_division" placeholder="e.g. Sylhet"
+                                value="<?= htmlspecialchars($_POST['guide_division'] ?? '') ?>">
+                        </div>
+                        <div class="reg_field">
+                            <label for="guide_district">District</label>
+                            <input type="text" id="guide_district" name="guide_district" placeholder="e.g. Moulvibazar"
+                                value="<?= htmlspecialchars($_POST['guide_district'] ?? '') ?>">
+                        </div>
+                    </div>
+
+                    <div id="form_manager" class="role_form" <?= $role !== 'manager' ? 'style="display:none;"' : '' ?>>
+                        <div class="reg_field">
+                            <label for="manager_ID">Manager ID</label>
+                            <input type="text" id="manager_ID" name="manager_ID"
+                                placeholder="Choose a unique manager ID"
+                                value="<?= htmlspecialchars($_POST['manager_ID'] ?? '') ?>">
+                        </div>
+                        <div class="reg_field">
+                            <label for="manager_name">Full Name</label>
+                            <input type="text" id="manager_name" name="manager_name" placeholder="Your full name"
+                                value="<?= htmlspecialchars($_POST['manager_name'] ?? '') ?>" autocomplete="name">
+                        </div>
+                        <div class="reg_field">
+                            <label for="manager_email">Email Address</label>
+                            <input type="email" id="manager_email" name="manager_email" placeholder="you@example.com"
+                                value="<?= htmlspecialchars($_POST['manager_email'] ?? '') ?>" autocomplete="email">
+                        </div>
+                        <div class="reg_field">
+                            <label for="manager_mobile">Mobile Number</label>
+                            <input type="tel" id="manager_mobile" name="manager_mobile" placeholder="+880 1XXX XXXXXX"
+                                value="<?= htmlspecialchars($_POST['manager_mobile'] ?? '') ?>" autocomplete="tel">
+                        </div>
+                        <div class="reg_field">
+                            <label for="hotel_registration_number">Hotel Registration Number</label>
+                            <input type="text" id="hotel_registration_number" name="hotel_registration_number"
+                                placeholder="Official hotel reg. number"
+                                value="<?= htmlspecialchars($_POST['hotel_registration_number'] ?? '') ?>">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="register_submit">Create Account</button>
+
+                </form>
+
+                <p id="signin_text">Already have an account? <a href="login.php" id="signin_link">Sign in</a></p>
+
+            </div>
+        </div>
     </div>
 
-    <div id="register_card">
+    <script>
+        const radios = document.querySelectorAll('.role_card input[type="radio"]');
+        const allForms = document.querySelectorAll('.role_form');
+        const roleInput = document.getElementById('role_input');
+        const cards = document.querySelectorAll('.role_card');
 
-      <?php if ($error): ?>
-        <div id="form_error"><?= htmlspecialchars($error) ?></div>
-      <?php endif; ?>
+        function switchRole(val) {
+            allForms.forEach(f => f.style.display = 'none');
+            const target = document.getElementById('form_' + val);
+            if (target) target.style.display = 'flex';
+            roleInput.value = val;
+            cards.forEach(c => c.classList.remove('active'));
+            const activeCard = document.getElementById('role_' + val + '_card');
+            if (activeCard) activeCard.classList.add('active');
+        }
 
-      <?php if ($success): ?>
-        <div id="form_success"><?= htmlspecialchars($success) ?></div>
-      <?php endif; ?>
-
-      <form method="POST" action="register.php" id="register_form">
-
-        <input type="hidden" name="role" id="role_input"
-          value="<?= htmlspecialchars($_POST['role'] ?? 'tourist') ?>">
-
-        <?php $role = $_POST['role'] ?? 'tourist'; ?>
-
-        <div id="form_tourist" class="role_form" <?= $role !== 'tourist' ? 'style="display:none;"' : '' ?>>
-          <div class="reg_field">
-            <label for="user_ID">User ID</label>
-            <input type="text" id="user_ID" name="user_ID"
-              placeholder="Choose a unique user ID"
-              value="<?= htmlspecialchars($_POST['user_ID'] ?? '') ?>" required>
-          </div>
-          <div class="reg_field">
-            <label for="user_name">Full Name</label>
-            <input type="text" id="user_name" name="user_name"
-              placeholder="Your full name"
-              value="<?= htmlspecialchars($_POST['user_name'] ?? '') ?>" required autocomplete="name">
-          </div>
-          <div class="reg_field">
-            <label for="user_email">Email Address</label>
-            <input type="email" id="user_email" name="user_email"
-              placeholder="you@example.com"
-              value="<?= htmlspecialchars($_POST['user_email'] ?? '') ?>" required autocomplete="email">
-          </div>
-          <div class="reg_field">
-            <label for="user_phone">Phone Number</label>
-            <input type="tel" id="user_phone" name="user_phone"
-              placeholder="+880 1XXX XXXXXX"
-              value="<?= htmlspecialchars($_POST['user_phone'] ?? '') ?>" required autocomplete="tel">
-          </div>
-          <div class="reg_field">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password"
-              placeholder="Create a password" required autocomplete="new-password">
-          </div>
-          <div class="reg_field">
-            <label for="confirm_password">Confirm Password</label>
-            <input type="password" id="confirm_password" name="confirm_password"
-              placeholder="Repeat your password" required autocomplete="new-password">
-          </div>
-        </div>
-
-        <div id="form_guide" class="role_form" <?= $role !== 'guide' ? 'style="display:none;"' : '' ?>>
-          <div class="reg_field">
-            <label for="guide_NID">National ID (NID)</label>
-            <input type="text" id="guide_NID" name="guide_NID"
-              placeholder="Your NID number"
-              value="<?= htmlspecialchars($_POST['guide_NID'] ?? '') ?>">
-          </div>
-          <div class="reg_field">
-            <label for="guide_name">Full Name</label>
-            <input type="text" id="guide_name" name="guide_name"
-              placeholder="Your full name"
-              value="<?= htmlspecialchars($_POST['guide_name'] ?? '') ?>" autocomplete="name">
-          </div>
-          <div class="reg_field">
-            <label for="guide_email">Email Address</label>
-            <input type="email" id="guide_email" name="guide_email"
-              placeholder="you@example.com"
-              value="<?= htmlspecialchars($_POST['guide_email'] ?? '') ?>" autocomplete="email">
-          </div>
-          <div class="reg_field">
-            <label for="guide_mobile">Mobile Number</label>
-            <input type="tel" id="guide_mobile" name="guide_mobile"
-              placeholder="+880 1XXX XXXXXX"
-              value="<?= htmlspecialchars($_POST['guide_mobile'] ?? '') ?>" autocomplete="tel">
-          </div>
-          <div class="reg_field">
-            <label for="guide_division">Division</label>
-            <input type="text" id="guide_division" name="guide_division"
-              placeholder="e.g. Sylhet"
-              value="<?= htmlspecialchars($_POST['guide_division'] ?? '') ?>">
-          </div>
-          <div class="reg_field">
-            <label for="guide_district">District</label>
-            <input type="text" id="guide_district" name="guide_district"
-              placeholder="e.g. Moulvibazar"
-              value="<?= htmlspecialchars($_POST['guide_district'] ?? '') ?>">
-          </div>
-        </div>
-
-        <div id="form_manager" class="role_form" <?= $role !== 'manager' ? 'style="display:none;"' : '' ?>>
-          <div class="reg_field">
-            <label for="manager_ID">Manager ID</label>
-            <input type="text" id="manager_ID" name="manager_ID"
-              placeholder="Choose a unique manager ID"
-              value="<?= htmlspecialchars($_POST['manager_ID'] ?? '') ?>">
-          </div>
-          <div class="reg_field">
-            <label for="manager_name">Full Name</label>
-            <input type="text" id="manager_name" name="manager_name"
-              placeholder="Your full name"
-              value="<?= htmlspecialchars($_POST['manager_name'] ?? '') ?>" autocomplete="name">
-          </div>
-          <div class="reg_field">
-            <label for="manager_email">Email Address</label>
-            <input type="email" id="manager_email" name="manager_email"
-              placeholder="you@example.com"
-              value="<?= htmlspecialchars($_POST['manager_email'] ?? '') ?>" autocomplete="email">
-          </div>
-          <div class="reg_field">
-            <label for="manager_mobile">Mobile Number</label>
-            <input type="tel" id="manager_mobile" name="manager_mobile"
-              placeholder="+880 1XXX XXXXXX"
-              value="<?= htmlspecialchars($_POST['manager_mobile'] ?? '') ?>" autocomplete="tel">
-          </div>
-          <div class="reg_field">
-            <label for="hotel_registration_number">Hotel Registration Number</label>
-            <input type="text" id="hotel_registration_number" name="hotel_registration_number"
-              placeholder="Official hotel reg. number"
-              value="<?= htmlspecialchars($_POST['hotel_registration_number'] ?? '') ?>">
-          </div>
-        </div>
-
-        <button type="submit" id="register_submit">Create Account</button>
-
-      </form>
-
-      <p id="signin_text">Already have an account? <a href="login.php" id="signin_link">Sign in</a></p>
-
-    </div>
-  </div>
-</div>
-
-<script>
-const radios    = document.querySelectorAll('.role_card input[type="radio"]');
-const allForms  = document.querySelectorAll('.role_form');
-const roleInput = document.getElementById('role_input');
-const cards     = document.querySelectorAll('.role_card');
-
-function switchRole(val) {
-  allForms.forEach(f => f.style.display = 'none');
-  const target = document.getElementById('form_' + val);
-  if (target) target.style.display = 'flex';
-  roleInput.value = val;
-  cards.forEach(c => c.classList.remove('active'));
-  const activeCard = document.getElementById('role_' + val + '_card');
-  if (activeCard) activeCard.classList.add('active');
-}
-
-radios.forEach(r => r.addEventListener('change', () => switchRole(r.value)));
-</script>
+        radios.forEach(r => r.addEventListener('change', () => switchRole(r.value)));
+    </script>
 
 </body>
+
 </html>
