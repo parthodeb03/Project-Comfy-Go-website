@@ -6,7 +6,7 @@ user_ID VARCHAR(100) PRIMARY KEY,
 user_email VARCHAR(100),
 user_name VARCHAR(100),
 user_phone VARCHAR(20),
-password VARCHAR(100)
+password VARCHAR(255)
 );
 
 CREATE TABLE Hotels(
@@ -15,7 +15,8 @@ hotel_name VARCHAR(100),
 hotel_division VARCHAR(100),
 hotel_district VARCHAR(100),
 hotel_location VARCHAR(150),
-hotel_rating VARCHAR(50)
+hotel_rating VARCHAR(50),
+hotel_price INT DEFAULT 0
 );
 
 CREATE TABLE Manager(
@@ -41,7 +42,8 @@ guide_name VARCHAR(100),
 guide_email VARCHAR(100),
 guide_mobile VARCHAR(20),
 guide_division VARCHAR(100),
-guide_district VARCHAR(100)
+guide_district VARCHAR(100),
+guide_rate INT DEFAULT 0
 );
 
 CREATE TABLE Booking(
