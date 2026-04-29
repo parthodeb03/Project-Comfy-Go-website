@@ -5,7 +5,7 @@ require_once 'db.php';
 $error   = '';
 $success = '';
 $email   = '';
-$step    = 1; // 1: enter email, 2: reset password
+$step    = 1; 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -19,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Please enter a valid email address.';
         } else {
-            // Check if email exists in any user table
+        
             $stmt = $pdo->prepare("
                 SELECT 'tourist' as type, user_ID as id, user_name as name, user_email as email FROM Users WHERE user_email = ?
                 UNION
@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Step 2: Reset password
+
     elseif ($action === 'reset_password') {
         if (!isset($_SESSION['reset_user'])) {
             $error = 'Session expired. Please start over.';
@@ -62,8 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $step = 2;
             } else {
                 $hashed = password_hash($new_password, PASSWORD_DEFAULT);
-
-                // Update password in the appropriate table
                 if ($user['type'] === 'tourist') {
                     $stmt = $pdo->prepare("UPDATE Users SET password = ? WHERE user_ID = ?");
                 } elseif ($user['type'] === 'guide') {
@@ -74,7 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $stmt->execute([$hashed, $user['id']]);
 
-                // Clear session and show success
                 unset($_SESSION['reset_user']);
                 $success = 'Your password has been successfully reset. You can now log in with your new password.';
                 $step = 1;
