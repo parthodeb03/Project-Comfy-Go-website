@@ -124,7 +124,6 @@ $transport_costs = [
       min-height: 100vh;
     }
 
-    /* ── HEADER ─────────────────────────────────────────── */
     #destinations_header {
       background: var(--forest);
       padding: 0 40px;
@@ -268,13 +267,11 @@ $transport_costs = [
 
     #destinations_signup_link:hover { background: var(--fern); }
 
-    /* ── PAGE WRAPPER ───────────────────────────────────── */
     #destinations_page {
       min-height: 100vh;
       background: var(--cream);
     }
 
-    /* ── HERO ───────────────────────────────────────────── */
     #destinations_hero {
       position: relative;
       padding: 100px 20px 80px;
@@ -283,7 +280,6 @@ $transport_costs = [
       overflow: hidden;
     }
 
-    /* Botanical SVG pattern overlay */
     #destinations_hero::before {
       content: '';
       position: absolute;
@@ -337,7 +333,6 @@ $transport_costs = [
       line-height: 1.8;
     }
 
-    /* ── CITY GRID ──────────────────────────────────────── */
     #city_grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
@@ -493,7 +488,6 @@ $transport_costs = [
 
     .city_card:hover .city_card_btn::after { transform: translateX(4px); }
 
-    /* ── CITY DETAIL ────────────────────────────────────── */
     #city_detail { display: none; padding-bottom: 80px; }
     #city_detail.active { display: block; }
 
@@ -567,7 +561,6 @@ $transport_costs = [
       color: var(--mist);
     }
 
-    /* ── CONTENT AREA ───────────────────────────────────── */
     #city_content {
       max-width: 1180px;
       margin: 0 auto;
@@ -600,8 +593,6 @@ $transport_costs = [
     }
 
     #back_to_cities::before { content: '←'; font-size: 1rem; }
-
-    /* ── INTRO BLOCK ────────────────────────────────────── */
     #city_intro {
       background: var(--forest);
       border-radius: var(--radius-lg);
@@ -632,8 +623,6 @@ $transport_costs = [
       position: relative;
       z-index: 1;
     }
-
-    /* ── CALCULATOR ─────────────────────────────────────── */
     #calculator_section {
       background: #fff;
       padding: 40px 42px;
@@ -775,7 +764,6 @@ $transport_costs = [
       color: var(--forest);
     }
 
-    /* ── SPOTS SECTION ──────────────────────────────────── */
     .spots_section_header {
       margin-bottom: 28px;
     }
@@ -903,7 +891,6 @@ $transport_costs = [
 
     .spot_fee span { color: var(--text-soft); font-weight: 400; }
 
-    /* ── SELECTED SPOT PREVIEW ──────────────────────────── */
     #selected_spots_list {
       margin-bottom: 20px;
     }
@@ -934,7 +921,6 @@ $transport_costs = [
       margin-top: 2px;
     }
 
-    /* ── EMPTY STATE ────────────────────────────────────── */
     .empty_city {
       text-align: center;
       padding: 60px 20px;
@@ -947,8 +933,6 @@ $transport_costs = [
       margin-bottom: 10px;
       color: var(--forest);
     }
-
-    /* ── SECTION DIVIDER ────────────────────────────────── */
     .ornament-line {
       display: flex;
       align-items: center;
@@ -970,7 +954,6 @@ $transport_costs = [
       color: var(--sage);
     }
 
-    /* ── RESPONSIVE ─────────────────────────────────────── */
     @media (max-width: 991px) {
       #destinations_header { padding: 0 20px; height: 65px; }
       #destinations_welcome, #destinations_role { display: none; }
