@@ -174,15 +174,14 @@
                 <h5>Company</h5>
                 <a href="about.php">Our Mission</a>
                 <a href="contact.php">Contact</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Terms of Service</a>
+                <a href="privacy_policy.php">Privacy Policy</a>
+                <a href="terms_of_service.php">Terms of Service</a>
             </div>
             <div class="footer_col">
                 <h5>Contact</h5>
-                <a href="#">Sylhet, Bangladesh</a>
-                <a href="#">+880 1234 567890</a>
-                <a href="#"><span class="__cf_email__"
-                        data-cfemail="90f9fef6ffd0f3fffdf6e9f7ffbef3fffd">[email&#160;protected]</span></a>
+                <a href="https://maps.google.com/?q=Sylhet,Bangladesh" target="_blank">Sylhet, Bangladesh</a>
+                <a href="tel:+8801234567890">+880 1234 567890</a>
+                <a href="mailto:info@comfygo.com">info@comfygo.com</a>
             </div>
         </div>
         <div id="footer_bottom">

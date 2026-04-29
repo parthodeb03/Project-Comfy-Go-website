@@ -26,7 +26,18 @@ $active_page = $active_page ?? 'home';
     <a href="login.php" id="nav_login">Login</a>
     <a href="signup.php" id="nav_signup">Signup</a>
 </div>
-<button id="nav_toggle" aria-label="Toggle menu">
-  <i class="fa-solid fa-bars"></i>
-</button>
+ <button id="nav_toggle" aria-label="Toggle menu">
+   <i class="fa-solid fa-bars"></i>
+ </button>
 </nav>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const nav = document.getElementById('navbaar');
+    const toggle = document.getElementById('nav_toggle');
+    if (nav && toggle) {
+      toggle.addEventListener('click', function () {
+        nav.classList.toggle('open');
+      });
+    }
+  });
+</script>

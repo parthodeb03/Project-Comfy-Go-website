@@ -47,15 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       $error = 'Please select transport and travel date.';
     } else {
       $booking_id = 'BK' . strtoupper(uniqid());
-      $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date) VALUES (?, 'Transport', 'Confirmed', ?, ?)");
-      $stmt->execute([$booking_id, $user_id, $travel_date]);
+      $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, transport_ID) VALUES (?, 'Transport', 'Confirmed', ?, ?, ?)");
+      $stmt->execute([$booking_id, $user_id, $travel_date, $transport_id]);
 
       $fare = $pdo->prepare("SELECT transport_fare FROM Transportation WHERE transport_ID = ?");
       $fare->execute([$transport_id]);
       $fare = $fare->fetchColumn();
 
       $payment_id = 'PY' . strtoupper(uniqid());
-      $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID) VALUES (?, ?, ?, ?)");
+      $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID, payment_date) VALUES (?, ?, ?, ?, CURDATE())");
       $stmt2->execute([$payment_id, $booking_id, $fare, $user_id]);
 
       $success = 'Transport booked successfully! Booking ID: ' . $booking_id;
@@ -75,11 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Selected hotel not found.';
       } else {
         $booking_id = 'BK' . strtoupper(uniqid());
-        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date) VALUES (?, 'Hotel', 'Confirmed', ?, ?)");
-        $stmt->execute([$booking_id, $user_id, $checkin]);
+        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, hotel_registration_number) VALUES (?, 'Hotel', 'Confirmed', ?, ?, ?)");
+        $stmt->execute([$booking_id, $user_id, $checkin, $hotel_reg]);
 
         $payment_id = 'PY' . strtoupper(uniqid());
-        $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID) VALUES (?, ?, ?, ?)");
+        $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID, payment_date) VALUES (?, ?, ?, ?, CURDATE())");
         $stmt2->execute([$payment_id, $booking_id, $hotel_price, $user_id]);
 
         $success = 'Hotel booked successfully! Booking ID: ' . $booking_id;
@@ -100,11 +100,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Selected guide not found.';
       } else {
         $booking_id = 'BK' . strtoupper(uniqid());
-        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date) VALUES (?, 'Guide', 'Confirmed', ?, ?)");
-        $stmt->execute([$booking_id, $user_id, $guide_date]);
+        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, guide_NID) VALUES (?, 'Guide', 'Pending', ?, ?, ?)");
+        $stmt->execute([$booking_id, $user_id, $guide_date, $guide_nid]);
 
         $payment_id = 'PY' . strtoupper(uniqid());
-        $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID) VALUES (?, ?, ?, ?)");
+        $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID, payment_date) VALUES (?, ?, ?, ?, CURDATE())");
         $stmt2->execute([$payment_id, $booking_id, $guide_rate, $user_id]);
 
         $success = 'Guide booked successfully! Booking ID: ' . $booking_id;
