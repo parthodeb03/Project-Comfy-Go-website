@@ -108,7 +108,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-/* ── data queries ───────────────────────────────────────────────── */
 $transports = $pdo->query("SELECT * FROM Transportation ORDER BY transport_route")->fetchAll();
 
 $division_filter = $_GET['division'] ?? '';
@@ -139,7 +138,6 @@ if ($transport_route_filter) {
   $transports = array_filter($transports, fn($t) => stripos($t['transport_route'], $transport_route_filter) !== false);
 }
 
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -156,8 +154,6 @@ if ($transport_route_filter) {
 
 <body>
 <div id="tourist_page">
-
-  <!-- ── TOP BAR ── -->
   <div id="tourist_topbar">
     <div id="tourist_welcome">
       <p id="tourist_welcome_tag">Tourist Dashboard</p>
@@ -178,8 +174,6 @@ if ($transport_route_filter) {
   <?php endif; ?>
 
   <div id="tourist_body">
-
-    <!-- ── SIDEBAR ── -->
     <div id="tourist_sidebar">
       <nav id="tourist_nav">
         <a href="#transport"    class="t_nav_link">Transport</a>
@@ -190,8 +184,6 @@ if ($transport_route_filter) {
         <a href="#profile"      class="t_nav_link">Profile</a>
       </nav>
     </div>
-
-    <!-- ── MAIN CONTENT ── -->
     <div id="tourist_content">
 
       <!-- Transport -->
@@ -234,7 +226,6 @@ if ($transport_route_filter) {
         <?php endif; ?>
       </section>
 
-      <!-- Hotels -->
       <section class="t_section" id="hotels">
         <h2 class="t_section_title">Book a Hotel</h2>
         <p class="t_section_sub">Filter by division to find certified hotels.</p>
@@ -275,7 +266,6 @@ if ($transport_route_filter) {
         <?php endif; ?>
       </section>
 
-      <!-- Guides -->
       <section class="t_section" id="guides">
         <h2 class="t_section_title">Book a Guide</h2>
         <p class="t_section_sub">Find certified local guides by division.</p>
@@ -316,7 +306,6 @@ if ($transport_route_filter) {
         <?php endif; ?>
       </section>
 
-      <!-- Bookings -->
       <section class="t_section" id="bookings">
         <h2 class="t_section_title">My Bookings</h2>
         <p class="t_section_sub">Your past and upcoming bookings.</p>
@@ -342,15 +331,11 @@ if ($transport_route_filter) {
           </div>
         <?php endif; ?>
       </section>
-
-      <!-- Destinations -->
       <section class="t_section" id="destinations">
         <h2 class="t_section_title">Destinations</h2>
         <p class="t_section_sub">Explore curated tourist spots, trip cost estimator, and travel guides across Bangladesh.</p>
         <a href="destinations.php" class="t_btn_primary" style="display:inline-block;margin-top:12px;text-decoration:none;">Browse Destinations →</a>
       </section>
-
-      <!-- Profile -->
       <section class="t_section" id="profile">
         <h2 class="t_section_title">Update Profile</h2>
         <p class="t_section_sub">Edit your account information.</p>
@@ -372,9 +357,9 @@ if ($transport_route_filter) {
         </form>
       </section>
 
-    </div><!-- /tourist_content -->
-  </div><!-- /tourist_body -->
-</div><!-- /tourist_page -->
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

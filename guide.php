@@ -71,11 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
-
-/*
- * Fetch bookings for this guide.
- * Separate pending bookings (require action) and confirmed/rejected history.
- */
 $pending_stmt = $pdo->prepare("
     SELECT b.booking_ID,
            b.booking_date,
@@ -157,7 +152,6 @@ $bookings = $history_stmt->fetchAll();
 
     <div id="guide_content">
 
-      <!-- OVERVIEW -->
       <section class="g_section" id="overview">
         <h2 class="g_section_title">Overview</h2>
         <p class="g_section_sub">Your current profile information at a glance.</p>
@@ -189,7 +183,6 @@ $bookings = $history_stmt->fetchAll();
         </div>
       </section>
 
-      <!-- BOOKINGS -->
       <section class="g_section" id="bookings">
         <h2 class="g_section_title">My Bookings</h2>
         <p class="g_section_sub">Tourists who have booked you as their guide.</p>
@@ -266,7 +259,6 @@ $bookings = $history_stmt->fetchAll();
         <?php endif; ?>
       </section>
 
-      <!-- PROFILE EDIT -->
       <section class="g_section" id="profile">
         <h2 class="g_section_title">Update Profile</h2>
         <p class="g_section_sub">Keep your information up to date so tourists can find you.</p>

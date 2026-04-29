@@ -80,7 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Cancel/reset
+
     elseif ($action === 'cancel') {
         unset($_SESSION['reset_user']);
         $step = 1;
@@ -88,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Pre-fill email if we're in step 2
+
 if ($step === 2 && isset($_SESSION['reset_user'])) {
     $email = $_SESSION['reset_user']['email'];
 }

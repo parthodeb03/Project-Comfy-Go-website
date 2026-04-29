@@ -78,9 +78,6 @@
             </div>
         </div>
     </section>
-
-
-
     <section id="steps_sec">
         <p class="sec_tag">How It Works</p>
         <h2 class="sec_title">Plan your trip in 4 simple steps</h2>

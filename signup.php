@@ -8,8 +8,6 @@ $success = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $role = $_POST['role'] ?? 'tourist';
-
-    /* ─────────────── TOURIST ─────────────── */
     if ($role === 'tourist') {
         $user_ID    = trim($_POST['user_ID']          ?? '');
         $user_name  = trim($_POST['user_name']         ?? '');
@@ -46,7 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-    /* ─────────────── GUIDE ─────────────── */
     } elseif ($role === 'guide') {
         $guide_NID      = trim($_POST['guide_NID']      ?? '');
         $guide_name     = trim($_POST['guide_name']     ?? '');
@@ -89,7 +86,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-    /* ─────────────── HOTEL MANAGER ─────────────── */
     } elseif ($role === 'manager') {
         $manager_ID     = trim($_POST['manager_ID']     ?? '');
         $manager_name   = trim($_POST['manager_name']   ?? '');
@@ -138,8 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
-/* Preserve which tab was active after a POST error */
 $active_role = $_POST['role'] ?? 'tourist';
 ?>
 <!DOCTYPE html>
@@ -200,7 +194,6 @@ $active_role = $_POST['role'] ?? 'tourist';
       <form method="POST" action="signup.php" id="register_form">
         <input type="hidden" name="role" id="role_input" value="<?= htmlspecialchars($active_role) ?>">
 
-        <!-- ── TOURIST FORM ── -->
         <div id="form_tourist" class="role_form">
           <div class="reg_field">
             <label>User ID</label>
@@ -231,8 +224,6 @@ $active_role = $_POST['role'] ?? 'tourist';
             <input type="password" name="confirm_password" placeholder="Repeat password" autocomplete="new-password">
           </div>
         </div>
-
-        <!-- ── GUIDE FORM ── -->
         <div id="form_guide" class="role_form">
           <div class="reg_field">
             <label>National ID (NID)</label>
@@ -274,7 +265,6 @@ $active_role = $_POST['role'] ?? 'tourist';
           </div>
         </div>
 
-        <!-- ── MANAGER FORM ── -->
         <div id="form_manager" class="role_form">
           <div class="reg_field">
             <label>Manager ID</label>
@@ -320,7 +310,6 @@ $active_role = $_POST['role'] ?? 'tourist';
 </div>
 
 <script>
-  /* Switch the visible form panel and update role cards + hidden input */
   function switchRole(val) {
     document.querySelectorAll('.role_form').forEach(f => f.style.display = 'none');
     const target = document.getElementById('form_' + val);
@@ -336,12 +325,10 @@ $active_role = $_POST['role'] ?? 'tourist';
     const radio = card ? card.querySelector('input[type="radio"]') : null;
     if (radio) radio.checked = true;
   }
-
-  /* On page load, activate the role that was posted (or default tourist) */
   (function () {
     const initial = <?= json_encode($active_role) ?>;
     switchRole(initial);
-  })();
+  })
 </script>
 
 </body>

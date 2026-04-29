@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'Please enter a valid email address.';
     } else {
 
-        /* ── 1. Try Tourist ── */
         $stmt = $pdo->prepare("SELECT user_ID, user_name, password FROM Users WHERE user_email = ? LIMIT 1");
         $stmt->execute([$email]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -28,7 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        /* ── 2. Try Guide ── */
         $stmt = $pdo->prepare("SELECT guide_NID, guide_name, password FROM Guide WHERE guide_email = ? LIMIT 1");
         $stmt->execute([$email]);
         $guide = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -42,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
         }
 
-        /* ── 3. Try Manager ── */
         $stmt = $pdo->prepare("SELECT manager_ID, manager_name, password FROM Manager WHERE manager_email = ? LIMIT 1");
         $stmt->execute([$email]);
         $manager = $stmt->fetch(PDO::FETCH_ASSOC);

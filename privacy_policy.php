@@ -14,7 +14,6 @@ include 'navbaar.php';
   <link rel="stylesheet" href="styles/about.css">
   <style>
 
-    /* ── Reset & Base ─────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -39,7 +38,6 @@ include 'navbaar.php';
       -webkit-font-smoothing: antialiased;
     }
 
-    /* ── Hero Banner ──────────────────────────────── */
     .policy-hero {
       background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand) 60%, #2a8fd4 100%);
       padding: 72px 20px 60px;
@@ -94,7 +92,6 @@ include 'navbaar.php';
       width: 14px; height: 14px; fill: var(--accent);
     }
 
-    /* ── Layout ───────────────────────────────────── */
     .policy-wrap {
       max-width: 860px;
       margin: 0 auto;
@@ -109,8 +106,6 @@ include 'navbaar.php';
       .policy-wrap { grid-template-columns: 1fr; gap: 32px; }
       .policy-toc  { display: none; }
     }
-
-    /* ── Table of Contents ────────────────────────── */
     .policy-toc {
       position: sticky;
       top: 24px;
@@ -168,7 +163,6 @@ include 'navbaar.php';
 
     .policy-toc a:hover { color: var(--brand); }
 
-    /* ── Main Content ─────────────────────────────── */
     .policy-body section {
       margin-bottom: 44px;
       scroll-margin-top: 24px;
@@ -231,7 +225,6 @@ include 'navbaar.php';
       font-weight: 600;
     }
 
-    /* ── Info Card (intro) ────────────────────────── */
     .intro-card {
       background: linear-gradient(135deg, var(--brand-light) 0%, #f0f7ff 100%);
       border: 1px solid #c5ddf5;
@@ -247,7 +240,6 @@ include 'navbaar.php';
       line-height: 1.8;
     }
 
-    /* ── Contact Card ─────────────────────────────── */
     .contact-card {
       background: var(--white);
       border: 1px solid var(--border);
@@ -296,7 +288,6 @@ include 'navbaar.php';
       color: var(--text);
     }
 
-    /* ── Footer note ──────────────────────────────── */
     .policy-footer-note {
       text-align: center;
       font-size: .8rem;
@@ -305,12 +296,10 @@ include 'navbaar.php';
       padding-top: 24px;
       border-top: 1px solid var(--border);
     }
-
   </style>
 </head>
 <body>
 
-<!-- Hero -->
 <div class="policy-hero">
   <span class="badge">
     <svg viewBox="0 0 20 20"><path d="M10 1l2.5 6.5H19l-5.5 4 2.1 6.5L10 14l-5.6 4 2.1-6.5L1 7.5h6.5z"/></svg>
@@ -320,10 +309,7 @@ include 'navbaar.php';
   <p class="subtitle">Last updated: April 29, 2026</p>
 </div>
 
-<!-- Body -->
 <div class="policy-wrap">
-
-  <!-- Table of Contents -->
   <aside class="policy-toc" aria-label="Table of contents">
     <div class="toc-title">Contents</div>
     <ol>
@@ -339,8 +325,6 @@ include 'navbaar.php';
       <li><a href="#s10">Contact Us</a></li>
     </ol>
   </aside>
-
-  <!-- Main -->
   <main class="policy-body">
 
     <div class="intro-card">

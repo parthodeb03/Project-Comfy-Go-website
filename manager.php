@@ -13,7 +13,6 @@ $manager_name = $_SESSION['manager_name'];
 $error   = '';
 $success = '';
 
-/* Fetch manager + their hotel in one query */
 $stmt = $pdo->prepare("
     SELECT m.manager_ID, m.manager_name, m.manager_email, m.manager_mobile,
            m.hotel_registration_number,
@@ -29,7 +28,6 @@ $manager = $stmt->fetch();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    /* ── Update manager profile ── */
     if ($action === 'update_profile') {
         $new_name   = trim($_POST['manager_name']   ?? '');
         $new_email  = trim($_POST['manager_email']  ?? '');
@@ -53,8 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $success = 'Profile updated successfully.';
             }
         }
-
-    /* ── Update hotel details ── */
     } elseif ($action === 'update_hotel') {
         $new_hotel_name     = trim($_POST['hotel_name']     ?? '');
         $new_hotel_division = trim($_POST['hotel_division'] ?? '');
@@ -71,14 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = 'Hotel details updated successfully.';
         }
 
-    /* ── Logout ── */
     } elseif ($action === 'logout') {
         session_destroy();
         header('Location: login.php');
         exit;
     }
 
-    /* Re-fetch after any update */
     $stmt = $pdo->prepare("
         SELECT m.manager_ID, m.manager_name, m.manager_email, m.manager_mobile,
                m.hotel_registration_number,
@@ -93,7 +87,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $manager_name = $manager['manager_name'];
 }
 
-/* Fetch hotel bookings */
 $bq = $pdo->prepare("
     SELECT b.booking_ID,
            b.booking_date,
@@ -125,8 +118,6 @@ $hotel_bookings = $bq->fetchAll();
 <?php $active_page = ''; include 'navbaar.php'; ?>
 
 <div id="manager_page">
-
-  <!-- TOP BAR -->
   <div id="manager_topbar">
     <div id="manager_welcome">
       <p id="manager_welcome_tag">Hotel Manager Dashboard</p>
@@ -148,7 +139,6 @@ $hotel_bookings = $bq->fetchAll();
 
   <div id="manager_body">
 
-    <!-- SIDEBAR -->
     <div id="manager_sidebar">
       <nav id="manager_nav">
         <a href="#overview"     class="m_nav_link">Overview</a>
@@ -159,8 +149,6 @@ $hotel_bookings = $bq->fetchAll();
     </div>
 
     <div id="manager_content">
-
-      <!-- OVERVIEW -->
       <section class="m_section" id="overview">
         <h2 class="m_section_title">Overview</h2>
         <p class="m_section_sub">Your hotel and account information at a glance.</p>
@@ -214,7 +202,6 @@ $hotel_bookings = $bq->fetchAll();
         </div>
       </section>
 
-      <!-- BOOKINGS -->
       <section class="m_section" id="bookings">
         <h2 class="m_section_title">Hotel Bookings</h2>
         <p class="m_section_sub">All tourist bookings for your hotel.</p>
@@ -249,7 +236,6 @@ $hotel_bookings = $bq->fetchAll();
         <?php endif; ?>
       </section>
 
-      <!-- HOTEL DETAILS EDIT -->
       <section class="m_section" id="hotel_edit">
         <h2 class="m_section_title">Update Hotel Details</h2>
         <p class="m_section_sub">Keep your hotel information accurate so tourists can find and book it.</p>
@@ -297,7 +283,6 @@ $hotel_bookings = $bq->fetchAll();
         </form>
       </section>
 
-      <!-- MANAGER PROFILE EDIT -->
       <section class="m_section" id="profile_edit">
         <h2 class="m_section_title">Update My Profile</h2>
         <p class="m_section_sub">Update your personal contact information.</p>
@@ -325,9 +310,9 @@ $hotel_bookings = $bq->fetchAll();
         </form>
       </section>
 
-    </div><!-- /manager_content -->
-  </div><!-- /manager_body -->
-</div><!-- /manager_page -->
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
