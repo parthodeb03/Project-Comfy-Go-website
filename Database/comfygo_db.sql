@@ -95,7 +95,6 @@ CREATE TABLE TouristSpots (
     estimated_hours DECIMAL(4,1) DEFAULT NULL
 );
 
--- ─── Hotels ───────────────────────────────────────────────────────────────────
 INSERT INTO Hotels (hotel_registration_number, hotel_name, hotel_division, hotel_district, hotel_location, hotel_rating, hotel_price) VALUES
 ('H001','Hotel Grand Sultan','Sylhet','Sylhet','Zindabazar, Sylhet','5',12000),
 ('H002','Rose View Hotel','Sylhet','Sylhet','Shahjalal Uposhohor, Sylhet','4',8500),
@@ -107,7 +106,6 @@ INSERT INTO Hotels (hotel_registration_number, hotel_name, hotel_division, hotel
 ('H008','The Peninsula Chittagong','Chittagong','Chittagong','GEC Circle, Chattogram','5',11000),
 ('H009','Radisson Blu Chattogram Bay View','Chittagong','Chittagong','Karnaphuli, Chattogram','5',16000);
 
--- ─── Transportation ───────────────────────────────────────────────────────────
 INSERT INTO Transportation (transport_ID, transport_type, transport_route, transport_fare) VALUES
 ('T001','Train','Dhaka-Sylhet',450),
 ('T002','Train','Dhaka-Sylhet',500),
@@ -129,21 +127,18 @@ INSERT INTO Transportation (transport_ID, transport_type, transport_route, trans
 ('L002','Launch','Dhaka-Mongla',900),
 ('L003','Launch','Barisal-Chittagong',1200);
 
--- ─── Tourist Spots ────────────────────────────────────────────────────────────
 INSERT INTO TouristSpots (spot_id, spot_name, city, division, description, best_season, entry_fee, estimated_hours) VALUES
--- Dhaka
+
 ('SP001','Lalbagh Fort','Dhaka','Dhaka','A 17th-century Mughal fort in the heart of old Dhaka.','Oct–Mar',20,2.0),
 ('SP002','Ahsan Manzil','Dhaka','Dhaka','The Pink Palace — former residence of the Nawabs of Dhaka.','Oct–Mar',30,1.5),
 ('SP003','Sadarghat Launch Terminal','Dhaka','Dhaka','Bustling river port on the Buriganga — a living slice of Dhaka life.','Year-round',0,1.0),
 ('SP004','Dhakeshwari Temple','Dhaka','Dhaka','The national temple of Bangladesh, dating back to the 12th century.','Oct–Mar',0,1.0),
 ('SP005','National Museum Dhaka','Dhaka','Dhaka','Four floors of Bangladesh history, art, and natural heritage.','Year-round',20,2.5),
--- Sylhet
 ('SP006','Ratargul Swamp Forest','Sylhet','Sylhet','The only freshwater swamp forest in Bangladesh — ethereal when flooded.','Jun–Oct',50,3.0),
 ('SP007','Jaflong','Sylhet','Sylhet','Stone-lined riverbed on the Piyain river at the Indian border.','Sep–Mar',0,2.5),
 ('SP008','Srimangal Tea Gardens','Sylhet','Sylhet','Rolling emerald tea estates — the tea capital of Bangladesh.','Sep–Mar',0,3.0),
 ('SP009','Hazrat Shah Jalal Shrine','Sylhet','Sylhet','The most revered shrine in Sylhet, drawing pilgrims year-round.','Year-round',0,1.0),
 ('SP010','Bichanakandi','Sylhet','Sylhet','Crystal-clear river surrounded by hills at the India border.','Sep–Feb',0,3.0),
--- Chittagong
 ('SP011','Patenga Sea Beach','Chittagong','Chittagong','A popular sea beach at the mouth of the Karnaphuli river.','Nov–Feb',0,2.0),
 ('SP012','Foy\'s Lake','Chittagong','Chittagong','A serene artificial lake surrounded by hills and woodland.','Nov–Mar',150,2.5),
 ('SP013','Ethnological Museum','Chittagong','Chittagong','Showcases the tribal and ethnic heritage of Bangladesh.','Year-round',10,1.5),

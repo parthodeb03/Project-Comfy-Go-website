@@ -10,7 +10,6 @@ $step    = 1;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
-    // Step 1: Verify email exists
     if ($action === 'verify_email') {
         $email = trim($_POST['email'] ?? '');
 
