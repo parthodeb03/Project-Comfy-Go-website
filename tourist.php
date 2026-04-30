@@ -45,9 +45,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!$transport_id || !$travel_date) {
       $error = 'Please select transport and travel date.';
     } else {
-      $booking_id = 'BK' . strtoupper(uniqid());
-      $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, transport_ID) VALUES (?, 'Transport', 'Confirmed', ?, ?, ?)");
-      $stmt->execute([$booking_id, $user_id, $travel_date, $transport_id]);
+       $booking_id = 'BK' . strtoupper(uniqid());
+       $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, transport_ID) VALUES (?, 'Transport', 'Pending', ?, ?, ?)");
+       $stmt->execute([$booking_id, $user_id, $travel_date, $transport_id]);
       $fare = $pdo->prepare("SELECT transport_fare FROM Transportation WHERE transport_ID = ?");
       $fare->execute([$transport_id]);
       $fare = $fare->fetchColumn();
@@ -58,8 +58,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
   } elseif ($action === 'book_hotel') {
-    $hotel_reg = trim($_POST['hotel_reg'] ?? '');
-    $checkin   = trim($_POST['checkin']   ?? '');
+    $hotel_reg   = trim($_POST['hotel_reg'] ?? '');
+    $checkin     = trim($_POST['checkin']   ?? '');
+    $num_persons = max(1, (int)($_POST['num_persons'] ?? 1));
+    $num_nights  = max(1, (int)($_POST['num_nights']  ?? 1));
     if (!$hotel_reg || !$checkin) {
       $error = 'Please select a hotel and check-in date.';
     } else {
@@ -69,13 +71,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       if ($hotel_price === false) {
         $error = 'Selected hotel not found.';
       } else {
-        $booking_id = 'BK' . strtoupper(uniqid());
-        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, hotel_registration_number) VALUES (?, 'Hotel', 'Confirmed', ?, ?, ?)");
+        $total_price = $hotel_price * $num_persons * $num_nights;
+        $booking_id  = 'BK' . strtoupper(uniqid());
+        $stmt = $pdo->prepare("INSERT INTO Booking (booking_ID, booking_Type, booking_confirmation, user_ID, booking_date, hotel_registration_number) VALUES (?, 'Hotel', 'Pending', ?, ?, ?)");
         $stmt->execute([$booking_id, $user_id, $checkin, $hotel_reg]);
         $payment_id = 'PY' . strtoupper(uniqid());
         $stmt2 = $pdo->prepare("INSERT INTO Payment (payment_ID, booking_ID, price, user_ID, payment_date) VALUES (?, ?, ?, ?, CURDATE())");
-        $stmt2->execute([$payment_id, $booking_id, $hotel_price, $user_id]);
-        $success = 'Hotel booked! Booking ID: ' . $booking_id;
+        $stmt2->execute([$payment_id, $booking_id, $total_price, $user_id]);
+        $success = 'Hotel booked! Booking ID: ' . $booking_id . ' — Total: ৳' . number_format($total_price) . ' (' . $num_persons . ' person(s) × ' . $num_nights . ' night(s))';
       }
     }
 
@@ -112,8 +115,8 @@ $transports = $pdo->query("SELECT * FROM Transportation ORDER BY transport_route
 
 $division_filter = $_GET['division'] ?? '';
 $hotel_query = $division_filter
-  ? $pdo->prepare("SELECT * FROM Hotels WHERE hotel_division = ?")
-  : $pdo->prepare("SELECT * FROM Hotels");
+  ? $pdo->prepare("SELECT *, hotel_description FROM Hotels WHERE hotel_division = ?")
+  : $pdo->prepare("SELECT *, hotel_description FROM Hotels");
 $division_filter ? $hotel_query->execute([$division_filter]) : $hotel_query->execute();
 $hotels = $hotel_query->fetchAll();
 
@@ -657,12 +660,22 @@ body {
                 <?= star_rating((float)$h['hotel_rating']) ?>
                 <span style="font-size:12px;color:var(--muted);margin-left:4px;"><?= htmlspecialchars($h['hotel_rating']) ?></span>
               </div>
+              <?php if (!empty($h['hotel_description'])): ?>
+                <p style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.5;"><?= nl2br(htmlspecialchars($h['hotel_description'])) ?></p>
+              <?php endif; ?>
+              <div style="font-size:13px;font-weight:600;color:var(--accent);margin-top:6px;">
+                ৳<?= number_format($h['hotel_price']) ?> <span style="font-weight:400;color:var(--muted);">/ person / night</span>
+              </div>
               <div class="card-divider"></div>
-              <form method="POST" action="tourist.php" class="card-form">
+              <form method="POST" action="tourist.php" class="card-form" style="flex-direction:column;gap:8px;">
                 <input type="hidden" name="action" value="book_hotel">
                 <input type="hidden" name="hotel_reg" value="<?= htmlspecialchars($h['hotel_registration_number']) ?>">
-                <input type="date" name="checkin" required class="date-input">
-                <button type="submit" class="btn-book">Book</button>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <input type="date" name="checkin" required class="date-input" style="flex:2;min-width:120px;">
+                  <input type="number" name="num_persons" min="1" value="1" class="date-input" style="flex:1;min-width:60px;" placeholder="Persons" title="Number of persons">
+                  <input type="number" name="num_nights"  min="1" value="1" class="date-input" style="flex:1;min-width:60px;" placeholder="Nights" title="Number of nights">
+                </div>
+                <button type="submit" class="btn-book" style="width:100%;">Book</button>
               </form>
             </div>
           <?php endforeach; ?>

@@ -16,6 +16,9 @@ CREATE TABLE Hotels (
     hotel_rating VARCHAR(50),
     hotel_price INT DEFAULT 0
 );
+
+ALTER TABLE Hotels ADD COLUMN hotel_description TEXT DEFAULT NULL;
+
 CREATE TABLE Manager (
     manager_ID VARCHAR(100) PRIMARY KEY,
     manager_name VARCHAR(100) NOT NULL,

@@ -347,3 +347,43 @@ body {
         grid-template-columns: 1fr 1fr;
     }
 }
+
+/* ─── APPROVAL BUTTONS ─── */
+.m_btn_approve {
+    padding: 0.45rem 1rem;
+    background: #1e8449;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.m_btn_approve:hover {
+    background: #27ae60;
+}
+
+.m_btn_reject {
+    padding: 0.45rem 1rem;
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.m_btn_reject:hover {
+    background: #e74c3c;
+}
+
+.m_table td form {
+    display: inline-block;
+    margin: 0 2px;
+}
