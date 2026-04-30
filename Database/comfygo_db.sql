@@ -1,6 +1,5 @@
 CREATE DATABASE IF NOT EXISTS comfygo_db;
 USE comfygo_db;
-
 CREATE TABLE Users (
     user_ID VARCHAR(100) PRIMARY KEY,
     user_email VARCHAR(100) UNIQUE NOT NULL,
@@ -8,7 +7,6 @@ CREATE TABLE Users (
     user_phone VARCHAR(20),
     password VARCHAR(255) NOT NULL
 );
-
 CREATE TABLE Hotels (
     hotel_registration_number VARCHAR(100) PRIMARY KEY,
     hotel_name VARCHAR(100),
@@ -18,7 +16,6 @@ CREATE TABLE Hotels (
     hotel_rating VARCHAR(50),
     hotel_price INT DEFAULT 0
 );
-
 CREATE TABLE Manager (
     manager_ID VARCHAR(100) PRIMARY KEY,
     manager_name VARCHAR(100) NOT NULL,

@@ -9,7 +9,6 @@ if (!isset($_SESSION['guide_nid']) || $_SESSION['role'] !== 'guide') {
 
 $guide_nid  = $_SESSION['guide_nid'];
 $guide_name = $_SESSION['guide_name'];
-
 $error   = '';
 $success = '';
 
@@ -38,8 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['guide_name'] = $new_name;
             $guide_name = $new_name;
             $success = 'Profile updated successfully.';
-
-            /* Re-fetch updated data */
             $stmt = $pdo->prepare("SELECT guide_NID, guide_name, guide_email, guide_mobile, guide_division, guide_district, guide_rate FROM Guide WHERE guide_NID = ?");
             $stmt->execute([$guide_nid]);
             $guide = $stmt->fetch();
@@ -71,34 +68,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 }
+
 $pending_stmt = $pdo->prepare("
-    SELECT b.booking_ID,
-           b.booking_date,
-           b.booking_confirmation,
-           u.user_name,
-           u.user_phone,
-           u.user_email
+    SELECT b.booking_ID, b.booking_date, b.booking_confirmation,
+           u.user_name, u.user_phone, u.user_email
     FROM   Booking b
     JOIN   Users u ON b.user_ID = u.user_ID
-    WHERE  b.booking_Type = 'Guide'
-      AND  b.guide_NID = ?
-      AND  b.booking_confirmation = 'Pending'
+    WHERE  b.booking_Type = 'Guide' AND b.guide_NID = ? AND b.booking_confirmation = 'Pending'
     ORDER  BY b.booking_date ASC
 ");
 $pending_stmt->execute([$guide_nid]);
 $pending_bookings = $pending_stmt->fetchAll();
 
 $history_stmt = $pdo->prepare("
-    SELECT b.booking_ID,
-           b.booking_date,
-           b.booking_confirmation,
-           u.user_name,
-           u.user_phone
+    SELECT b.booking_ID, b.booking_date, b.booking_confirmation,
+           u.user_name, u.user_phone
     FROM   Booking b
     JOIN   Users u ON b.user_ID = u.user_ID
-    WHERE  b.booking_Type = 'Guide'
-      AND  b.guide_NID = ?
-      AND  b.booking_confirmation != 'Pending'
+    WHERE  b.booking_Type = 'Guide' AND b.guide_NID = ? AND b.booking_confirmation != 'Pending'
     ORDER  BY b.booking_date DESC
 ");
 $history_stmt->execute([$guide_nid]);
@@ -190,72 +177,77 @@ $bookings = $history_stmt->fetchAll();
         <?php if (empty($pending_bookings) && empty($bookings)): ?>
           <p class="g_empty">No bookings yet. Your profile will appear to tourists once you set your rate.</p>
         <?php else: ?>
+
           <?php if (!empty($pending_bookings)): ?>
-            <h3 style="margin: 20px 0 10px; color: #d35400; font-size: 1.1rem;">Pending Approvals</h3>
-            <div class="g_table_wrap">
-              <table class="g_table">
-                <thead>
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>Tourist</th>
-                    <th>Phone</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($pending_bookings as $b): ?>
-                  <tr>
-                    <td><?= htmlspecialchars($b['booking_ID']) ?></td>
-                    <td><?= htmlspecialchars($b['user_name']) ?></td>
-                    <td><?= htmlspecialchars($b['user_phone']) ?></td>
-                    <td><?= htmlspecialchars($b['booking_date']) ?></td>
-                    <td>
-                      <form method="POST" action="guide.php" style="display:inline;">
-                        <input type="hidden" name="action" value="approve_booking">
-                        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($b['booking_ID']) ?>">
-                        <button type="submit" class="g_btn_sm" style="background:#28a745;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;">Approve</button>
-                      </form>
-                      <form method="POST" action="guide.php" style="display:inline;">
-                        <input type="hidden" name="action" value="reject_booking">
-                        <input type="hidden" name="booking_id" value="<?= htmlspecialchars($b['booking_ID']) ?>">
-                        <button type="submit" class="g_btn_sm" style="background:#dc3545;color:white;border:none;padding:5px 10px;border-radius:4px;cursor:pointer;" onclick="return confirm('Reject this booking?')">Reject</button>
-                      </form>
-                    </td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
+            <p class="g_section_label">Pending Approvals</p>
+            <div class="g_booking_cards">
+              <?php foreach ($pending_bookings as $b): ?>
+              <div class="g_booking_card">
+                <div class="g_booking_card_header">
+                  <span class="g_booking_id">#<?= htmlspecialchars($b['booking_ID']) ?></span>
+                  <span class="g_badge" style="background:#fff7ed;color:#c2410c;">Pending</span>
+                </div>
+                <div class="g_booking_card_body">
+                  <div class="g_booking_row">
+                    <span class="label">Tourist</span>
+                    <?= htmlspecialchars($b['user_name']) ?>
+                  </div>
+                  <div class="g_booking_row">
+                    <span class="label">Phone</span>
+                    <?= htmlspecialchars($b['user_phone']) ?>
+                  </div>
+                  <div class="g_booking_row">
+                    <span class="label">Date</span>
+                    <?= htmlspecialchars($b['booking_date']) ?>
+                  </div>
+                </div>
+                <div class="g_booking_card_actions">
+                  <form method="POST" action="guide.php" style="flex:1;">
+                    <input type="hidden" name="action" value="approve_booking">
+                    <input type="hidden" name="booking_id" value="<?= htmlspecialchars($b['booking_ID']) ?>">
+                    <button type="submit" class="g_btn_approve" style="width:100%;">Approve</button>
+                  </form>
+                  <form method="POST" action="guide.php" style="flex:1;">
+                    <input type="hidden" name="action" value="reject_booking">
+                    <input type="hidden" name="booking_id" value="<?= htmlspecialchars($b['booking_ID']) ?>">
+                    <button type="submit" class="g_btn_reject" style="width:100%;" onclick="return confirm('Reject this booking?')">Reject</button>
+                  </form>
+                </div>
+              </div>
+              <?php endforeach; ?>
             </div>
           <?php endif; ?>
 
           <?php if (!empty($bookings)): ?>
-            <h3 style="margin: 20px 0 10px; color: #2c3e23; font-size: 1.1rem;">Booking History</h3>
-            <div class="g_table_wrap">
-              <table class="g_table">
-                <thead>
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>Tourist</th>
-                    <th>Phone</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php foreach ($bookings as $b): ?>
-                  <tr>
-                    <td><?= htmlspecialchars($b['booking_ID']) ?></td>
-                    <td><?= htmlspecialchars($b['user_name']) ?></td>
-                    <td><?= htmlspecialchars($b['user_phone']) ?></td>
-                    <td><?= htmlspecialchars($b['booking_date']) ?></td>
-                    <td><span class="g_badge"><?= htmlspecialchars($b['booking_confirmation']) ?></span></td>
-                  </tr>
-                  <?php endforeach; ?>
-                </tbody>
-              </table>
+            <p class="g_section_label" style="margin-top:28px;">Booking History</p>
+            <div class="g_booking_cards">
+              <?php foreach ($bookings as $b): ?>
+              <div class="g_booking_card">
+                <div class="g_booking_card_header">
+                  <span class="g_booking_id">#<?= htmlspecialchars($b['booking_ID']) ?></span>
+                  <span class="g_badge <?= $b['booking_confirmation'] === 'Confirmed' ? 'g_badge_confirmed' : 'g_badge_rejected' ?>">
+                    <?= htmlspecialchars($b['booking_confirmation']) ?>
+                  </span>
+                </div>
+                <div class="g_booking_card_body">
+                  <div class="g_booking_row">
+                    <span class="label">Tourist</span>
+                    <?= htmlspecialchars($b['user_name']) ?>
+                  </div>
+                  <div class="g_booking_row">
+                    <span class="label">Phone</span>
+                    <?= htmlspecialchars($b['user_phone']) ?>
+                  </div>
+                  <div class="g_booking_row">
+                    <span class="label">Date</span>
+                    <?= htmlspecialchars($b['booking_date']) ?>
+                  </div>
+                </div>
+              </div>
+              <?php endforeach; ?>
             </div>
           <?php endif; ?>
+
         <?php endif; ?>
       </section>
 
@@ -265,32 +257,32 @@ $bookings = $history_stmt->fetchAll();
 
         <form method="POST" action="guide.php" id="guide_profile_form">
           <input type="hidden" name="action" value="update_profile">
-
-          <div class="g_field">
-            <label>Full Name</label>
-            <input type="text" name="guide_name" value="<?= htmlspecialchars($guide['guide_name']) ?>" required>
+          <div class="g_profile_grid">
+            <div class="g_field">
+              <label>Full Name</label>
+              <input type="text" name="guide_name" value="<?= htmlspecialchars($guide['guide_name']) ?>" required>
+            </div>
+            <div class="g_field">
+              <label>Email Address</label>
+              <input type="email" name="guide_email" value="<?= htmlspecialchars($guide['guide_email']) ?>" required>
+            </div>
+            <div class="g_field">
+              <label>Mobile Number</label>
+              <input type="tel" name="guide_mobile" value="<?= htmlspecialchars($guide['guide_mobile']) ?>" required>
+            </div>
+            <div class="g_field">
+              <label>Division</label>
+              <input type="text" name="guide_division" value="<?= htmlspecialchars($guide['guide_division']) ?>" required>
+            </div>
+            <div class="g_field">
+              <label>District</label>
+              <input type="text" name="guide_district" value="<?= htmlspecialchars($guide['guide_district']) ?>" required>
+            </div>
+            <div class="g_field">
+              <label>Rate per Day (৳)</label>
+              <input type="number" name="guide_rate" value="<?= htmlspecialchars($guide['guide_rate']) ?>" min="0" required>
+            </div>
           </div>
-          <div class="g_field">
-            <label>Email Address</label>
-            <input type="email" name="guide_email" value="<?= htmlspecialchars($guide['guide_email']) ?>" required>
-          </div>
-          <div class="g_field">
-            <label>Mobile Number</label>
-            <input type="tel" name="guide_mobile" value="<?= htmlspecialchars($guide['guide_mobile']) ?>" required>
-          </div>
-          <div class="g_field">
-            <label>Division</label>
-            <input type="text" name="guide_division" value="<?= htmlspecialchars($guide['guide_division']) ?>" required>
-          </div>
-          <div class="g_field">
-            <label>District</label>
-            <input type="text" name="guide_district" value="<?= htmlspecialchars($guide['guide_district']) ?>" required>
-          </div>
-          <div class="g_field">
-            <label>Rate per Day (৳)</label>
-            <input type="number" name="guide_rate" value="<?= htmlspecialchars($guide['guide_rate']) ?>" min="0" required>
-          </div>
-
           <button type="submit" class="g_btn_primary">Save Changes</button>
         </form>
       </section>
