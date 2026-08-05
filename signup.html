@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register — ComfyGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          },
+          colors: {
+            dark: '#1a3322',
+            accent: '#3a6642',
+            accentHover: '#4e8056',
+            gold: '#e6d38a',
+            sage: '#b8d4bc',
+            cream: '#dff0e2',
+            muted: '#6b8b72'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #faf7f2;
+      color: #1a2e1e;
+      overflow-x: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(2deg); }
+    }
+    @keyframes float-reverse {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(12px) rotate(-2deg); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(58, 102, 66, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0); }
+    }
+
+    .animate-fade-up {
+      opacity: 0;
+      animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-fade-down {
+      opacity: 0;
+      animation: fadeInDown 0.6s ease-out forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    /* Navbar */
+    .nav-scrolled {
+      background: rgba(26, 51, 34, 0.95) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.2);
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #dff0e2;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-menu.open {
+      max-height: 400px;
+    }
+
+    /* Background blobs */
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+
+    /* Auth card */
+    .auth-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(78, 128, 86, 0.1);
+      box-shadow: 0 25px 50px -12px rgba(26, 51, 34, 0.12), 0 0 0 1px rgba(255,255,255,0.5) inset;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+    }
+    .auth-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 30px 60px -12px rgba(26, 51, 34, 0.18), 0 0 0 1px rgba(255,255,255,0.5) inset;
+    }
+
+    /* Inputs */
+    .input-wrap {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .input-wrap:focus-within {
+      transform: translateX(3px);
+    }
+    .input-wrap:focus-within .field_icon {
+      color: #3a6642;
+      transform: scale(1.1);
+    }
+    .field_icon {
+      transition: all 0.3s ease;
+    }
+    .auth-input {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #f8faf8;
+    }
+    .auth-input:hover {
+      background: #f0f5f0;
+    }
+    .auth-input:focus {
+      background: white;
+      box-shadow: 0 0 0 4px rgba(58, 102, 66, 0.08);
+      border-color: #3a6642;
+    }
+
+    /* Password toggle */
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      cursor: pointer;
+      padding: 4px;
+      transition: color 0.2s ease;
+      z-index: 10;
+    }
+    .pw-toggle:hover {
+      color: #3a6642;
+    }
+
+    /* Section headers */
+    .form-section-header {
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .form-section-header:hover {
+      background: rgba(58, 102, 66, 0.03);
+    }
+    .form-section-header::after {
+      content: '\f107';
+      font-family: 'Font Awesome 6 Free';
+      font-weight: 900;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9ca3af;
+      transition: transform 0.3s ease;
+    }
+    .form-section-header.collapsed::after {
+      transform: translateY(-50%) rotate(-90deg);
+    }
+
+    /* Collapsible form */
+    .role_form {
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    }
+    .role_form.collapsed {
+      max-height: 0 !important;
+      opacity: 0;
+      margin-top: 0;
+      margin-bottom: 0;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    .btn-primary:hover::before {
+      width: 400px;
+      height: 400px;
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+    .btn-primary.loading {
+      pointer-events: none;
+      opacity: 0.85;
+    }
+
+    /* Spinner */
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: none;
+    }
+    .btn-primary.loading .spinner { display: inline-block; }
+    .btn-primary.loading .btn-text { display: none; }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Error states */
+    .input-error {
+      border-color: #dc2626 !important;
+      background-color: #fef2f2 !important;
+    }
+    .error-msg {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 6px;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+    .error-msg.show {
+      display: flex;
+      animation: fadeInUp 0.3s ease;
+    }
+
+    /* Password strength */
+    .strength-bar {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 6px;
+      transition: all 0.3s ease;
+      background: #e5e7eb;
+      overflow: hidden;
+    }
+    .strength-bar-fill {
+      height: 100%;
+      width: 0;
+      border-radius: 2px;
+      transition: all 0.4s ease;
+    }
+    .strength-weak { background: #ef4444; width: 33%; }
+    .strength-medium { background: #f59e0b; width: 66%; }
+    .strength-strong { background: #22c55e; width: 100%; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      padding: 16px 24px;
+      background: white;
+      border-left: 4px solid #3a6642;
+      border-radius: 12px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateX(150%);
+      transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-left-color: #dc2626; }
+
+    /* Role selector tabs */
+    .role-tab {
+      position: relative;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+    .role-tab.active {
+      background: #3a6642;
+      color: white;
+      box-shadow: 0 4px 15px rgba(58, 102, 66, 0.3);
+    }
+    .role-tab:not(.active):hover {
+      background: rgba(58, 102, 66, 0.05);
+      color: #3a6642;
+    }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      background: #1a3322;
+      color: #dff0e2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(26,51,34,0.3);
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .back-to-top:hover {
+      background: #3a6642;
+      transform: translateY(-3px);
+    }
+
+    /* Grain */
+    .grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.03;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #faf7f2; }
+    ::-webkit-scrollbar-thumb { background: #4e8056; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i id="toast-icon" class="fa-solid fa-check-circle text-xl text-accent"></i>
+    <div>
+      <p id="toast-title" class="font-semibold text-sm text-dark">Success</p>
+      <p id="toast-message" class="text-xs text-muted">Operation completed.</p>
+    </div>
+  </div>
+
+  <!-- Back to Top -->
+  <div id="backToTop" class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <i class="fa-solid fa-arrow-up text-sm"></i>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbaar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-dark shadow-md transition-all duration-500">
+    <div id="nav_sec_1" class="flex items-center">
+      <a href="index.html" id="comfygo_logo" class="text-xl font-bold text-cream flex items-center gap-2 hover:opacity-80 transition-opacity" style="font-family: 'Playfair Display', serif;">
+        <i class="fa-solid fa-leaf text-[#7aaa80]"></i>ComfyGo
+      </a>
+    </div>
+    <div id="nav_sec_2" class="hidden md:flex items-center gap-6">
+      <a href="about.html" id="nav_about" class="nav-link text-sage hover:text-cream text-sm font-medium transition-colors">About</a>
+      <a href="contact.html" id="nav_contact" class="nav-link text-sage hover:text-cream text-sm font-medium transition-colors">Contact</a>
+    </div>
+    <div id="nav_sec_3" class="hidden md:flex items-center gap-4">
+      <a href="login.html" id="nav_login" class="text-sage hover:text-cream text-sm font-medium transition-colors">Login</a>
+      <a href="signup.html" id="nav_signup" class="bg-accent text-cream px-5 py-2 rounded-lg text-sm font-medium hover:bg-accentHover transition-all shadow-lg shadow-accent/20">Signup</a>
+    </div>
+    <button id="nav_toggle" aria-label="Toggle menu" class="md:hidden p-2 rounded-lg text-sage hover:text-cream hover:bg-white/10 transition-colors">
+      <i id="menu-icon" class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu absolute top-full left-0 right-0 bg-dark/98 backdrop-blur-xl border-t border-white/10 md:hidden">
+      <div class="px-6 py-5 flex flex-col gap-3">
+        <a href="about.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">About</a>
+        <a href="contact.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">Contact</a>
+        <div class="flex gap-3 pt-2">
+          <a href="login.html" class="flex-1 text-center text-sage border border-sage/30 rounded-lg py-2.5 text-sm font-medium">Login</a>
+          <a href="signup.html" class="flex-1 text-center bg-accent text-cream rounded-lg py-2.5 text-sm font-medium">Signup</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="register_page_bg" class="min-h-screen flex flex-col items-center relative overflow-hidden pt-20 grain" style="background: linear-gradient(135deg, #f0f5f0 0%, #e8f0e8 50%, #f5f0e8 100%);">
+    
+    <!-- Decorative blobs -->
+    <div class="blob w-[500px] h-[500px] bg-[#4e8056] top-[-150px] left-[-150px] animate-[float_7s_ease-in-out_infinite]"></div>
+    <div class="blob w-[400px] h-[400px] bg-[#e6d38a] bottom-[-100px] right-[-100px] animate-[float-reverse_8s_ease-in-out_infinite] opacity-20"></div>
+    
+    <!-- Floating icons -->
+    <i class="fa-solid fa-leaf absolute top-24 left-[8%] text-[#4e8056]/10 text-5xl animate-[float_6s_ease-in-out_infinite]"></i>
+    <i class="fa-solid fa-user-plus absolute bottom-32 right-[12%] text-[#e6d38a]/15 text-4xl animate-[float-reverse_7s_ease-in-out_infinite]"></i>
+
+    <!-- Hero -->
+    <div id="register_hero" class="text-center py-12 px-4 relative z-10">
+      <p id="register_tag" class="animate-fade-down text-accent font-semibold text-sm uppercase tracking-[3px] mb-3">Join ComfyGo</p>
+      <h1 id="register_title" class="animate-fade-up delay-100 text-4xl md:text-5xl font-bold text-dark mb-4 leading-tight" style="font-family: 'Playfair Display', serif;">
+        Create your <em class="text-accent not-italic">account</em>
+      </h1>
+      <p id="register_sub" class="animate-fade-up delay-200 text-muted text-lg max-w-md mx-auto">Tell us who you are to get started. Choose your role below.</p>
+      
+      <!-- Role Selector -->
+      <div class="animate-fade-up delay-300 mt-8 flex flex-wrap justify-center gap-3">
+        <button onclick="switchRole('tourist')" id="tab-tourist" class="role-tab active px-6 py-3 rounded-xl border border-accent/20 text-sm font-semibold flex items-center gap-2">
+          <i class="fa-solid fa-user"></i> Tourist
+        </button>
+        <button onclick="switchRole('guide')" id="tab-guide" class="role-tab px-6 py-3 rounded-xl border border-accent/20 text-sm font-semibold flex items-center gap-2 text-gray-600">
+          <i class="fa-solid fa-map-location-dot"></i> Guide
+        </button>
+        <button onclick="switchRole('manager')" id="tab-manager" class="role-tab px-6 py-3 rounded-xl border border-accent/20 text-sm font-semibold flex items-center gap-2 text-gray-600">
+          <i class="fa-solid fa-hotel"></i> Hotel Manager
+        </button>
+        <button onclick="switchRole('admin')" id="tab-admin" class="role-tab px-6 py-3 rounded-xl border border-accent/20 text-sm font-semibold flex items-center gap-2 text-gray-600">
+          <i class="fa-solid fa-shield-halved"></i> Admin
+        </button>
+      </div>
+    </div>
+
+    <!-- Form Card -->
+    <div id="register_wrapper" class="w-full max-w-2xl px-4 pb-12 relative z-10">
+      <div id="register_card" class="auth-card rounded-2xl p-8 md:p-10">
+
+        <form id="register_form" onsubmit="handleSubmit(event)" novalidate>
+
+          <!-- Tourist Form -->
+          <div id="form_tourist" class="role_form">
+            <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-user text-accent"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-dark" style="font-family: 'Playfair Display', serif;">Tourist Registration</h2>
+                <p class="text-xs text-gray-400">Create a traveller account</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">User ID</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-id-card field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="user_ID" placeholder="Choose a unique user ID" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-user_ID"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> User ID is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Full Name</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-user field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="user_name" placeholder="Your full name" autocomplete="name" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-user_name"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Full name is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Email Address</label>
+                <div class="input-wrap relative">
+                  <i class="fa-regular fa-envelope field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="email" name="user_email" placeholder="you@example.com" autocomplete="email" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-user_email"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Valid email is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Phone Number</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-phone field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="tel" name="user_phone" placeholder="+880 1XXX XXXXXX" autocomplete="tel" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-user_phone"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Phone number is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="password" id="pw-tourist" placeholder="Min. 6 characters" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none" oninput="checkStrength(this, 'strength-tourist')">
+                  <span class="pw-toggle" onclick="togglePw('pw-tourist', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <div class="strength-bar"><div class="strength-bar-fill" id="strength-tourist"></div></div>
+                <p class="error-msg" id="error-password"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Password must be at least 6 characters</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Confirm Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="confirm_password" id="pw-tourist-confirm" placeholder="Repeat password" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                  <span class="pw-toggle" onclick="togglePw('pw-tourist-confirm', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <p class="error-msg" id="error-confirm_password"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Passwords do not match</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Guide Form -->
+          <div id="form_guide" class="role_form hidden mt-8">
+            <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center">
+                <i class="fa-solid fa-map-location-dot text-amber-700"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-dark" style="font-family: 'Playfair Display', serif;">Guide Registration</h2>
+                <p class="text-xs text-gray-400">Register as a certified guide</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">National ID (NID)</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-id-card field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="guide_NID" placeholder="Your NID number" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_NID"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> NID is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Full Name</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-user field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="guide_name" placeholder="Your full name" autocomplete="name" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_name"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Full name is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Email Address</label>
+                <div class="input-wrap relative">
+                  <i class="fa-regular fa-envelope field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="email" name="guide_email" placeholder="you@example.com" autocomplete="email" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_email"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Valid email is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Mobile Number</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-phone field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="tel" name="guide_mobile" placeholder="+880 1XXX XXXXXX" autocomplete="tel" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_mobile"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Mobile number is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Division</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-map field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="guide_division" placeholder="e.g. Sylhet" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_division"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Division is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">District</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-location-dot field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="guide_district" placeholder="e.g. Moulvibazar" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-guide_district"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> District is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="guide_password" id="pw-guide" placeholder="Min. 6 characters" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none" oninput="checkStrength(this, 'strength-guide')">
+                  <span class="pw-toggle" onclick="togglePw('pw-guide', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <div class="strength-bar"><div class="strength-bar-fill" id="strength-guide"></div></div>
+                <p class="error-msg" id="error-guide_password"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Password must be at least 6 characters</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Confirm Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="guide_confirm" id="pw-guide-confirm" placeholder="Repeat password" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                  <span class="pw-toggle" onclick="togglePw('pw-guide-confirm', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <p class="error-msg" id="error-guide_confirm"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Passwords do not match</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Manager Form -->
+          <div id="form_manager" class="role_form hidden mt-8">
+            <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center">
+                <i class="fa-solid fa-hotel text-purple-700"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-dark" style="font-family: 'Playfair Display', serif;">Hotel Manager Registration</h2>
+                <p class="text-xs text-gray-400">Register your hotel with us</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Manager ID</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-id-badge field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="manager_ID" placeholder="Choose a unique manager ID" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-manager_ID"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Manager ID is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Full Name</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-user field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="manager_name" placeholder="Your full name" autocomplete="name" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-manager_name"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Full name is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Email Address</label>
+                <div class="input-wrap relative">
+                  <i class="fa-regular fa-envelope field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="email" name="manager_email" placeholder="you@example.com" autocomplete="email" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-manager_email"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Valid email is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Mobile Number</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-phone field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="tel" name="manager_mobile" placeholder="+880 1XXX XXXXXX" autocomplete="tel" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-manager_mobile"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Mobile number is required</p>
+              </div>
+
+              <div class="reg_field md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Hotel Registration Number</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-certificate field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="hotel_registration_number" placeholder="Official hotel reg. number" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-hotel_registration_number"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Registration number is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="manager_password" id="pw-manager" placeholder="Min. 6 characters" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none" oninput="checkStrength(this, 'strength-manager')">
+                  <span class="pw-toggle" onclick="togglePw('pw-manager', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <div class="strength-bar"><div class="strength-bar-fill" id="strength-manager"></div></div>
+                <p class="error-msg" id="error-manager_password"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Password must be at least 6 characters</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Confirm Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="manager_confirm" id="pw-manager-confirm" placeholder="Repeat password" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                  <span class="pw-toggle" onclick="togglePw('pw-manager-confirm', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <p class="error-msg" id="error-manager_confirm"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Passwords do not match</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin Form -->
+          <div id="form_admin" class="role_form hidden mt-8">
+            <div class="flex items-center gap-3 mb-8 pb-4 border-b border-gray-100">
+              <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center">
+                <i class="fa-solid fa-shield-halved text-red-700"></i>
+              </div>
+              <div>
+                <h2 class="text-xl font-bold text-dark" style="font-family: 'Playfair Display', serif;">Admin Registration</h2>
+                <p class="text-xs text-gray-400">Create a system administrator account</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Admin ID</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-id-badge field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="admin_ID" placeholder="Choose a unique admin ID" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-admin_ID"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Admin ID is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Full Name</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-user field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="text" name="admin_name" placeholder="Your full name" autocomplete="name" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-admin_name"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Full name is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Email Address</label>
+                <div class="input-wrap relative">
+                  <i class="fa-regular fa-envelope field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="email" name="admin_email" placeholder="you@example.com" autocomplete="email" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-admin_email"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Valid email is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Mobile Number</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-phone field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="tel" name="admin_mobile" placeholder="+880 1XXX XXXXXX" autocomplete="tel" class="auth-input w-full pl-11 pr-4 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                </div>
+                <p class="error-msg" id="error-admin_mobile"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Mobile number is required</p>
+              </div>
+
+              <div class="reg_field md:col-span-2">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Admin Secret Key</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-key field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="admin_secret_key" id="admin-secret" placeholder="Enter the admin authorization key" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                  <span class="pw-toggle" onclick="togglePw('admin-secret', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <p class="text-xs text-gray-400 mt-1 ml-0.5">This key is provided by the system owner to authorize admin registration.</p>
+                <p class="error-msg" id="error-admin_secret_key"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Secret key is required</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="admin_password" id="pw-admin" placeholder="Min. 6 characters" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none" oninput="checkStrength(this, 'strength-admin')">
+                  <span class="pw-toggle" onclick="togglePw('pw-admin', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <div class="strength-bar"><div class="strength-bar-fill" id="strength-admin"></div></div>
+                <p class="error-msg" id="error-admin_password"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Password must be at least 6 characters</p>
+              </div>
+
+              <div class="reg_field">
+                <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 ml-0.5">Confirm Password</label>
+                <div class="input-wrap relative">
+                  <i class="fa-solid fa-lock field_icon absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                  <input type="password" name="admin_confirm" id="pw-admin-confirm" placeholder="Repeat password" autocomplete="new-password" class="auth-input w-full pl-11 pr-11 py-3 border border-gray-200 rounded-xl text-dark text-sm outline-none">
+                  <span class="pw-toggle" onclick="togglePw('pw-admin-confirm', this)">
+                    <i class="fa-regular fa-eye"></i>
+                  </span>
+                </div>
+                <p class="error-msg" id="error-admin_confirm"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> Passwords do not match</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="mt-8 flex items-start gap-3">
+            <input type="checkbox" id="terms" name="terms" class="mt-1 w-4 h-4 rounded border-gray-300 text-accent focus:ring-accent cursor-pointer">
+            <label for="terms" class="text-sm text-gray-500 cursor-pointer select-none">
+              I agree to the <a href="terms_of_service.html" class="text-accent font-semibold hover:text-dark transition-colors">Terms of Service</a> and <a href="privacy_policy.html" class="text-accent font-semibold hover:text-dark transition-colors">Privacy Policy</a>
+            </label>
+          </div>
+          <p class="error-msg ml-7" id="error-terms"><i class="fa-solid fa-circle-exclamation text-[10px]"></i> You must agree to the terms</p>
+
+          <!-- Submit -->
+          <button type="submit" id="register_submit" class="btn-primary mt-8 w-full bg-accent text-white font-semibold py-3.5 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-accent/20 hover:shadow-xl hover:shadow-accent/30 text-lg">
+            <span class="spinner"></span>
+            <span class="btn-text">Create Account</span>
+            <i class="fa-solid fa-arrow-right btn-text text-sm"></i>
+          </button>
+
+          <p id="signin_text" class="mt-6 text-center text-gray-500 text-sm">
+            Already have an account? 
+            <a href="login.html" id="signin_link" class="text-accent font-semibold hover:text-dark transition-colors inline-flex items-center gap-1 group">
+              Sign in <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+            </a>
+          </p>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Footer -->
+  <footer class="bg-dark text-sage/60 py-6 text-center text-xs border-t border-white/5 relative z-10">
+    <p> ComfyGo. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // Mobile Menu
+    const navToggle = document.getElementById('nav_toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let menuOpen = false;
+
+    navToggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open');
+      menuIcon.className = menuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    });
+
+    // Navbar Scroll
+    const navbar = document.getElementById('navbaar');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 30) {
+        navbar.classList.add('nav-scrolled');
+      } else {
+        navbar.classList.remove('nav-scrolled');
+      }
+
+      const backToTop = document.getElementById('backToTop');
+      if (window.pageYOffset > 500) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    // Role Switcher
+    let currentRole = 'tourist';
+
+    function switchRole(role) {
+      currentRole = role;
+      
+      // Update tabs
+      document.querySelectorAll('.role-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      document.getElementById(`tab-${role}`).classList.add('active');
+
+      // Show/hide forms with animation
+      const forms = ['tourist', 'guide', 'manager', 'admin'];
+      forms.forEach(r => {
+        const form = document.getElementById(`form_${r}`);
+        if (r === role) {
+          form.classList.remove('hidden');
+          form.style.opacity = '0';
+          form.style.transform = 'translateY(20px)';
+          setTimeout(() => {
+            form.style.transition = 'all 0.5s ease';
+            form.style.opacity = '1';
+            form.style.transform = 'translateY(0)';
+          }, 50);
+        } else {
+          form.classList.add('hidden');
+          form.style.opacity = '';
+          form.style.transform = '';
+        }
+      });
+
+      // Clear errors
+      document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+      document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('input-error'));
+    }
+
+    // Password Toggle
+    function togglePw(id, btn) {
+      const input = document.getElementById(id);
+      const icon = btn.querySelector('i');
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-regular fa-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-regular fa-eye';
+      }
+    }
+
+    // Password Strength
+    function checkStrength(input, barId) {
+      const val = input.value;
+      const bar = document.getElementById(barId);
+      if (!val) {
+        bar.className = 'strength-bar-fill';
+        return;
+      }
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (val.length >= 10) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      bar.className = 'strength-bar-fill';
+      if (strength <= 2) bar.classList.add('strength-weak');
+      else if (strength <= 4) bar.classList.add('strength-medium');
+      else bar.classList.add('strength-strong');
+    }
+
+    // Toast
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-message');
+
+      toast.className = `toast ${type}`;
+      icon.className = type === 'success'
+        ? 'fa-solid fa-check-circle text-xl text-accent'
+        : 'fa-solid fa-circle-exclamation text-xl text-red-600';
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+
+    // Validation
+    function validateEmail(email) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.error-msg').forEach(e => e.classList.remove('show'));
+      document.querySelectorAll('.auth-input').forEach(i => i.classList.remove('input-error'));
+    }
+
+    function showError(name) {
+      const errorEl = document.getElementById(`error-${name}`);
+      const input = document.querySelector(`[name="${name}"]`);
+      if (errorEl) errorEl.classList.add('show');
+      if (input) {
+        input.classList.add('input-error', 'shake');
+        setTimeout(() => input.classList.remove('shake'), 400);
+      }
+    }
+
+    // Form Submit
+    async function handleSubmit(e) {
+      e.preventDefault();
+      clearErrors();
+
+      let valid = true;
+      const terms = document.getElementById('terms');
+
+      if (currentRole === 'tourist') {
+        const fields = ['user_ID', 'user_name', 'user_email', 'user_phone', 'password', 'confirm_password'];
+        fields.forEach(f => {
+          const el = document.querySelector(`[name="${f}"]`);
+          if (!el || !el.value.trim()) {
+            showError(f);
+            valid = false;
+          }
+        });
+        const email = document.querySelector('[name="user_email"]');
+        if (email && !validateEmail(email.value)) {
+          showError('user_email');
+          valid = false;
+        }
+        const pw = document.querySelector('[name="password"]');
+        const cpw = document.querySelector('[name="confirm_password"]');
+        if (pw && cpw && pw.value !== cpw.value) {
+          showError('confirm_password');
+          valid = false;
+        }
+        if (pw && pw.value.length < 6) {
+          showError('password');
+          valid = false;
+        }
+      } else if (currentRole === 'guide') {
+        const fields = ['guide_NID', 'guide_name', 'guide_email', 'guide_mobile', 'guide_division', 'guide_district', 'guide_password', 'guide_confirm'];
+        fields.forEach(f => {
+          const el = document.querySelector(`[name="${f}"]`);
+          if (!el || !el.value.trim()) {
+            showError(f);
+            valid = false;
+          }
+        });
+        const email = document.querySelector('[name="guide_email"]');
+        if (email && !validateEmail(email.value)) {
+          showError('guide_email');
+          valid = false;
+        }
+        const pw = document.querySelector('[name="guide_password"]');
+        const cpw = document.querySelector('[name="guide_confirm"]');
+        if (pw && cpw && pw.value !== cpw.value) {
+          showError('guide_confirm');
+          valid = false;
+        }
+        if (pw && pw.value.length < 6) {
+          showError('guide_password');
+          valid = false;
+        }
+      } else if (currentRole === 'manager') {
+        const fields = ['manager_ID', 'manager_name', 'manager_email', 'manager_mobile', 'hotel_registration_number', 'manager_password', 'manager_confirm'];
+        fields.forEach(f => {
+          const el = document.querySelector(`[name="${f}"]`);
+          if (!el || !el.value.trim()) {
+            showError(f);
+            valid = false;
+          }
+        });
+        const email = document.querySelector('[name="manager_email"]');
+        if (email && !validateEmail(email.value)) {
+          showError('manager_email');
+          valid = false;
+        }
+        const pw = document.querySelector('[name="manager_password"]');
+        const cpw = document.querySelector('[name="manager_confirm"]');
+        if (pw && cpw && pw.value !== cpw.value) {
+          showError('manager_confirm');
+          valid = false;
+        }
+        if (pw && pw.value.length < 6) {
+          showError('manager_password');
+          valid = false;
+        }
+      } else if (currentRole === 'admin') {
+        const fields = ['admin_ID', 'admin_name', 'admin_email', 'admin_mobile', 'admin_secret_key', 'admin_password', 'admin_confirm'];
+        fields.forEach(f => {
+          const el = document.querySelector(`[name="${f}"]`);
+          if (!el || !el.value.trim()) {
+            showError(f);
+            valid = false;
+          }
+        });
+        const email = document.querySelector('[name="admin_email"]');
+        if (email && !validateEmail(email.value)) {
+          showError('admin_email');
+          valid = false;
+        }
+        const pw = document.querySelector('[name="admin_password"]');
+        const cpw = document.querySelector('[name="admin_confirm"]');
+        if (pw && cpw && pw.value !== cpw.value) {
+          showError('admin_confirm');
+          valid = false;
+        }
+        if (pw && pw.value.length < 6) {
+          showError('admin_password');
+          valid = false;
+        }
+      }
+
+      if (!terms.checked) {
+        document.getElementById('error-terms').classList.add('show');
+        valid = false;
+      }
+
+      if (!valid) {
+        showToast('Please fix errors', 'Some required fields are missing or invalid.', 'error');
+        return;
+      }
+
+      // Loading
+      const btn = document.getElementById('register_submit');
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      await new Promise(r => setTimeout(r, 2000));
+
+      btn.classList.remove('loading');
+      btn.disabled = false;
+
+      showToast('Welcome to ComfyGo!', 'Your account has been created successfully.');
+    }
+
+    // Button Ripple
+    document.getElementById('register_submit').addEventListener('click', function(e) {
+      const rect = this.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const ripple = document.createElement('span');
+      ripple.style.cssText = `
+        position: absolute;
+        background: rgba(255,255,255,0.2);
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 0.6s ease-out;
+        pointer-events: none;
+        left: ${x}px;
+        top: ${y}px;
+        width: 100px;
+        height: 100px;
+        margin-left: -50px;
+        margin-top: -50px;
+      `;
+      this.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `@keyframes ripple { to { transform: scale(4); opacity: 0; } }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

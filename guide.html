@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Dashboard — ComfyGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans: ['Jost', 'sans-serif']
+          },
+          colors: {
+            dark: '#1a3322',
+            accent: '#3a6642',
+            accentHover: '#4e8056',
+            gold: '#e6d38a',
+            sage: '#b8d4bc',
+            cream: '#dff0e2',
+            muted: '#6b8b72'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: #f8faf8;
+      overflow-x: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(58, 102, 66, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0); }
+    }
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-fade-in { animation: fadeInUp 0.6s ease-out forwards; }
+    .animate-fade-left { animation: fadeInLeft 0.5s ease-out forwards; }
+    .animate-scale-in { animation: scaleIn 0.5s ease-out forwards; }
+    .delay-100 { animation-delay: 0.1s; opacity: 0; }
+    .delay-200 { animation-delay: 0.2s; opacity: 0; }
+    .delay-300 { animation-delay: 0.3s; opacity: 0; }
+    .delay-400 { animation-delay: 0.4s; opacity: 0; }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-left.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Navbar */
+    .nav-scrolled {
+      background: rgba(26, 51, 34, 0.95) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #dff0e2;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-menu.open {
+      max-height: 400px;
+    }
+
+    /* Sidebar */
+    .sidebar-link {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+    .sidebar-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%) scaleY(0);
+      width: 3px;
+      height: 60%;
+      background: #3a6642;
+      border-radius: 0 4px 4px 0;
+      transition: transform 0.3s ease;
+    }
+    .sidebar-link.active::before,
+    .sidebar-link:hover::before {
+      transform: translateY(-50%) scaleY(1);
+    }
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(58,102,66,0.08) 0%, transparent 100%);
+      color: #1a3322;
+    }
+
+    /* Cards */
+    .info-card {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(78, 128, 86, 0.08);
+    }
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -8px rgba(26, 51, 34, 0.12);
+      border-color: rgba(78, 128, 86, 0.2);
+    }
+    .info-card .icon-box {
+      transition: all 0.3s ease;
+    }
+    .info-card:hover .icon-box {
+      transform: scale(1.1) rotate(-5deg);
+      background: #3a6642;
+      color: white;
+    }
+
+    /* Booking cards */
+    .booking-card {
+      transition: all 0.3s ease;
+      border: 1px solid transparent;
+    }
+    .booking-card:hover {
+      border-color: rgba(78, 128, 86, 0.15);
+      box-shadow: 0 8px 25px -5px rgba(26, 51, 34, 0.08);
+    }
+
+    /* Buttons */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s ease, height 0.5s ease;
+    }
+    .btn-primary:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    /* Status badges */
+    .badge-pending {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    .badge-confirmed {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+    }
+    .badge-rejected {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+    }
+
+    /* Form inputs */
+    .form-input {
+      transition: all 0.3s ease;
+      background: #f8faf8;
+      border: 1px solid #e5e7eb;
+    }
+    .form-input:hover {
+      background: #f0f5f0;
+      border-color: #d1d5db;
+    }
+    .form-input:focus {
+      background: white;
+      border-color: #3a6642;
+      box-shadow: 0 0 0 4px rgba(58, 102, 66, 0.08);
+      outline: none;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      background: white;
+      border-left: 4px solid #3a6642;
+      border-radius: 10px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(150%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-left-color: #dc2626; }
+    .toast.info { border-left-color: #2563eb; }
+
+    /* Stats overview */
+    .stat-number {
+      background: linear-gradient(135deg, #1a3322, #3a6642);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Section transition */
+    .g_section {
+      scroll-margin-top: 100px;
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f8faf8; }
+    ::-webkit-scrollbar-thumb { background: #b8d4bc; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4e8056; }
+
+    /* Grain */
+    .grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.02;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    /* Collapsed mobile sidebar */
+    @media (max-width: 768px) {
+      .sidebar-mobile {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: white;
+        border-top: 1px solid rgba(78,128,86,0.1);
+        padding: 8px 16px;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+      }
+      .sidebar-mobile a {
+        flex-direction: column;
+        align-items: center;
+        padding: 8px 12px;
+        font-size: 11px;
+        gap: 4px;
+      }
+      .sidebar-mobile a i {
+        font-size: 18px;
+      }
+      #guide_body {
+        padding-bottom: 80px;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-[#1a2e1e]">
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i id="toast-icon" class="fa-solid fa-check-circle text-lg text-accent"></i>
+    <div>
+      <p id="toast-title" class="font-semibold text-sm text-dark">Success</p>
+      <p id="toast-message" class="text-xs text-muted">Operation completed.</p>
+    </div>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbaar" class="fixed top-0 left-0 right-0 z-50 bg-dark shadow-md transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div id="nav_sec_1" class="flex-shrink-0">
+          <a href="index.html" id="comfygo_logo" class="text-2xl font-bold text-cream tracking-wide flex items-center gap-2 hover:opacity-80 transition-opacity" style="font-family: 'Cormorant Garamond', serif;">
+            <i class="fa-solid fa-leaf text-[#7aaa80]"></i>ComfyGo
+          </a>
+        </div>
+        <div id="nav_sec_2" class="hidden md:flex space-x-8">
+          <a href="about.html" id="nav_about" class="nav-link text-sage hover:text-cream px-3 py-2 rounded-md text-sm font-medium transition">About</a>
+          <a href="contact.html" id="nav_contact" class="nav-link text-sage hover:text-cream px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+        </div>
+        <div id="nav_sec_3" class="hidden md:flex space-x-4 items-center">
+          <a href="login.html" id="nav_login" class="text-sage hover:text-cream px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
+          <a href="signup.html" id="nav_signup" class="bg-accent text-cream hover:bg-accentHover px-5 py-2 rounded-lg text-sm font-medium transition shadow-lg shadow-accent/20 hover:shadow-accent/30">Signup</a>
+        </div>
+        <button id="nav_toggle" class="md:hidden p-2 rounded-md text-sage hover:text-cream hover:bg-white/10 transition-colors focus:outline-none">
+          <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu md:hidden bg-dark/98 backdrop-blur-xl border-t border-white/10">
+      <div class="px-4 py-5 flex flex-col gap-3">
+        <a href="about.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">About</a>
+        <a href="contact.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">Contact</a>
+        <div class="flex gap-3 pt-2">
+          <a href="login.html" class="flex-1 text-center text-sage border border-sage/30 rounded-lg py-2.5 text-sm font-medium">Login</a>
+          <a href="signup.html" class="flex-1 text-center bg-accent text-cream rounded-lg py-2.5 text-sm font-medium">Signup</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Guide Page -->
+  <div id="guide_page" class="pt-16">
+
+    <!-- Topbar -->
+    <div id="guide_topbar" class="bg-white shadow-sm border-b border-gray-100 relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-full bg-gradient-to-l from-[#f0f5f0] to-transparent opacity-50 pointer-events-none"></div>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div id="guide_welcome" class="animate-fade-in">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 bg-accent/10 text-accent text-[10px] font-bold uppercase tracking-wider rounded-full">Guide</span>
+              <p class="text-xs text-gray-400 uppercase tracking-wider">Dashboard</p>
+            </div>
+            <h1 class="text-2xl md:text-3xl font-bold text-dark flex items-center gap-3" style="font-family: 'Cormorant Garamond', serif;">
+              Welcome, Rahim
+              <span class="w-2.5 h-2.5 bg-green-500 rounded-full animate-pulse" title="Online"></span>
+            </h1>
+            <p class="text-sm text-gray-500 mt-1 font-mono text-xs tracking-wide">NID: 19957890123456789</p>
+          </div>
+          <form method="POST" action="guide.html" class="animate-fade-in delay-100">
+            <button type="submit" id="guide_logout_btn" class="btn-primary bg-red-600 hover:bg-red-700 text-white font-medium py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/20">
+              <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+              <span>Logout</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div id="guide_body" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="flex flex-col md:flex-row gap-8">
+
+        <!-- Sidebar -->
+        <div id="guide_sidebar" class="w-full md:w-64 flex-shrink-0">
+          <!-- Desktop Sidebar -->
+          <nav id="guide_nav" class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 p-3 sticky top-24 animate-fade-left">
+            <a href="#overview" class="sidebar-link active block px-4 py-3 rounded-xl text-dark font-medium mb-1 flex items-center gap-3 transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-chart-pie w-5 text-center text-sm text-accent"></i> Overview
+            </a>
+            <a href="#bookings" class="sidebar-link block px-4 py-3 rounded-xl text-gray-600 hover:text-dark hover:bg-gray-50 font-medium mb-1 flex items-center gap-3 transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-calendar-check w-5 text-center text-sm text-gray-400"></i> My Bookings
+              <span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">1</span>
+            </a>
+            <a href="#profile" class="sidebar-link block px-4 py-3 rounded-xl text-gray-600 hover:text-dark hover:bg-gray-50 font-medium flex items-center gap-3 transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-user-gear w-5 text-center text-sm text-gray-400"></i> Profile
+            </a>
+            
+            <div class="mt-6 pt-6 border-t border-gray-100 px-4">
+              <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-3">Quick Stats</p>
+              <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-gray-500">Earnings</span>
+                  <span class="text-sm font-bold text-dark">৳12,500</span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-gray-500">Rating</span>
+                  <div class="flex items-center gap-1">
+                    <span class="text-sm font-bold text-dark">4.8</span>
+                    <i class="fa-solid fa-star text-[#e6d38a] text-[10px]"></i>
+                  </div>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-xs text-gray-500">Tours</span>
+                  <span class="text-sm font-bold text-dark">24</span>
+                </div>
+              </div>
+            </div>
+          </nav>
+
+          <!-- Mobile Bottom Nav -->
+          <nav class="sidebar-mobile md:hidden">
+            <a href="#overview" class="sidebar-link active flex text-dark font-medium rounded-lg transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-chart-pie text-accent"></i> Overview
+            </a>
+            <a href="#bookings" class="sidebar-link flex text-gray-500 font-medium rounded-lg transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-calendar-check"></i> Bookings
+            </a>
+            <a href="#profile" class="sidebar-link flex text-gray-500 font-medium rounded-lg transition-all" onclick="setActive(this)">
+              <i class="fa-solid fa-user-gear"></i> Profile
+            </a>
+          </nav>
+        </div>
+
+        <!-- Content -->
+        <div id="guide_content" class="flex-1 min-w-0">
+
+          <!-- Overview Section -->
+          <section class="g_section mb-10 reveal" id="overview">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-chart-pie text-accent text-sm"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">Overview</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-11 text-sm">Your current profile information at a glance.</p>
+
+            <!-- Quick Stats Row -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <div class="bg-gradient-to-br from-accent to-[#2c5a34] rounded-2xl p-5 text-white shadow-lg shadow-accent/20">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-white/70 uppercase tracking-wider">Total Earnings</span>
+                  <i class="fa-solid fa-sack-dollar text-white/30 text-lg"></i>
+                </div>
+                <p class="text-2xl font-bold">৳12,500</p>
+                <p class="text-[11px] text-white/60 mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+15% this month</p>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500 uppercase tracking-wider">Rating</span>
+                  <i class="fa-solid fa-star text-[#e6d38a] text-lg"></i>
+                </div>
+                <p class="text-2xl font-bold text-dark">4.8<span class="text-sm text-gray-400 font-normal">/5</span></p>
+                <p class="text-[11px] text-gray-400 mt-1">Based on 24 reviews</p>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500 uppercase tracking-wider">Tours</span>
+                  <i class="fa-solid fa-route text-accent/40 text-lg"></i>
+                </div>
+                <p class="text-2xl font-bold text-dark">24</p>
+                <p class="text-[11px] text-gray-400 mt-1">Completed this year</p>
+              </div>
+              <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-xs text-gray-500 uppercase tracking-wider">Pending</span>
+                  <i class="fa-solid fa-clock text-orange-400 text-lg"></i>
+                </div>
+                <p class="text-2xl font-bold text-dark">1</p>
+                <p class="text-[11px] text-gray-400 mt-1">Awaiting response</p>
+              </div>
+            </div>
+
+            <div id="guide_info_grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Full Name</p>
+                  <p class="text-lg font-semibold text-dark">Rahim Uddin</p>
+                </div>
+              </div>
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-envelope"></i>
+                </div>
+                <div class="overflow-hidden">
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Email</p>
+                  <p class="text-lg font-semibold text-dark truncate">rahim@example.com</p>
+                </div>
+              </div>
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-phone"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Mobile</p>
+                  <p class="text-lg font-semibold text-dark">+880 1712-345678</p>
+                </div>
+              </div>
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-map"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Division</p>
+                  <p class="text-lg font-semibold text-dark">Dhaka</p>
+                </div>
+              </div>
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">District</p>
+                  <p class="text-lg font-semibold text-dark">Dhaka</p>
+                </div>
+              </div>
+              <div class="info-card bg-white rounded-2xl shadow-sm p-6 flex items-center gap-4">
+                <div class="icon-box w-12 h-12 rounded-xl bg-[#f0f5f0] flex items-center justify-center text-accent text-lg flex-shrink-0">
+                  <i class="fa-solid fa-tag"></i>
+                </div>
+                <div>
+                  <p class="text-xs text-gray-400 uppercase tracking-wider font-medium mb-0.5">Rate per Day</p>
+                  <p class="text-lg font-semibold text-dark">৳2,500</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Bookings Section -->
+          <section class="g_section mb-10 reveal" id="bookings">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-calendar-check text-accent text-sm"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">My Bookings</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-11 text-sm">Tourists who have booked you as their guide.</p>
+
+            <!-- Pending -->
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-lg font-semibold text-dark flex items-center gap-2">
+                Pending Approvals
+                <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">1</span>
+              </p>
+              <button class="text-xs text-accent font-medium hover:text-dark transition-colors">View All</button>
+            </div>
+            <div class="g_booking_cards space-y-4 mb-10">
+              <div class="booking-card bg-white rounded-2xl shadow-sm p-6 border-l-4 border-orange-400" id="booking-pending-1">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-100 to-yellow-50 flex items-center justify-center text-orange-600 font-bold text-sm">FA</div>
+                    <div>
+                      <span class="text-lg font-bold text-dark block">#BK-1042</span>
+                      <span class="text-xs text-gray-400">Booked 2 hours ago</span>
+                    </div>
+                  </div>
+                  <span class="badge-pending text-xs font-bold px-3 py-1.5 rounded-full">Pending</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5 bg-gray-50 rounded-xl p-4">
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Tourist</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-user text-gray-300 text-xs"></i> Fatima Akter
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Phone</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-phone text-gray-300 text-xs"></i> +880 1812-345678
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Date</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-regular fa-calendar text-gray-300 text-xs"></i> Aug 15, 2026
+                    </span>
+                  </div>
+                </div>
+                <div class="flex gap-3">
+                  <button onclick="handleBooking('approve', 'BK-1042', this)" class="btn-primary flex-1 bg-accent hover:bg-[#2c5a34] text-white font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-accent/20">
+                    <i class="fa-solid fa-check text-sm"></i> Approve
+                  </button>
+                  <button onclick="handleBooking('reject', 'BK-1042', this)" class="btn-primary flex-1 bg-white border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-xmark text-sm"></i> Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- History -->
+            <div class="flex items-center justify-between mb-4">
+              <p class="text-lg font-semibold text-dark">Booking History</p>
+              <div class="flex gap-2">
+                <button class="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:border-accent hover:text-accent transition">All</button>
+                <button class="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:border-accent hover:text-accent transition">Confirmed</button>
+                <button class="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:border-accent hover:text-accent transition">Rejected</button>
+              </div>
+            </div>
+            <div class="g_booking_cards space-y-4">
+              <div class="booking-card bg-white rounded-2xl shadow-sm p-6 border-l-4 border-green-500">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-emerald-50 flex items-center justify-center text-green-700 font-bold text-sm">KH</div>
+                    <div>
+                      <span class="text-lg font-bold text-dark block">#BK-1038</span>
+                      <span class="text-xs text-gray-400">Completed on Jul 20</span>
+                    </div>
+                  </div>
+                  <span class="badge-confirmed text-xs font-bold px-3 py-1.5 rounded-full">Confirmed</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-50 rounded-xl p-4">
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Tourist</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-user text-gray-300 text-xs"></i> Kamal Hossain
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Phone</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-phone text-gray-300 text-xs"></i> +880 1612-345678
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Date</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-regular fa-calendar text-gray-300 text-xs"></i> Jul 20, 2026
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="booking-card bg-white rounded-2xl shadow-sm p-6 border-l-4 border-red-400 opacity-75">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-5">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-pink-50 flex items-center justify-center text-red-700 font-bold text-sm">NJ</div>
+                    <div>
+                      <span class="text-lg font-bold text-dark block">#BK-1035</span>
+                      <span class="text-xs text-gray-400">Rejected on Jul 10</span>
+                    </div>
+                  </div>
+                  <span class="badge-rejected text-xs font-bold px-3 py-1.5 rounded-full">Rejected</span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-gray-50 rounded-xl p-4">
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Tourist</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-user text-gray-300 text-xs"></i> Nusrat Jahan
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Phone</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-solid fa-phone text-gray-300 text-xs"></i> +880 1512-345678
+                    </span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block mb-1">Date</span>
+                    <span class="text-dark font-semibold text-sm flex items-center gap-2">
+                      <i class="fa-regular fa-calendar text-gray-300 text-xs"></i> Jul 10, 2026
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Profile Section -->
+          <section class="g_section mb-10 reveal" id="profile">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-user-gear text-accent text-sm"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">Update Profile</h2>
+            </div>
+            <p class="text-gray-500 mb-6 ml-11 text-sm">Keep your information up to date so tourists can find you.</p>
+
+            <form id="guide_profile_form" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8" onsubmit="handleProfileSubmit(event)">
+              <div class="g_profile_grid grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">Full Name</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" value="Rahim Uddin" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">Email Address</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="email" value="rahim@example.com" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">Mobile Number</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="tel" value="+880 1712-345678" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">Division</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-map absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" value="Dhaka" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">District</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" value="Dhaka" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+                <div class="g_field">
+                  <label class="block text-sm font-medium text-dark mb-2 ml-0.5">Rate per Day (৳)</label>
+                  <div class="relative">
+                    <i class="fa-solid fa-tag absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="number" value="2500" min="0" class="form-input w-full rounded-xl pl-10 pr-4 py-3 text-dark">
+                  </div>
+                </div>
+              </div>
+              <div class="mt-8 flex items-center gap-4">
+                <button type="submit" id="profile-submit-btn" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white font-semibold py-3 px-8 rounded-xl transition flex items-center gap-2 shadow-lg shadow-accent/20">
+                  <span class="spinner hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                  <span class="btn-text">Save Changes</span>
+                  <i class="fa-solid fa-check btn-text text-sm"></i>
+                </button>
+                <button type="button" class="text-gray-500 hover:text-dark text-sm font-medium transition-colors" onclick="document.getElementById('guide_profile_form').reset()">Cancel</button>
+              </div>
+            </form>
+          </section>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile Menu
+    const navToggle = document.getElementById('nav_toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let menuOpen = false;
+
+    navToggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open');
+      menuIcon.className = menuOpen ? 'fa-solid fa-xmark text-xl' : 'fa-solid fa-bars text-xl';
+    });
+
+    // Navbar scroll
+    const navbar = document.getElementById('navbaar');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 20) {
+        navbar.classList.add('nav-scrolled');
+      } else {
+        navbar.classList.remove('nav-scrolled');
+      }
+    });
+
+    // Scroll Reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal, .reveal-left').forEach(el => observer.observe(el));
+
+    // Active Sidebar Link
+    function setActive(element) {
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active', 'text-dark', 'bg-gradient-to-r');
+        link.classList.add('text-gray-600', 'hover:bg-gray-50');
+        const icon = link.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-accent');
+          icon.classList.add('text-gray-400');
+        }
+      });
+      element.classList.remove('text-gray-600', 'hover:bg-gray-50');
+      element.classList.add('active', 'text-dark');
+      const activeIcon = element.querySelector('i');
+      if (activeIcon) {
+        activeIcon.classList.remove('text-gray-400');
+        activeIcon.classList.add('text-accent');
+      }
+    }
+
+    // Scroll spy for sidebar
+    const sections = document.querySelectorAll('.g_section');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+      
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active', 'text-dark');
+        link.classList.add('text-gray-600');
+        const icon = link.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-accent');
+          icon.classList.add('text-gray-400');
+        }
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active', 'text-dark');
+          link.classList.remove('text-gray-600');
+          if (icon) {
+            icon.classList.add('text-accent');
+            icon.classList.remove('text-gray-400');
+          }
+        }
+      });
+    });
+
+    // Toast
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-message');
+      
+      toast.className = `toast ${type}`;
+      icon.className = type === 'success' 
+        ? 'fa-solid fa-check-circle text-lg text-accent' 
+        : type === 'error'
+        ? 'fa-solid fa-circle-exclamation text-lg text-red-600'
+        : 'fa-solid fa-info-circle text-lg text-blue-600';
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+      
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // Booking Actions
+    async function handleBooking(action, bookingId, btn) {
+      const card = btn.closest('.booking-card');
+      const approveBtn = card.querySelector('button:first-of-type');
+      const rejectBtn = card.querySelector('button:last-of-type');
+      
+      // Disable buttons
+      approveBtn.disabled = true;
+      rejectBtn.disabled = true;
+      approveBtn.style.opacity = '0.6';
+      rejectBtn.style.opacity = '0.6';
+
+      // Simulate API
+      await new Promise(r => setTimeout(r, 800));
+
+      if (action === 'approve') {
+        card.style.borderLeftColor = '#22c55e';
+        card.querySelector('.badge-pending').className = 'badge-confirmed text-xs font-bold px-3 py-1.5 rounded-full';
+        card.querySelector('.badge-confirmed').textContent = 'Confirmed';
+        card.querySelector('.text-xs.text-gray-400').textContent = 'Just now';
+        
+        // Remove action buttons
+        const actionDiv = card.querySelector('.flex.gap-3');
+        actionDiv.innerHTML = '<div class="w-full bg-green-50 text-green-700 text-sm font-semibold py-3 rounded-xl text-center flex items-center justify-center gap-2"><i class="fa-solid fa-check-circle"></i> Booking Approved</div>';
+        
+        showToast('Booking Approved', `You approved booking ${bookingId}`);
+      } else {
+        card.style.borderLeftColor = '#ef4444';
+        card.style.opacity = '0.6';
+        card.querySelector('.badge-pending').className = 'badge-rejected text-xs font-bold px-3 py-1.5 rounded-full';
+        card.querySelector('.badge-rejected').textContent = 'Rejected';
+        card.querySelector('.text-xs.text-gray-400').textContent = 'Just now';
+        
+        const actionDiv = card.querySelector('.flex.gap-3');
+        actionDiv.innerHTML = '<div class="w-full bg-red-50 text-red-700 text-sm font-semibold py-3 rounded-xl text-center flex items-center justify-center gap-2"><i class="fa-solid fa-xmark-circle"></i> Booking Rejected</div>';
+        
+        showToast('Booking Rejected', `You rejected booking ${bookingId}`, 'info');
+      }
+    }
+
+    // Profile Form
+    async function handleProfileSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('profile-submit-btn');
+      const spinner = btn.querySelector('.spinner');
+      const btnText = btn.querySelector('.btn-text');
+      const icon = btn.querySelector('.btn-text + i');
+      
+      spinner.classList.remove('hidden');
+      btnText.textContent = 'Saving...';
+      if (icon) icon.classList.add('hidden');
+      btn.disabled = true;
+      
+      await new Promise(r => setTimeout(r, 1500));
+      
+      spinner.classList.add('hidden');
+      btnText.textContent = 'Saved!';
+      if (icon) {
+        icon.classList.remove('hidden');
+        icon.className = 'fa-solid fa-check text-sm';
+      }
+      
+      showToast('Profile Updated', 'Your changes have been saved successfully.');
+      
+      setTimeout(() => {
+        btnText.textContent = 'Save Changes';
+        if (icon) icon.className = 'fa-solid fa-check text-sm';
+        btn.disabled = false;
+      }, 2000);
+    }
+
+    // Button ripple
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (this.disabled) return;
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const ripple = document.createElement('span');
+        ripple.style.cssText = `
+          position: absolute;
+          background: rgba(255,255,255,0.2);
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.5s ease-out;
+          pointer-events: none;
+          left: ${x}px;
+          top: ${y}px;
+          width: 80px;
+          height: 80px;
+          margin-left: -40px;
+          margin-top: -40px;
+        `;
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 500);
+      });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `@keyframes ripple { to { transform: scale(4); opacity: 0; } }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

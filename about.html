@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — ComfyGo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root{
+            --bg: #F2ECDD;        /* sun-dried khadi paper */
+            --ink: #1C2620;       /* deep green-black text */
+            --deep: #14342C;      /* Bengal tea-leaf green */
+            --deep-2: #1D4B40;
+            --brick: #B5502F;     /* Ahsan Manzil terracotta */
+            --brick-2: #93401F;
+            --teal: #3B6E71;      /* river teal */
+            --gold: #C99A2E;      /* mustard-field gold */
+            --paper-line: rgba(28,38,32,0.12);
+        }
+
+        *{ box-sizing:border-box; }
+        html{ scroll-behavior:smooth; }
+        body{
+            background:var(--bg);
+            color:var(--ink);
+            font-family:'DM Sans', sans-serif;
+            font-weight:400;
+            margin:0;
+            -webkit-font-smoothing:antialiased;
+        }
+        .disp{ font-family:'Fraunces', serif; }
+
+        @media (prefers-reduced-motion: reduce){
+            *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+        }
+
+        /* ---------- NAV ---------- */
+        #navbaar{
+            background:var(--bg);
+            box-shadow:none;
+            border-bottom:1px solid var(--paper-line);
+            padding:1.1rem 2rem;
+            position:sticky; top:0; z-index:50;
+            backdrop-filter:blur(6px);
+        }
+        #comfygo_logo{
+            font-family:'Fraunces', serif;
+            font-style:italic;
+            font-weight:600;
+            font-size:1.5rem;
+            color:var(--deep);
+            position:relative;
+            padding-left:2.1rem;
+        }
+        #comfygo_logo::before{
+            content:"";
+            position:absolute; left:0; top:50%;
+            width:1.6rem; height:1.6rem;
+            transform:translateY(-50%);
+            border-radius:50%;
+            border:1.5px solid var(--brick);
+            background:
+                radial-gradient(circle at 50% 50%, transparent 0 3px, var(--brick) 3.5px 4px, transparent 4.5px);
+        }
+        #nav_sec_2 a, #nav_sec_3 a{
+            font-weight:500; font-size:0.95rem; color:var(--ink);
+            text-decoration:none;
+            padding-bottom:2px;
+            border-bottom:1px solid transparent;
+            transition:border-color .2s ease, color .2s ease;
+        }
+        #nav_sec_2 a:hover, #nav_login:hover{
+            color:var(--brick);
+            border-bottom-color:var(--brick);
+        }
+        #nav_signup{
+            background:var(--deep) !important;
+            color:var(--bg) !important;
+            padding:0.5rem 1.2rem !important;
+            border-radius:999px !important;
+            font-weight:600;
+            transition:background .2s ease;
+        }
+        #nav_signup:hover{ background:var(--brick-2) !important; }
+        #nav_toggle{ color:var(--ink); }
+
+        /* ---------- SIGNATURE: certification stamp badge ---------- */
+        .stamp{
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            width:2.6rem; height:2.6rem;
+            border-radius:50%;
+            border:1.5px dashed var(--brick);
+            color:var(--brick);
+            font-family:'Fraunces', serif;
+            font-style:italic;
+            font-size:0.85rem;
+            flex-shrink:0;
+            position:relative;
+        }
+        .stamp::after{
+            content:"";
+            position:absolute; inset:4px;
+            border-radius:50%;
+            border:1px solid var(--brick);
+            opacity:.55;
+        }
+
+        /* ---------- HERO ---------- */
+        #about_sec_1{
+            background:var(--deep);
+            background-image:
+                radial-gradient(ellipse 80% 60% at 15% 0%, rgba(255,255,255,0.05), transparent 60%);
+            color:var(--bg);
+            padding:5.5rem 1.5rem 8rem;
+            position:relative;
+            text-align:center;
+            overflow:hidden;
+        }
+        #about_header{
+            font-family:'Fraunces', serif;
+            font-style:italic;
+            font-weight:600;
+            font-size:clamp(2.3rem, 6vw, 4.4rem);
+            line-height:1.05;
+            margin:0 auto 1.4rem;
+            max-width:16ch;
+            letter-spacing:-0.01em;
+        }
+        #about_text{
+            max-width:52ch;
+            margin:0 auto;
+            font-weight:300;
+            font-size:1.08rem;
+            line-height:1.75;
+            color:#DCE6E1;
+        }
+        /* river wave divider closing the hero */
+        #about_sec_1::after{
+            content:"";
+            position:absolute; left:0; right:0; bottom:-1px; height:70px;
+            background:var(--bg);
+            -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 70' preserveAspectRatio='none'><path d='M0,35 C150,70 350,0 600,35 C850,70 1050,0 1200,35 L1200,70 L0,70 Z'/></svg>") bottom / 100% 100% no-repeat;
+            mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 70' preserveAspectRatio='none'><path d='M0,35 C150,70 350,0 600,35 C850,70 1050,0 1200,35 L1200,70 L0,70 Z'/></svg>") bottom / 100% 100% no-repeat;
+        }
+
+        /* generic section header w/ eyebrow rule */
+        .sect-head{
+            display:flex; align-items:center; gap:0.9rem;
+            margin-bottom:1.6rem;
+        }
+        .sect-head::after{
+            content:""; flex:1; height:1px;
+            background:linear-gradient(to right, var(--paper-line), transparent);
+        }
+
+        /* ---------- MISSION ---------- */
+        #about_sec_2{
+            max-width:1080px;
+            margin:0 auto;
+            padding:5rem 1.5rem 4.5rem;
+            display:grid;
+            grid-template-columns: 1.05fr 1.2fr;
+            gap:3.2rem;
+            align-items:start;
+        }
+        #about_header_2{
+            grid-column:1 / -1;
+            display:flex; align-items:center; gap:0.9rem;
+            font-family:'Fraunces', serif;
+            font-weight:600;
+            font-size:1.9rem;
+            color:var(--deep);
+            margin:0 0 0.4rem;
+        }
+        #about_header_2::before{
+            content:"01";
+            font-family:'DM Sans', sans-serif;
+            font-size:0.7rem;
+            font-weight:600;
+            letter-spacing:0.08em;
+            color:var(--teal);
+            border:1px solid var(--teal);
+            border-radius:999px;
+            padding:0.25rem 0.6rem;
+        }
+        #about_subsec_1{
+            border-radius:14px;
+            overflow:hidden;
+            aspect-ratio: 4/5;
+            background:linear-gradient(155deg, var(--teal), var(--deep));
+            box-shadow:0 18px 40px -20px rgba(20,52,44,0.45);
+        }
+        #about_img_1{ width:100%; height:100%; object-fit:cover; display:block; }
+        #about_text_2{
+            font-size:1.02rem;
+            line-height:1.85;
+            color:#333f38;
+        }
+
+        /* ---------- PLACES ---------- */
+        #about_sec_3{
+            background:var(--deep);
+            padding:5rem 1.5rem 5.5rem;
+            position:relative;
+        }
+        #certified_places{
+            max-width:1080px;
+            margin:0 auto 2.6rem;
+            font-family:'Fraunces', serif;
+            font-style:italic;
+            font-weight:600;
+            font-size:2.1rem;
+            color:var(--bg);
+            text-align:center;
+        }
+        .places-grid{
+            max-width:1080px;
+            margin:0 auto;
+            display:grid;
+            grid-template-columns:repeat(3, 1fr);
+            gap:1.8rem;
+        }
+        .places-grid > div{
+            background:var(--bg);
+            border-radius:16px;
+            overflow:hidden;
+            position:relative;
+            box-shadow:0 20px 45px -24px rgba(0,0,0,0.5);
+        }
+        .places-grid img{
+            width:100%; height:190px; object-fit:cover; display:block;
+            background:linear-gradient(140deg, var(--teal), var(--brick-2));
+        }
+        .places-grid p[id$="_img"]{ display:none; }
+        #sylhet, #dhaka, #ctg{
+            font-family:'Fraunces', serif;
+            font-weight:600;
+            font-size:1.25rem;
+            color:var(--deep);
+            margin:1.3rem 1.4rem 0.6rem;
+            padding-right:2.6rem;
+            position:relative;
+        }
+        #sylhet::after, #dhaka::after, #ctg::after{
+            content:"✓ certified";
+            position:absolute; right:-0.1rem; top:0.15rem;
+            font-family:'DM Sans', sans-serif;
+            font-size:0.62rem;
+            font-weight:600;
+            letter-spacing:0.06em;
+            text-transform:uppercase;
+            color:var(--brick);
+            border:1px dashed var(--brick);
+            border-radius:999px;
+            padding:0.2rem 0.5rem;
+            white-space:nowrap;
+        }
+        #sylhet_des, #dhaka_des, #ctg_des{
+            font-size:0.92rem;
+            line-height:1.7;
+            color:#4a544d;
+            margin:0 1.4rem 1.5rem;
+        }
+
+        /* ---------- HOTELS / GUIDES stripes ---------- */
+        #Hotels, #guides_sec{
+            max-width:1080px;
+            margin:0 auto;
+            padding:4.5rem 1.5rem;
+            display:grid;
+            grid-template-columns:1.2fr 1fr;
+            gap:3rem;
+            align-items:center;
+        }
+        #guides_sec{ grid-template-columns:1fr 1.2fr; }
+        #guides_sec #aboutGuides{ order:-1; }
+
+        #hotels, #guides_title{
+            display:flex; align-items:center; gap:0.8rem;
+            font-family:'Fraunces', serif;
+            font-weight:600;
+            font-size:1.85rem;
+            color:var(--deep);
+            margin:0 0 1.1rem;
+        }
+        #hotel_des, #guides_des{
+            font-size:1rem;
+            line-height:1.8;
+            color:#3a443e;
+        }
+        #aboutHotel, #aboutGuides{
+            width:100%;
+            aspect-ratio:5/4;
+            object-fit:cover;
+            border-radius:14px;
+            background:linear-gradient(155deg, var(--gold), var(--brick-2));
+            box-shadow:0 18px 40px -22px rgba(20,52,44,0.4);
+        }
+
+        footer.mark{
+            text-align:center;
+            font-size:0.78rem;
+            color:var(--teal);
+            padding:2.2rem 1rem 3rem;
+            letter-spacing:0.04em;
+        }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width:860px){
+            #about_sec_2, #Hotels, #guides_sec{ grid-template-columns:1fr; }
+            #guides_sec #aboutGuides{ order:0; }
+            .places-grid{ grid-template-columns:1fr; }
+            #navbaar{ padding:1rem 1.2rem; }
+            #nav_sec_2{ display:none; }
+        }
+
+        a:focus-visible, button:focus-visible{
+            outline:2px solid var(--brick);
+            outline-offset:3px;
+        }
+    </style>
+</head>
+<body>
+
+<nav id="navbaar" class="flex items-center justify-between">
+    <div id="nav_sec_1">
+        <a href="index.html" id="comfygo_logo">ComfyGo</a>
+    </div>
+    <div id="nav_sec_2" class="flex gap-6">
+        <a href="about.html" id="nav_about">About</a>
+        <a href="contact.html" id="nav_contact">Contact</a>
+    </div>
+    <div id="nav_sec_3" class="flex items-center gap-4">
+        <a href="login.html" id="nav_login">Login</a>
+        <a href="signup.html" id="nav_signup">Signup</a>
+    </div>
+    <button id="nav_toggle" aria-label="Toggle menu" class="md:hidden focus:outline-none">
+        <i class="fa-solid fa-bars text-xl"></i>
+    </button>
+</nav>
+
+<div id="about_sec_1">
+    <p id="about_header">Travel made with comfort!</p>
+    <p id="about_text">ComfyGo is a travel agency dedicated to crafting comfortable, memorable, and stress-free journeys across Bangladesh. From the misty tea gardens of Sylhet to the bustling streets of Dhaka and the sun-kissed shores of Chittagong, we bring every destination to life with carefully curated services, trusted local guides, and handpicked accommodations — so you can focus on the experience, not the logistics.</p>
+</div>
+
+<div id="about_sec_2">
+    <p id="about_header_2">Our Mission</p>
+    <div id="about_subsec_1">
+        <img src="images/about_image1.jpg" alt="Our Mission" id="about_img_1">
+    </div>
+    <p id="about_text_2">At ComfyGo, our mission is simple — to make every journey feel effortless and extraordinary. We believe travel should be a source of joy, not stress. That's why we handle every detail, from the moment you book to the moment you return home.<br><br>We work with verified local partners, certified guides, and carefully selected hotels to ensure your safety and comfort at every step. Whether you're a solo explorer, a family on holiday, or a group of adventurers, we tailor each experience to match your pace and preferences.<br><br>We are committed to responsible, sustainable tourism that uplifts local communities and preserves the natural beauty of Bangladesh for generations to come.</p>
+</div>
+
+<div id="about_sec_3">
+    <p id="certified_places">Places We Certified</p>
+    <div class="places-grid">
+        <div id="about_sylhet">
+            <img src="images/aboutSylhet_image.jpg" alt="Sylhet" id="sylhet_img">
+            <p id="sylhet">Sylhet</p>
+            <p id="sylhet_des">Nestled in the northeast, Sylhet enchants visitors with rolling tea estates, crystal-clear rivers, and ancient shrines. Highlights include the surreal beauty of Jaflong's stone beaches, the haunting stillness of Ratargul Swamp Forest, the spiritual calm of Shah Jalal Mazar, and the emerald rows of Lakkatura Tea Garden — a destination that feels worlds apart from the ordinary.</p>
+        </div>
+        <div id="about_dhaka">
+            <img src="images/aboutDhaka_image.jpg" alt="Dhaka" id="dhaka_img">
+            <p id="dhaka">Dhaka</p>
+            <p id="dhaka_des">Bangladesh's vibrant capital pulses with history, culture, and relentless energy. From the ornate pink palace of Ahsan Manzil along the Buriganga River to the iconic silhouette of the National Parliament Building, Dhaka rewards every curious traveller. Explore the National Museum's rich collections, pay homage at the National Martyrs' Memorial, and lose yourself in the colourful chaos of Old Dhaka's lanes.</p>
+        </div>
+        <div id="about_ctg">
+            <img src="images/aboutCtg_image.jpg" alt="Chittagong" id="ctg_img">
+            <p id="ctg">Chittagong</p>
+            <p id="ctg_des">Bangladesh's port city blends sea breeze, hills, and heritage into one unforgettable destination. Stroll the windswept sands of Patenga Sea Beach at sunset, wander the peaceful Foy's Lake amid forested hills, or journey into the dramatic Chittagong Hill Tracts. The Chittagong War Cemetery stands as a moving tribute to history, offering quiet reflection amid immaculate grounds.</p>
+        </div>
+    </div>
+</div>
+
+<div id="Hotels">
+    <div>
+        <p id="hotels"><span class="stamp">✓</span> Certified Hotels</p>
+        <p id="hotel_des">ComfyGo has personally vetted and certified a selection of hotels across Bangladesh's top destinations, chosen for their comfort, cleanliness, safety standards, and proximity to key attractions. Each property is evaluated based on traveller feedback, facilities, and our own on-ground inspections.<br><br>From boutique guesthouses surrounded by Sylhet's tea gardens to well-appointed city hotels in Dhaka and seaside retreats in Chittagong, our certified accommodations are matched to every budget and travel style — so you always rest easy, wherever you go.</p>
+    </div>
+    <img src="images/aboutHotels.jpg" alt="Certified Hotels" id="aboutHotel">
+</div>
+
+<div id="guides_sec">
+    <img src="images/about_guides.jpg" alt="Certified Guides" id="aboutGuides">
+    <div>
+        <p id="guides_title"><span class="stamp">✓</span> Certified Guides</p>
+        <p id="guides_des">A great destination becomes truly memorable with the right guide by your side. ComfyGo's certified guides are handpicked locals who bring each destination to life with deep cultural knowledge, storytelling, and genuine hospitality. Every guide undergoes a thorough vetting process covering language proficiency, safety training, and destination expertise.<br><br>Whether you need a knowledgeable companion for a historical walking tour through Old Dhaka, a nature expert for Ratargul's swamp trails, or a seasoned hill guide for the Chittagong Hill Tracts, our certified guides ensure your journey is safe, enriching, and full of authentic moments you won't find in any guidebook.</p>
+    </div>
+</div>
+
+<footer class="mark">ComfyGo · Dhaka · Sylhet · Chittagong</footer>
+
+</body>
+</html>

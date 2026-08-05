@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Destinations — ComfyGo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cormorant Garamond', 'serif'],
+                        sans: ['Jost', 'sans-serif']
+                    },
+                    colors: {
+                        dark: '#1a3322',
+                        darkLight: '#244a31',
+                        accent: '#3a6642',
+                        accentHover: '#4e8056',
+                        gold: '#e6d38a',
+                        sage: '#b8d4bc',
+                        cream: '#dff0e2',
+                        muted: '#6b8b72'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: #faf7f2;
+            overflow-x: hidden;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+        }
+
+        @keyframes float-reverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(12px) rotate(-3deg); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(74, 128, 86, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(74, 128, 86, 0.4); }
+        }
+
+        @keyframes draw-line {
+            from { width: 0; }
+            to { width: 60px; }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-reverse { animation: float-reverse 7s ease-in-out infinite; }
+        .animate-float-slow { animation: float 9s ease-in-out infinite; }
+
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        .fade-in-down {
+            opacity: 0;
+            animation: fadeInDown 0.8s ease-out forwards;
+        }
+        .scale-in {
+            opacity: 0;
+            animation: scaleIn 0.6s ease-out forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+
+        /* Scroll Reveal */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-left.active { opacity: 1; transform: translateX(0); }
+        
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-scale.active { opacity: 1; transform: scale(1); }
+
+        /* Card Enhancements */
+        .city_card {
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+        .city_card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            padding: 2px;
+            background: linear-gradient(135deg, rgba(74,128,86,0.3), transparent 50%, rgba(230,211,138,0.2));
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+        .city_card:hover::before { opacity: 1; }
+
+        .city_card_img {
+            position: relative;
+            overflow: hidden;
+        }
+        .city_card_img::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(26,51,34,0.7) 0%, rgba(26,51,34,0.2) 50%, transparent 100%);
+            transition: all 0.5s ease;
+        }
+        .city_card:hover .city_card_img::after {
+            background: linear-gradient(to top, rgba(26,51,34,0.8) 0%, rgba(26,51,34,0.3) 60%, transparent 100%);
+        }
+        .city_card:hover .city_card_img {
+            transform: scale(1.05);
+        }
+
+        /* Image zoom on hover */
+        .city_card_img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Button ripple */
+        .city_card_btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .city_card_btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        .city_card_btn:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+        .city_card_btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(26,51,34,0.3);
+        }
+        .city_card_btn:active {
+            transform: translateY(0);
+        }
+
+        /* Season badge */
+        .season-badge {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        .city_card:hover .season-badge {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Stats divider animation */
+        .city_card_stat {
+            position: relative;
+        }
+        .city_card_stat:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: -33%;
+            top: 20%;
+            height: 60%;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(78,128,86,0.2), transparent);
+        }
+
+        /* Navbar */
+        .nav-scrolled {
+            background: rgba(26, 51, 34, 0.95) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0,0,0,0.3);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1.5px;
+            background: #dff0e2;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mobile-menu.open {
+            max-height: 400px;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(26, 51, 34, 0.7);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 24px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(26,51,34,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .modal-close:hover {
+            background: rgba(26,51,34,0.2);
+            transform: rotate(90deg);
+        }
+
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background: #1a3322;
+            color: #dff0e2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 50;
+            box-shadow: 0 4px 20px rgba(26,51,34,0.3);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: #3a6642;
+            transform: translateY(-3px);
+        }
+
+        /* Decorative particles */
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #faf7f2; }
+        ::-webkit-scrollbar-thumb { background: #4e8056; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3a6642; }
+
+        /* Image placeholder fallback */
+        .img-fallback {
+            background: linear-gradient(135deg, #1a3322 0%, #3a6642 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #dff0e2;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+        }
+
+        /* Stagger children */
+        .stagger-children > *:nth-child(1) { transition-delay: 0.1s; }
+        .stagger-children > *:nth-child(2) { transition-delay: 0.2s; }
+        .stagger-children > *:nth-child(3) { transition-delay: 0.3s; }
+
+        /* Hero text glow */
+        .hero-glow {
+            text-shadow: 0 0 40px rgba(230,211,138,0.3);
+        }
+
+        /* Grain overlay */
+        .grain::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            opacity: 0.04;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Loading skeleton for images */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+    </style>
+</head>
+<body class="bg-[#faf7f2] text-[#1a2e1e] font-sans min-h-screen">
+
+    <!-- Back to Top -->
+    <div id="backToTop" class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fa-solid fa-arrow-up text-sm"></i>
+    </div>
+
+    <!-- City Modal -->
+    <div id="cityModal" class="modal-overlay" onclick="closeModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <div class="modal-close" onclick="closeModal()">
+                <i class="fa-solid fa-xmark text-dark"></i>
+            </div>
+            <div id="modalImage" class="h-64 bg-cover bg-center relative">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <h2 id="modalTitle" class="absolute bottom-6 left-8 text-4xl font-serif font-bold text-white italic">City Name</h2>
+            </div>
+            <div class="p-8">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="px-3 py-1 bg-[#1a3322]/10 text-[#1a3322] rounded-full text-xs font-medium tracking-wider uppercase" id="modalSeason">Season</span>
+                    <span class="px-3 py-1 bg-[#e6d38a]/30 text-[#1a3322] rounded-full text-xs font-medium tracking-wider uppercase" id="modalDuration">Duration</span>
+                </div>
+                <p id="modalDesc" class="font-serif text-[#3a5a42] italic text-lg leading-relaxed mb-6">Description goes here.</p>
+                <div class="bg-[#f5f0e8] rounded-xl p-5 mb-6">
+                    <h3 class="text-sm font-semibold text-[#1a3322] uppercase tracking-wider mb-3">Top Attractions</h3>
+                    <ul id="modalAttractions" class="space-y-2 text-sm text-[#3a5a42]">
+                        <!-- Populated by JS -->
+                    </ul>
+                </div>
+                <button class="w-full py-3.5 bg-[#1a3322] text-[#dff0e2] rounded-xl text-sm font-medium tracking-widest uppercase hover:bg-[#3a6642] transition-all flex items-center justify-center gap-2 group">
+                    <span>Plan Your Trip</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="navbaar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-[#1a3322] shadow-md transition-all duration-500">
+        <div id="nav_sec_1">
+            <a href="index.html" id="comfygo_logo" class="text-2xl font-bold text-[#dff0e2] tracking-wide hover:opacity-80 transition-opacity flex items-center gap-2">
+                <i class="fa-solid fa-leaf text-[#7aaa80]"></i>ComfyGo
+            </a>
+        </div>
+        <div id="nav_sec_2" class="hidden md:flex gap-8 items-center">
+            <a href="about.html" id="nav_about" class="nav-link text-[#b8d4bc] hover:text-[#dff0e2] transition-colors text-sm tracking-wide">About</a>
+            <a href="contact.html" id="nav_contact" class="nav-link text-[#b8d4bc] hover:text-[#dff0e2] transition-colors text-sm tracking-wide">Contact</a>
+        </div>
+        <div id="nav_sec_3" class="hidden md:flex gap-4 items-center">
+            <a href="login.html" id="nav_login" class="text-[#b8d4bc] hover:text-[#dff0e2] transition-colors text-sm tracking-wide">Login</a>
+            <a href="signup.html" id="nav_signup" class="bg-[#3a6642] text-[#dff0e2] px-5 py-2 rounded-lg hover:bg-[#4e8056] transition-all text-sm tracking-wide hover:shadow-lg hover:shadow-[#3a6642]/30">Signup</a>
+        </div>
+        <button id="nav_toggle" aria-label="Toggle menu" class="md:hidden text-[#b8d4bc] focus:outline-none p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu fixed top-[72px] left-0 right-0 bg-[#1a3322]/98 backdrop-blur-xl z-40 border-t border-white/10 md:hidden">
+        <div class="px-6 py-6 flex flex-col gap-4">
+            <a href="about.html" class="text-[#b8d4bc] hover:text-[#dff0e2] transition-colors py-2 border-b border-white/5">About</a>
+            <a href="contact.html" class="text-[#b8d4bc] hover:text-[#dff0e2] transition-colors py-2 border-b border-white/5">Contact</a>
+            <div class="flex gap-3 pt-2">
+                <a href="login.html" class="flex-1 text-center text-[#b8d4bc] border border-[#b8d4bc]/30 rounded-lg py-2.5 text-sm">Login</a>
+                <a href="signup.html" class="flex-1 text-center bg-[#3a6642] text-[#dff0e2] rounded-lg py-2.5 text-sm">Signup</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero -->
+    <header id="destinations_hero" class="relative pt-32 pb-24 px-6 text-center bg-[#1a3322] overflow-hidden grain">
+        <!-- Animated background elements -->
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_10%_20%,rgba(74,128,86,0.25),transparent),radial-gradient(ellipse_40%_60%_at_90%_80%,rgba(36,74,49,0.4),transparent)] pointer-events-none"></div>
+        
+        <!-- Floating decorative elements -->
+        <div class="particle w-2 h-2 bg-[#e6d38a] top-[20%] left-[15%] animate-float"></div>
+        <div class="particle w-3 h-3 bg-[#7aaa80] top-[30%] right-[20%] animate-float-reverse"></div>
+        <div class="particle w-2 h-2 bg-[#b8d4bc] bottom-[25%] left-[25%] animate-float-slow"></div>
+        <div class="particle w-1.5 h-1.5 bg-[#e6d38a] bottom-[30%] right-[15%] animate-float" style="animation-delay: 2s;"></div>
+
+        <!-- Large decorative leaf shapes -->
+        <i class="fa-solid fa-leaf absolute top-24 left-[10%] text-[#7aaa80]/10 text-5xl animate-float"></i>
+        <i class="fa-solid fa-leaf absolute bottom-20 right-[12%] text-[#e6d38a]/10 text-4xl animate-float-reverse"></i>
+        <i class="fa-solid fa-tree absolute top-32 right-[18%] text-[#4e8056]/10 text-6xl animate-float-slow"></i>
+
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <p class="fade-in-up text-[#7aaa80] text-xs font-semibold tracking-[4px] uppercase mb-5">Discover Bangladesh</p>
+            <span class="fade-in-up delay-100 block w-[60px] h-[2px] bg-gradient-to-r from-transparent via-[#b8982a] to-transparent mx-auto mb-8"></span>
+            <h1 class="fade-in-up delay-200 font-serif text-[clamp(2.8rem,5vw,4.2rem)] text-[#dff0e2] font-semibold leading-tight mb-3 hero-glow">
+                Journey Into <em class="text-[#e6d38a] not-italic">Nature</em>
+            </h1>
+            <p class="fade-in-up delay-300 font-serif text-[#b8d4bc] text-lg italic max-w-lg mx-auto mt-6 leading-relaxed">
+                Three extraordinary destinations where ancient heritage meets breathtaking landscapes — awaiting your discovery.
+            </p>
+            
+            <!-- Scroll indicator -->
+            <div class="fade-in-up delay-500 mt-12 flex flex-col items-center gap-2 opacity-60">
+                <span class="text-[10px] uppercase tracking-[3px] text-[#b8d4bc]">Scroll to explore</span>
+                <div class="w-[1px] h-8 bg-gradient-to-b from-[#b8d4bc] to-transparent animate-pulse"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main id="destinations_page" class="min-h-screen relative">
+        <!-- Subtle top fade from hero -->
+        <div class="h-24 bg-gradient-to-b from-[#1a3322] to-[#faf7f2] opacity-10"></div>
+
+        <div id="city_grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-[1200px] mx-auto px-6 pb-[100px] -mt-12 stagger-children">
+            
+            <!-- Dhaka Card -->
+            <div class="city_card reveal-scale bg-white rounded-[18px] overflow-hidden shadow-lg border border-[rgba(78,128,86,0.12)] cursor-pointer group" onclick="openModal('dhaka')">
+                <div class="city_card_img h-[240px] bg-cover bg-center relative" style="background-image:url('images/aboutDhaka_image.jpg')" onerror="this.classList.add('img-fallback')">
+                    <span class="season-badge absolute top-4 right-4 px-3.5 py-1.5 bg-white/15 border border-white/30 rounded-full text-white text-xs font-sans tracking-wide">Oct – Mar</span>
+                    <span class="absolute bottom-5 left-6 text-white font-serif text-3xl font-bold z-10 drop-shadow-lg">Dhaka</span>
+                    <div class="absolute top-4 left-4 z-10">
+                        <span class="px-2.5 py-1 bg-[#e6d38a] text-[#1a3322] rounded-full text-[10px] font-bold tracking-wider uppercase">Capital</span>
+                    </div>
+                </div>
+                <div class="city_card_body p-7">
+                    <div class="city_card_stats flex justify-between mb-5 pb-5 border-b border-[rgba(78,128,86,0.12)]">
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">8+</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Attractions</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">3–5</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Days</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">Oct–Mar</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Best Season</span>
+                        </div>
+                    </div>
+                    <p class="font-serif text-[#3a5a42] italic text-[15px] leading-relaxed mb-6 line-clamp-3">The bustling capital blending Mughal grandeur with modern energy — where centuries of history live side by side with a vibrant cityscape.</p>
+                    <button class="city_card_btn w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-[#1a3322] text-[#dff0e2] rounded-xl text-xs font-sans font-medium tracking-[2px] uppercase">
+                        <span>Explore Dhaka</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Sylhet Card -->
+            <div class="city_card reveal-scale bg-white rounded-[18px] overflow-hidden shadow-lg border border-[rgba(78,128,86,0.12)] cursor-pointer group" onclick="openModal('sylhet')">
+                <div class="city_card_img h-[240px] bg-cover bg-center relative" style="background-image:url('images/aboutSylhet_image.jpg')" onerror="this.classList.add('img-fallback')">
+                    <span class="season-badge absolute top-4 right-4 px-3.5 py-1.5 bg-white/15 border border-white/30 rounded-full text-white text-xs font-sans tracking-wide">Sep – Mar</span>
+                    <span class="absolute bottom-5 left-6 text-white font-serif text-3xl font-bold z-10 drop-shadow-lg">Sylhet</span>
+                    <div class="absolute top-4 left-4 z-10">
+                        <span class="px-2.5 py-1 bg-[#7aaa80] text-white rounded-full text-[10px] font-bold tracking-wider uppercase">Nature</span>
+                    </div>
+                </div>
+                <div class="city_card_body p-7">
+                    <div class="city_card_stats flex justify-between mb-5 pb-5 border-b border-[rgba(78,128,86,0.12)]">
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">8+</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Attractions</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">4–6</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Days</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">Sep–Mar</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Best Season</span>
+                        </div>
+                    </div>
+                    <p class="font-serif text-[#3a5a42] italic text-[15px] leading-relaxed mb-6 line-clamp-3">Emerald tea gardens, mystic hills, and sacred shrines — Sylhet is nature at its most serene, where the land itself breathes tranquillity.</p>
+                    <button class="city_card_btn w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-[#1a3322] text-[#dff0e2] rounded-xl text-xs font-sans font-medium tracking-[2px] uppercase">
+                        <span>Explore Sylhet</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chittagong Card -->
+            <div class="city_card reveal-scale bg-white rounded-[18px] overflow-hidden shadow-lg border border-[rgba(78,128,86,0.12)] cursor-pointer group" onclick="openModal('chittagong')">
+                <div class="city_card_img h-[240px] bg-cover bg-center relative" style="background-image:url('images/aboutCtg_image.jpg')" onerror="this.classList.add('img-fallback')">
+                    <span class="season-badge absolute top-4 right-4 px-3.5 py-1.5 bg-white/15 border border-white/30 rounded-full text-white text-xs font-sans tracking-wide">Nov – Feb</span>
+                    <span class="absolute bottom-5 left-6 text-white font-serif text-3xl font-bold z-10 drop-shadow-lg">Chittagong</span>
+                    <div class="absolute top-4 left-4 z-10">
+                        <span class="px-2.5 py-1 bg-[#4e8056] text-white rounded-full text-[10px] font-bold tracking-wider uppercase">Coastal</span>
+                    </div>
+                </div>
+                <div class="city_card_body p-7">
+                    <div class="city_card_stats flex justify-between mb-5 pb-5 border-b border-[rgba(78,128,86,0.12)]">
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">8+</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Attractions</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">3–5</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Days</span>
+                        </div>
+                        <div class="city_card_stat flex flex-col items-center gap-1.5 flex-1">
+                            <strong class="font-serif text-[1.35rem] text-[#244a31] font-semibold group-hover:text-[#3a6642] transition-colors">Nov–Feb</strong>
+                            <span class="text-[11px] text-[#6b8b72] tracking-wider uppercase">Best Season</span>
+                        </div>
+                    </div>
+                    <p class="font-serif text-[#3a5a42] italic text-[15px] leading-relaxed mb-6 line-clamp-3">Where rolling hills cascade into the Bay of Bengal — a coastal treasure of pristine beaches, lush hill tracts, and a storied maritime soul.</p>
+                    <button class="city_card_btn w-full flex items-center justify-center gap-2 py-3.5 px-6 bg-[#1a3322] text-[#dff0e2] rounded-xl text-xs font-sans font-medium tracking-[2px] uppercase">
+                        <span>Explore Chittagong</span>
+                        <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Call to Action Section -->
+        <div class="reveal bg-[#1a3322] relative overflow-hidden py-20 px-6 grain">
+            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(74,128,86,0.3),transparent)]"></div>
+            <div class="max-w-3xl mx-auto text-center relative z-10">
+                <i class="fa-solid fa-compass text-[#e6d38a]/30 text-5xl mb-6 animate-float"></i>
+                <h2 class="font-serif text-3xl md:text-4xl text-[#dff0e2] font-semibold mb-4 italic">Ready for Your Next Adventure?</h2>
+                <p class="text-[#b8d4bc] text-lg mb-8 max-w-lg mx-auto leading-relaxed">Let us craft the perfect itinerary tailored to your wanderlust. Every journey begins with a single step.</p>
+                <a href="contact.html" class="inline-flex items-center gap-3 px-8 py-3.5 bg-[#e6d38a] text-[#1a3322] rounded-xl font-semibold tracking-wider uppercase text-sm hover:bg-[#f0e4a8] transition-all hover:shadow-xl hover:shadow-[#e6d38a]/20 hover:-translate-y-1">
+                    <span>Start Planning</span>
+                    <i class="fa-solid fa-paper-plane"></i>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-[#0f1f14] text-[#b8d4bc]/70 py-12 border-t border-white/5">
+        <div class="max-w-[1200px] mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-leaf text-[#4e8056]"></i>
+                    <span class="text-xl font-bold text-[#dff0e2] tracking-wide" style="font-family: 'Cormorant Garamond', serif;">ComfyGo</span>
+                </div>
+                <div class="flex gap-6 text-sm">
+                    <a href="about.html" class="hover:text-[#dff0e2] transition-colors">About</a>
+                    <a href="destinations.html" class="hover:text-[#dff0e2] transition-colors">Destinations</a>
+                    <a href="contact.html" class="hover:text-[#dff0e2] transition-colors">Contact</a>
+                </div>
+                <div class="flex gap-4">
+                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#3a6642] hover:text-[#dff0e2] transition-all">
+                        <i class="fa-brands fa-facebook-f text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#3a6642] hover:text-[#dff0e2] transition-all">
+                        <i class="fa-brands fa-instagram text-sm"></i>
+                    </a>
+                    <a href="#" class="w-9 h-9 rounded-full bg-white/5 flex items-center justify-center hover:bg-[#3a6642] hover:text-[#dff0e2] transition-all">
+                        <i class="fa-brands fa-twitter text-sm"></i>
+                    </a>
+                </div>
+            </div>
+            <div class="mt-8 pt-6 border-t border-white/5 text-center text-xs text-[#6b8b72]">
+                <p> ComfyGo. All rights reserved. Crafted with care for travellers.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // City Data for Modal
+        const cityData = {
+            dhaka: {
+                title: 'Dhaka',
+                image: 'images/aboutDhaka_image.jpg',
+                season: 'Oct – Mar',
+                duration: '3–5 Days',
+                description: 'The bustling capital blending Mughal grandeur with modern energy — where centuries of history live side by side with a vibrant cityscape. From the iconic Lalbagh Fort to the serene banks of the Buriganga, Dhaka offers an intoxicating mix of chaos and charm.',
+                attractions: [
+                    'Lalbagh Fort — Mughal architectural masterpiece',
+                    'Ahsan Manzil — The Pink Palace by the river',
+                    'Sadarghat — One of the world\'s busiest river ports',
+                    'National Parliament House — Iconic modernist architecture',
+                    'Old Dhaka Street Food Tour — A culinary adventure',
+                    'Liberation War Museum — Poignant historical journey'
+                ]
+            },
+            sylhet: {
+                title: 'Sylhet',
+                image: 'images/aboutSylhet_image.jpg',
+                season: 'Sep – Mar',
+                duration: '4–6 Days',
+                description: 'Emerald tea gardens, mystic hills, and sacred shrines — Sylhet is nature at its most serene, where the land itself breathes tranquillity. Home to the largest tea gardens in Bangladesh and the enchanting Ratargul swamp forest.',
+                attractions: [
+                    'Ratargul Swamp Forest — Bangladesh\'s only freshwater swamp',
+                    'Jaflong — Stone collection site with Khasia hills',
+                    'Lalakhal — Turquoise river with boat rides',
+                    'Tea Garden Tours — Endless rolling green estates',
+                    'Shah Jalal Shrine — Spiritual heart of Sylhet',
+                    'Bichnakandi — Stunning stone quarry landscape'
+                ]
+            },
+            chittagong: {
+                title: 'Chittagong',
+                image: 'images/aboutCtg_image.jpg',
+                season: 'Nov – Feb',
+                duration: '3–5 Days',
+                description: 'Where rolling hills cascade into the Bay of Bengal — a coastal treasure of pristine beaches, lush hill tracts, and a storied maritime soul. Chittagong combines natural beauty with rich cultural heritage.',
+                attractions: [
+                    'Cox\'s Bazar — World\'s longest unbroken sea beach',
+                    'Saint Martin\'s Island — Coral island paradise',
+                    'Bandarban Hill Tracts — Tribal culture & mountain treks',
+                    'Chandranath Temple — Ancient hilltop shrine',
+                    'Foy\'s Lake — Scenic urban waterbody',
+                    'Patenga Beach — Sunset views by the port'
+                ]
+            }
+        };
+
+        // Mobile Menu
+        const navToggle = document.getElementById('nav_toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        let menuOpen = false;
+
+        navToggle.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open');
+            menuIcon.className = menuOpen ? 'fa-solid fa-xmark text-xl' : 'fa-solid fa-bars text-xl';
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbaar');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 50) {
+                navbar.classList.add('nav-scrolled');
+            } else {
+                navbar.classList.remove('nav-scrolled');
+            }
+            
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -60px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .reveal-scale, .reveal-left').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Modal Functions
+        function openModal(cityKey) {
+            const data = cityData[cityKey];
+            if (!data) return;
+
+            document.getElementById('modalTitle').textContent = data.title;
+            document.getElementById('modalImage').style.backgroundImage = `url('${data.image}')`;
+            document.getElementById('modalSeason').textContent = data.season;
+            document.getElementById('modalDuration').textContent = data.duration;
+            document.getElementById('modalDesc').textContent = data.description;
+            
+            const attractionsList = document.getElementById('modalAttractions');
+            attractionsList.innerHTML = data.attractions.map(attr => `
+                <li class="flex items-start gap-3 py-1.5">
+                    <i class="fa-solid fa-location-dot text-[#3a6642] mt-1 text-xs"></i>
+                    <span>${attr}</span>
+                </li>
+            `).join('');
+
+            document.getElementById('cityModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('cityModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Image error handling
+        document.querySelectorAll('.city_card_img').forEach(img => {
+            img.addEventListener('error', function() {
+                this.style.backgroundImage = 'none';
+                this.classList.add('img-fallback');
+                this.innerHTML = '<span class="text-2xl italic">Image Unavailable</span>';
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+</html>

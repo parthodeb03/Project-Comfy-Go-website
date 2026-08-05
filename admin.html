@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ComfyGo — Admin Panel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+:root{
+    --bg:#F2ECDD;
+    --panel:#FFFFFF;
+    --ink:#1C2620;
+    --muted:#6C776F;
+    --deep:#14342C;
+    --deep-2:#1D4B40;
+    --brick:#B5502F;
+    --brick-2:#93401F;
+    --teal:#3B6E71;
+    --gold:#C99A2E;
+    --line:rgba(28,38,32,0.12);
+    --ok-bg:#E8F1E8; --ok-fg:#2C6B41;
+    --pending-bg:#FBF0DD; --pending-fg:#9A6B1D;
+    --new-bg:#FDEDE7; --new-fg:#B5502F;
+}
+*{ box-sizing:border-box; }
+body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'DM Sans', sans-serif;
+    -webkit-font-smoothing:antialiased;
+}
+.disp{ font-family:'Fraunces', serif; }
+button{ font-family:inherit; cursor:pointer; }
+input, textarea, select{ font-family:inherit; }
+
+/* ---------- LAYOUT ---------- */
+#app{ display:flex; min-height:100vh; }
+
+/* Sidebar */
+#sidebar{
+    width:236px; flex-shrink:0;
+    background:var(--deep);
+    color:#DCE6E1;
+    padding:1.6rem 1.1rem;
+    display:flex; flex-direction:column;
+    position:sticky; top:0; height:100vh;
+}
+#brand{
+    display:flex; align-items:center; gap:0.6rem;
+    padding:0 0.4rem 1.6rem;
+    margin-bottom:1.2rem;
+    border-bottom:1px solid rgba(242,236,221,0.12);
+}
+#brand .stamp-sm{
+    width:1.9rem; height:1.9rem; border-radius:50%;
+    border:1.5px dashed var(--gold);
+    position:relative; flex-shrink:0;
+}
+#brand .stamp-sm::after{ content:""; position:absolute; inset:3px; border-radius:50%; border:1px solid var(--gold); opacity:.6; }
+#brand span{ font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:1.25rem; color:var(--bg); }
+#brand small{ display:block; font-family:'DM Sans'; font-style:normal; font-size:0.65rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); }
+
+nav#side_nav{ display:flex; flex-direction:column; gap:0.2rem; }
+.nav_item{
+    display:flex; align-items:center; gap:0.75rem;
+    padding:0.65rem 0.8rem;
+    border-radius:8px;
+    color:#B9C9C2;
+    font-size:0.9rem; font-weight:500;
+    transition:background .15s ease, color .15s ease;
+    border:none; background:transparent; text-align:left; width:100%;
+}
+.nav_item i{ width:1.1rem; text-align:center; color:#7E9791; font-size:0.9rem; }
+.nav_item:hover{ background:rgba(242,236,221,0.06); color:var(--bg); }
+.nav_item.active{ background:rgba(242,236,221,0.1); color:var(--bg); }
+.nav_item.active i{ color:var(--gold); }
+
+#sidebar_foot{ margin-top:auto; padding-top:1rem; border-top:1px solid rgba(242,236,221,0.12); }
+#view_site{
+    display:flex; align-items:center; gap:0.6rem;
+    color:#B9C9C2; font-size:0.85rem; padding:0.6rem 0.4rem;
+    transition:color .15s ease;
+}
+#view_site:hover{ color:var(--gold); }
+
+/* Main */
+#main{ flex:1; min-width:0; }
+#topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.3rem 2.2rem; background:var(--panel);
+    border-bottom:1px solid var(--line);
+    position:sticky; top:0; z-index:20;
+}
+#page_title{ font-family:'Fraunces', serif; font-weight:600; font-size:1.5rem; color:var(--deep); margin:0; }
+#page_sub{ font-size:0.85rem; color:var(--muted); margin:0.15rem 0 0; }
+#admin_chip{ display:flex; align-items:center; gap:0.7rem; }
+#admin_avatar{
+    width:2.2rem; height:2.2rem; border-radius:50%;
+    background:linear-gradient(155deg, var(--teal), var(--deep));
+    color:var(--bg); display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces', serif; font-style:italic; font-weight:600; font-size:0.9rem;
+}
+#admin_name{ font-size:0.85rem; font-weight:600; color:var(--ink); margin:0; }
+#admin_role{ font-size:0.72rem; color:var(--muted); margin:0; }
+
+#content{ padding:2rem 2.2rem 3rem; max-width:1180px; }
+
+/* ---------- Buttons ---------- */
+.btn{
+    display:inline-flex; align-items:center; gap:0.5rem;
+    font-size:0.86rem; font-weight:600;
+    padding:0.6rem 1.1rem; border-radius:999px; border:1px solid transparent;
+    transition:background .15s ease, transform .15s ease, border-color .15s ease;
+}
+.btn-primary{ background:var(--brick); color:var(--bg); }
+.btn-primary:hover{ background:var(--brick-2); }
+.btn-ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
+.btn-ghost:hover{ border-color:var(--teal); color:var(--teal); }
+.btn-icon{
+    width:2rem; height:2rem; border-radius:50%; border:1px solid var(--line);
+    display:inline-flex; align-items:center; justify-content:center;
+    background:transparent; color:var(--muted); font-size:0.8rem;
+    transition:all .15s ease;
+}
+.btn-icon:hover{ border-color:var(--teal); color:var(--teal); }
+.btn-icon.danger:hover{ border-color:var(--brick); color:var(--brick); }
+
+/* ---------- Stat cards ---------- */
+.stats_row{ display:grid; grid-template-columns:repeat(4, 1fr); gap:1.1rem; margin-bottom:2.2rem; }
+.stat_card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:1.4rem 1.5rem; position:relative; overflow:hidden;
+}
+.stat_card .stat_icon{
+    width:2.4rem; height:2.4rem; border-radius:50%;
+    border:1.5px dashed var(--teal); display:flex; align-items:center; justify-content:center;
+    color:var(--teal); margin-bottom:0.9rem; font-size:0.95rem;
+}
+.stat_card .stat_num{ font-family:'Fraunces', serif; font-weight:600; font-size:1.9rem; color:var(--deep); display:block; }
+.stat_card .stat_label{ font-size:0.82rem; color:var(--muted); }
+
+/* ---------- Section head ---------- */
+.section_head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:1.3rem; }
+.section_head h2{ font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem; color:var(--deep); margin:0; display:flex; align-items:center; gap:0.6rem; }
+
+/* ---------- Table ---------- */
+.table_wrap{ background:var(--panel); border:1px solid var(--line); border-radius:14px; overflow:hidden; }
+table{ width:100%; border-collapse:collapse; }
+thead th{
+    text-align:left; font-size:0.72rem; font-weight:600; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--muted); padding:0.9rem 1.2rem; border-bottom:1px solid var(--line); background:#FAF7F0;
+}
+tbody td{ padding:0.95rem 1.2rem; border-bottom:1px solid var(--line); font-size:0.88rem; color:var(--ink); vertical-align:middle; }
+tbody tr:last-child td{ border-bottom:none; }
+tbody tr:hover{ background:#FBF9F3; }
+.cell_name{ font-weight:600; color:var(--deep); }
+.cell_actions{ display:flex; gap:0.4rem; justify-content:flex-end; }
+.msg_preview{ color:var(--muted); max-width:280px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; display:inline-block; vertical-align:middle; }
+
+.badge{
+    display:inline-flex; align-items:center; gap:0.35rem;
+    font-size:0.72rem; font-weight:600; padding:0.28rem 0.7rem; border-radius:999px;
+}
+.badge.certified{ background:var(--ok-bg); color:var(--ok-fg); }
+.badge.pending{ background:var(--pending-bg); color:var(--pending-fg); }
+.badge.new{ background:var(--new-bg); color:var(--new-fg); }
+.badge.responded{ background:var(--ok-bg); color:var(--ok-fg); }
+.badge button{ background:none; border:none; padding:0; margin:0; }
+
+/* ---------- Card grids (destinations / testimonials) ---------- */
+.card_grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1.2rem; margin-bottom:2.4rem; }
+.entity_card{
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:1.5rem 1.4rem; position:relative;
+}
+.entity_card .card_top{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.6rem; }
+.entity_card h3{ font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; color:var(--deep); margin:0 0 0.2rem; }
+.entity_card .tagline{ font-size:0.8rem; color:var(--teal); margin:0 0 0.7rem; }
+.entity_card p.desc{ font-size:0.85rem; line-height:1.6; color:#4a544d; margin:0 0 1rem; }
+.entity_card .card_foot{ display:flex; justify-content:space-between; align-items:center; }
+.entity_card .quote_mark{ font-family:'Fraunces', serif; font-style:italic; font-size:2.2rem; color:var(--gold); line-height:1; display:block; margin-bottom:0.2rem; }
+
+/* ---------- Modal ---------- */
+#modal_overlay{
+    position:fixed; inset:0; background:rgba(20,30,26,0.45);
+    display:none; align-items:center; justify-content:center; z-index:100; padding:1.5rem;
+}
+#modal_overlay.open{ display:flex; }
+#modal_box{
+    background:var(--panel); border-radius:16px; width:100%; max-width:460px;
+    padding:1.8rem 1.8rem 1.5rem; max-height:88vh; overflow-y:auto;
+    box-shadow:0 30px 60px -20px rgba(20,52,44,0.4);
+}
+#modal_box h3{ font-family:'Fraunces', serif; font-weight:600; font-size:1.25rem; color:var(--deep); margin:0 0 1.2rem; }
+.field{ margin-bottom:1rem; }
+.field label{ display:block; font-size:0.78rem; font-weight:600; color:var(--muted); margin-bottom:0.35rem; }
+.field input, .field textarea, .field select{
+    width:100%; padding:0.6rem 0.8rem; border:1px solid var(--line); border-radius:8px;
+    font-size:0.9rem; color:var(--ink); background:#FCFAF5;
+}
+.field textarea{ resize:vertical; min-height:80px; }
+.field input:focus, .field textarea:focus, .field select:focus{ outline:none; border-color:var(--teal); }
+#modal_actions{ display:flex; justify-content:flex-end; gap:0.6rem; margin-top:1.3rem; }
+
+/* ---------- Empty state ---------- */
+.empty_state{ text-align:center; padding:3rem 1.5rem; color:var(--muted); }
+.empty_state i{ font-size:1.6rem; color:var(--teal); margin-bottom:0.8rem; display:block; }
+
+/* Views */
+.view{ display:none; }
+.view.active{ display:block; }
+
+@media (max-width: 1024px){
+    .stats_row{ grid-template-columns:repeat(2,1fr); }
+    .card_grid{ grid-template-columns:repeat(2,1fr); }
+}
+@media (max-width: 760px){
+    #sidebar{ display:none; }
+    .stats_row, .card_grid{ grid-template-columns:1fr; }
+    #content{ padding:1.4rem; }
+    #topbar{ padding:1rem 1.4rem; }
+}
+button:focus-visible, a:focus-visible{ outline:2px solid var(--brick); outline-offset:2px; }
+</style>
+</head>
+<body>
+
+<div id="app">
+    <aside id="sidebar">
+        <div id="brand">
+            <div class="stamp-sm"></div>
+            <div>
+                <span>ComfyGo</span>
+                <small>Admin</small>
+            </div>
+        </div>
+        <nav id="side_nav">
+            <button class="nav_item active" data-view="dashboard"><i class="fa-solid fa-gauge"></i>Dashboard</button>
+            <button class="nav_item" data-view="destinations"><i class="fa-solid fa-map-location-dot"></i>Destinations</button>
+            <button class="nav_item" data-view="hotels"><i class="fa-solid fa-hotel"></i>Hotels</button>
+            <button class="nav_item" data-view="guides"><i class="fa-solid fa-user-tie"></i>Guides</button>
+            <button class="nav_item" data-view="testimonials"><i class="fa-solid fa-quote-left"></i>Testimonials</button>
+            <button class="nav_item" data-view="inquiries"><i class="fa-solid fa-envelope"></i>Inquiries</button>
+        </nav>
+        <div id="sidebar_foot">
+            <a href="index.html" id="view_site"><i class="fa-solid fa-arrow-up-right-from-square"></i> View live site</a>
+        </div>
+    </aside>
+
+    <main id="main">
+        <div id="topbar">
+            <div>
+                <p id="page_title">Dashboard</p>
+                <p id="page_sub">Overview of ComfyGo's certified network</p>
+            </div>
+            <div id="admin_chip">
+                <div>
+                    <p id="admin_name" style="text-align:right;">Admin</p>
+                    <p id="admin_role">Operations</p>
+                </div>
+                <div id="admin_avatar">A</div>
+            </div>
+        </div>
+
+        <div id="content">
+
+            <!-- DASHBOARD -->
+            <section class="view active" id="view_dashboard">
+                <div class="stats_row">
+                    <div class="stat_card">
+                        <div class="stat_icon"><i class="fa-solid fa-map-location-dot"></i></div>
+                        <span class="stat_num" id="stat_destinations">0</span>
+                        <span class="stat_label">Certified Cities</span>
+                    </div>
+                    <div class="stat_card">
+                        <div class="stat_icon"><i class="fa-solid fa-hotel"></i></div>
+                        <span class="stat_num" id="stat_hotels">0</span>
+                        <span class="stat_label">Partner Hotels</span>
+                    </div>
+                    <div class="stat_card">
+                        <div class="stat_icon"><i class="fa-solid fa-user-tie"></i></div>
+                        <span class="stat_num" id="stat_guides">0</span>
+                        <span class="stat_label">Certified Guides</span>
+                    </div>
+                    <div class="stat_card">
+                        <div class="stat_icon"><i class="fa-solid fa-envelope"></i></div>
+                        <span class="stat_num" id="stat_inquiries">0</span>
+                        <span class="stat_label">New Inquiries</span>
+                    </div>
+                </div>
+
+                <div class="section_head"><h2><i class="fa-solid fa-inbox" style="color:var(--brick);"></i>Recent inquiries</h2>
+                    <button class="btn btn-ghost" data-view-link="inquiries">View all</button>
+                </div>
+                <div class="table_wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>Message</th><th>Date</th><th>Status</th></tr></thead>
+                        <tbody id="dash_inquiries_body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- DESTINATIONS -->
+            <section class="view" id="view_destinations">
+                <div class="section_head">
+                    <h2><i class="fa-solid fa-map-location-dot" style="color:var(--brick);"></i>Certified destinations</h2>
+                    <button class="btn btn-primary" onclick="openModal('destinations')"><i class="fa-solid fa-plus"></i>Add destination</button>
+                </div>
+                <div class="card_grid" id="destinations_grid"></div>
+            </section>
+
+            <!-- HOTELS -->
+            <section class="view" id="view_hotels">
+                <div class="section_head">
+                    <h2><i class="fa-solid fa-hotel" style="color:var(--brick);"></i>Certified hotels</h2>
+                    <button class="btn btn-primary" onclick="openModal('hotels')"><i class="fa-solid fa-plus"></i>Add hotel</button>
+                </div>
+                <div class="table_wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>City</th><th>Rating</th><th>Price / night</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="hotels_body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- GUIDES -->
+            <section class="view" id="view_guides">
+                <div class="section_head">
+                    <h2><i class="fa-solid fa-user-tie" style="color:var(--brick);"></i>Certified guides</h2>
+                    <button class="btn btn-primary" onclick="openModal('guides')"><i class="fa-solid fa-plus"></i>Add guide</button>
+                </div>
+                <div class="table_wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>City</th><th>Languages</th><th>Experience</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="guides_body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TESTIMONIALS -->
+            <section class="view" id="view_testimonials">
+                <div class="section_head">
+                    <h2><i class="fa-solid fa-quote-left" style="color:var(--brick);"></i>Testimonials</h2>
+                    <button class="btn btn-primary" onclick="openModal('testimonials')"><i class="fa-solid fa-plus"></i>Add testimonial</button>
+                </div>
+                <div class="card_grid" id="testimonials_grid"></div>
+            </section>
+
+            <!-- INQUIRIES -->
+            <section class="view" id="view_inquiries">
+                <div class="section_head">
+                    <h2><i class="fa-solid fa-envelope" style="color:var(--brick);"></i>Contact inquiries</h2>
+                </div>
+                <div class="table_wrap">
+                    <table>
+                        <thead><tr><th>Name</th><th>Email</th><th>Message</th><th>Date</th><th>Status</th><th></th></tr></thead>
+                        <tbody id="inquiries_body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<!-- MODAL -->
+<div id="modal_overlay">
+    <div id="modal_box">
+        <h3 id="modal_title">Add item</h3>
+        <form id="modal_form"></form>
+        <div id="modal_actions">
+            <button class="btn btn-ghost" type="button" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-primary" type="button" onclick="submitModal()"><i class="fa-solid fa-check"></i>Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+/* ---------------- Config ---------------- */
+const CITY_OPTIONS = ["Sylhet","Dhaka","Chittagong"];
+
+const ENTITY_CONFIG = {
+    destinations: {
+        title: "Destination",
+        fields: [
+            {key:"name", label:"City name", type:"text"},
+            {key:"tagline", label:"Tagline", type:"text"},
+            {key:"description", label:"Description", type:"textarea"},
+            {key:"status", label:"Status", type:"select", options:["certified","pending"]},
+        ]
+    },
+    hotels: {
+        title: "Hotel",
+        fields: [
+            {key:"name", label:"Hotel name", type:"text"},
+            {key:"city", label:"City", type:"select", options:CITY_OPTIONS},
+            {key:"rating", label:"Rating (out of 5)", type:"number"},
+            {key:"price", label:"Price / night (BDT)", type:"number"},
+            {key:"status", label:"Status", type:"select", options:["certified","pending"]},
+        ]
+    },
+    guides: {
+        title: "Guide",
+        fields: [
+            {key:"name", label:"Guide name", type:"text"},
+            {key:"city", label:"City", type:"select", options:CITY_OPTIONS},
+            {key:"languages", label:"Languages", type:"text"},
+            {key:"experience", label:"Experience (years)", type:"number"},
+            {key:"status", label:"Status", type:"select", options:["certified","pending"]},
+        ]
+    },
+    testimonials: {
+        title: "Testimonial",
+        fields: [
+            {key:"author", label:"Traveller name", type:"text"},
+            {key:"location", label:"Location", type:"text"},
+            {key:"text", label:"Testimonial", type:"textarea"},
+        ]
+    }
+};
+
+const STORAGE_KEYS = {
+    destinations: "comfygo:destinations",
+    hotels: "comfygo:hotels",
+    guides: "comfygo:guides",
+    testimonials: "comfygo:testimonials",
+    inquiries: "comfygo:inquiries",
+};
+
+const SEED = {
+    destinations: [
+        {id:"d1", name:"Sylhet", tagline:"Tea gardens & rivers", description:"Rolling tea estates, Jaflong's stone beaches, and the spiritual calm of Shah Jalal Mazar.", status:"certified"},
+        {id:"d2", name:"Dhaka", tagline:"Capital heritage & energy", description:"Ahsan Manzil, the National Parliament, and the colourful chaos of Old Dhaka.", status:"certified"},
+        {id:"d3", name:"Chittagong", tagline:"Sea, hills & heritage", description:"Patenga Sea Beach, Foy's Lake, and the dramatic Chittagong Hill Tracts.", status:"certified"},
+    ],
+    hotels: [
+        {id:"h1", name:"Lakeview Tea Resort", city:"Sylhet", rating:4.6, price:6200, status:"certified"},
+        {id:"h2", name:"Buriganga Heritage Hotel", city:"Dhaka", rating:4.3, price:5400, status:"certified"},
+        {id:"h3", name:"Patenga Shore Retreat", city:"Chittagong", rating:4.5, price:5800, status:"certified"},
+        {id:"h4", name:"Jaflong Riverside Inn", city:"Sylhet", rating:4.1, price:3800, status:"pending"},
+        {id:"h5", name:"Old Town Boutique Stay", city:"Dhaka", rating:4.0, price:4200, status:"certified"},
+    ],
+    guides: [
+        {id:"g1", name:"Faruk Ahmed", city:"Sylhet", languages:"Bengali, English", experience:7, status:"certified"},
+        {id:"g2", name:"Shirin Akter", city:"Dhaka", languages:"Bengali, English, Hindi", experience:5, status:"certified"},
+        {id:"g3", name:"Belal Chowdhury", city:"Chittagong", languages:"Bengali, English", experience:9, status:"certified"},
+        {id:"g4", name:"Mahin Rahman", city:"Sylhet", languages:"Bengali", experience:2, status:"pending"},
+    ],
+    testimonials: [
+        {id:"t1", author:"Rahim Uddin", location:"Dhaka, Bangladesh", text:"ComfyGo made our family trip to Sylhet absolutely seamless. The hotel was stunning and our guide knew every hidden spot in Jaflong."},
+        {id:"t2", author:"Nusrat Jahan", location:"Sylhet, Bangladesh", text:"I was travelling solo for the first time and ComfyGo's team was incredibly supportive. Everything was arranged perfectly."},
+        {id:"t3", author:"Karim Hassan", location:"Chittagong, Bangladesh", text:"The certified guide in Chittagong was exceptional — knowledgeable, fun, and punctual. Highly recommend ComfyGo."},
+    ],
+    inquiries: [
+        {id:"i1", name:"Tania Islam", email:"tania.islam@example.com", message:"Interested in a 4-day Sylhet tea garden tour for two people in October.", date:"2026-07-24", status:"new"},
+        {id:"i2", name:"Imran Kabir", email:"imran.kabir@example.com", message:"Do you offer group discounts for a 12-person Chittagong Hill Tracts trip?", date:"2026-07-22", status:"new"},
+        {id:"i3", name:"Farzana Begum", email:"farzana.b@example.com", message:"Looking for a certified guide fluent in English for a Dhaka heritage walk.", date:"2026-07-18", status:"responded"},
+        {id:"i4", name:"Shafiul Alam", email:"shafiul.alam@example.com", message:"Can you recommend a certified hotel near Patenga Beach under 5000 BDT?", date:"2026-07-15", status:"responded"},
+    ]
+};
+
+let state = { destinations:[], hotels:[], guides:[], testimonials:[], inquiries:[] };
+let modalContext = { type:null, id:null };
+
+/* ---------------- Storage helpers ---------------- */
+async function loadEntity(type){
+    try{
+        const res = await window.storage.get(STORAGE_KEYS[type], false);
+        if(res && res.value){ return JSON.parse(res.value); }
+    }catch(e){ /* not found yet */ }
+    return null;
+}
+async function saveEntity(type){
+    try{
+        await window.storage.set(STORAGE_KEYS[type], JSON.stringify(state[type]), false);
+    }catch(e){ console.error("Storage save failed", type, e); }
+}
+async function initData(){
+    for(const type of Object.keys(STORAGE_KEYS)){
+        const loaded = await loadEntity(type);
+        if(loaded){ state[type] = loaded; }
+        else{ state[type] = SEED[type]; await saveEntity(type); }
+    }
+    renderAll();
+}
+
+/* ---------------- Navigation ---------------- */
+document.querySelectorAll(".nav_item").forEach(btn=>{
+    btn.addEventListener("click", ()=> switchView(btn.dataset.view));
+});
+document.querySelectorAll("[data-view-link]").forEach(btn=>{
+    btn.addEventListener("click", ()=> switchView(btn.dataset.viewLink));
+});
+
+const PAGE_META = {
+    dashboard: ["Dashboard","Overview of ComfyGo's certified network"],
+    destinations: ["Destinations","Manage certified cities and their descriptions"],
+    hotels: ["Hotels","Manage partner and certified hotels"],
+    guides: ["Guides","Manage certified local guides"],
+    testimonials: ["Testimonials","Manage traveller reviews shown on the site"],
+    inquiries: ["Inquiries","Messages submitted through the contact form"],
+};
+
+function switchView(view){
+    document.querySelectorAll(".nav_item").forEach(b=> b.classList.toggle("active", b.dataset.view===view));
+    document.querySelectorAll(".view").forEach(v=> v.classList.remove("active"));
+    document.getElementById("view_"+view).classList.add("active");
+    document.getElementById("page_title").textContent = PAGE_META[view][0];
+    document.getElementById("page_sub").textContent = PAGE_META[view][1];
+}
+
+/* ---------------- Rendering ---------------- */
+function renderAll(){
+    renderStats();
+    renderDashboardInquiries();
+    renderDestinations();
+    renderHotels();
+    renderGuides();
+    renderTestimonials();
+    renderInquiries();
+}
+
+function renderStats(){
+    document.getElementById("stat_destinations").textContent = state.destinations.length;
+    document.getElementById("stat_hotels").textContent = state.hotels.length;
+    document.getElementById("stat_guides").textContent = state.guides.length;
+    document.getElementById("stat_inquiries").textContent = state.inquiries.filter(i=>i.status==="new").length;
+}
+
+function badge(status){
+    const label = status.charAt(0).toUpperCase()+status.slice(1);
+    return `<span class="badge ${status}">${label}</span>`;
+}
+
+function renderDashboardInquiries(){
+    const rows = [...state.inquiries].sort((a,b)=> b.date.localeCompare(a.date)).slice(0,4);
+    document.getElementById("dash_inquiries_body").innerHTML = rows.map(i=>`
+        <tr>
+            <td class="cell_name">${escapeHtml(i.name)}</td>
+            <td><span class="msg_preview">${escapeHtml(i.message)}</span></td>
+            <td>${i.date}</td>
+            <td>${badge(i.status)}</td>
+        </tr>`).join("") || emptyRow(4,"No inquiries yet");
+}
+
+function renderDestinations(){
+    const grid = document.getElementById("destinations_grid");
+    if(!state.destinations.length){ grid.innerHTML = emptyState("map-location-dot","No destinations yet"); return; }
+    grid.innerHTML = state.destinations.map(d=>`
+        <div class="entity_card">
+            <div class="card_top">
+                <div>
+                    <h3>${escapeHtml(d.name)}</h3>
+                    <p class="tagline">${escapeHtml(d.tagline||"")}</p>
+                </div>
+                ${badge(d.status)}
+            </div>
+            <p class="desc">${escapeHtml(d.description||"")}</p>
+            <div class="card_foot">
+                <button class="btn-icon" onclick="openModal('destinations','${d.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn-icon danger" onclick="removeEntity('destinations','${d.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+            </div>
+        </div>`).join("");
+}
+
+function renderHotels(){
+    const body = document.getElementById("hotels_body");
+    body.innerHTML = state.hotels.map(h=>`
+        <tr>
+            <td class="cell_name">${escapeHtml(h.name)}</td>
+            <td>${escapeHtml(h.city)}</td>
+            <td><i class="fa-solid fa-star" style="color:var(--gold); font-size:0.75rem;"></i> ${Number(h.rating).toFixed(1)}</td>
+            <td>৳${Number(h.price).toLocaleString()}</td>
+            <td>${badge(h.status)}</td>
+            <td>
+                <div class="cell_actions">
+                    <button class="btn-icon" onclick="openModal('hotels','${h.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon danger" onclick="removeEntity('hotels','${h.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`).join("") || emptyRow(6,"No hotels yet");
+}
+
+function renderGuides(){
+    const body = document.getElementById("guides_body");
+    body.innerHTML = state.guides.map(g=>`
+        <tr>
+            <td class="cell_name">${escapeHtml(g.name)}</td>
+            <td>${escapeHtml(g.city)}</td>
+            <td>${escapeHtml(g.languages)}</td>
+            <td>${g.experience} yrs</td>
+            <td>${badge(g.status)}</td>
+            <td>
+                <div class="cell_actions">
+                    <button class="btn-icon" onclick="openModal('guides','${g.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon danger" onclick="removeEntity('guides','${g.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`).join("") || emptyRow(6,"No guides yet");
+}
+
+function renderTestimonials(){
+    const grid = document.getElementById("testimonials_grid");
+    if(!state.testimonials.length){ grid.innerHTML = emptyState("quote-left","No testimonials yet"); return; }
+    grid.innerHTML = state.testimonials.map(t=>`
+        <div class="entity_card">
+            <span class="quote_mark">&ldquo;</span>
+            <p class="desc">${escapeHtml(t.text)}</p>
+            <div class="card_foot">
+                <div>
+                    <p style="font-weight:600; font-size:0.85rem; color:var(--deep); margin:0;">${escapeHtml(t.author)}</p>
+                    <p style="font-size:0.75rem; color:var(--teal); margin:0;">${escapeHtml(t.location)}</p>
+                </div>
+                <div class="cell_actions">
+                    <button class="btn-icon" onclick="openModal('testimonials','${t.id}')" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                    <button class="btn-icon danger" onclick="removeEntity('testimonials','${t.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+        </div>`).join("");
+}
+
+function renderInquiries(){
+    const body = document.getElementById("inquiries_body");
+    const rows = [...state.inquiries].sort((a,b)=> b.date.localeCompare(a.date));
+    body.innerHTML = rows.map(i=>`
+        <tr>
+            <td class="cell_name">${escapeHtml(i.name)}</td>
+            <td>${escapeHtml(i.email)}</td>
+            <td><span class="msg_preview">${escapeHtml(i.message)}</span></td>
+            <td>${i.date}</td>
+            <td>${badge(i.status)}</td>
+            <td>
+                <div class="cell_actions">
+                    ${i.status==="new"
+                        ? `<button class="btn-icon" onclick="markResponded('${i.id}')" title="Mark responded"><i class="fa-solid fa-check"></i></button>`
+                        : ``}
+                    <button class="btn-icon danger" onclick="removeEntity('inquiries','${i.id}')" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                </div>
+            </td>
+        </tr>`).join("") || emptyRow(6,"No inquiries yet");
+}
+
+function emptyRow(colspan, text){
+    return `<tr><td colspan="${colspan}"><div class="empty_state"><i class="fa-solid fa-inbox"></i>${text}</div></td></tr>`;
+}
+function emptyState(icon, text){
+    return `<div class="empty_state" style="grid-column:1/-1;"><i class="fa-solid fa-${icon}"></i>${text}</div>`;
+}
+function escapeHtml(str){
+    return String(str ?? "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+}
+
+/* ---------------- CRUD actions ---------------- */
+async function markResponded(id){
+    const item = state.inquiries.find(i=>i.id===id);
+    if(item){ item.status="responded"; await saveEntity("inquiries"); renderAll(); }
+}
+async function removeEntity(type, id){
+    if(!confirm("Delete this item? This can't be undone.")) return;
+    state[type] = state[type].filter(x=>x.id!==id);
+    await saveEntity(type);
+    renderAll();
+}
+
+/* ---------------- Modal ---------------- */
+function openModal(type, id=null){
+    modalContext = {type, id};
+    const config = ENTITY_CONFIG[type];
+    const existing = id ? state[type].find(x=>x.id===id) : null;
+    document.getElementById("modal_title").textContent = existing ? `Edit ${config.title}` : `Add ${config.title}`;
+
+    const form = document.getElementById("modal_form");
+    form.innerHTML = config.fields.map(f=>{
+        const val = existing ? (existing[f.key] ?? "") : "";
+        if(f.type==="textarea"){
+            return `<div class="field"><label>${f.label}</label><textarea name="${f.key}">${escapeHtml(val)}</textarea></div>`;
+        }
+        if(f.type==="select"){
+            const opts = f.options.map(o=>`<option value="${o}" ${o===val?"selected":""}>${o.charAt(0).toUpperCase()+o.slice(1)}</option>`).join("");
+            return `<div class="field"><label>${f.label}</label><select name="${f.key}">${opts}</select></div>`;
+        }
+        return `<div class="field"><label>${f.label}</label><input type="${f.type}" name="${f.key}" value="${escapeHtml(val)}" ${f.type==='number'?'step="0.1"':''}></div>`;
+    }).join("");
+
+    document.getElementById("modal_overlay").classList.add("open");
+}
+function closeModal(){
+    document.getElementById("modal_overlay").classList.remove("open");
+    modalContext = {type:null, id:null};
+}
+async function submitModal(){
+    const {type, id} = modalContext;
+    const config = ENTITY_CONFIG[type];
+    const form = document.getElementById("modal_form");
+    const data = {};
+    config.fields.forEach(f=>{
+        const el = form.querySelector(`[name="${f.key}"]`);
+        data[f.key] = f.type==="number" ? Number(el.value || 0) : el.value.trim();
+    });
+
+    if(!data.name && !data.author){ alert("Please fill in the required fields."); return; }
+
+    if(id){
+        const idx = state[type].findIndex(x=>x.id===id);
+        state[type][idx] = { ...state[type][idx], ...data };
+    }else{
+        const newId = type.slice(0,1) + Date.now();
+        state[type].push({ id:newId, ...data });
+    }
+    await saveEntity(type);
+    closeModal();
+    renderAll();
+}
+document.getElementById("modal_overlay").addEventListener("click", (e)=>{
+    if(e.target.id==="modal_overlay") closeModal();
+});
+document.addEventListener("keydown", (e)=>{
+    if(e.key==="Escape") closeModal();
+});
+
+/* ---------------- Init ---------------- */
+initData();
+</script>
+</body>
+</html>

@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manager Dashboard — ComfyGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Cormorant Garamond', 'serif'],
+            sans: ['Jost', 'sans-serif']
+          },
+          colors: {
+            dark: '#1a3322',
+            accent: '#3a6642',
+            accentHover: '#4e8056',
+            gold: '#e6d38a',
+            sage: '#b8d4bc',
+            cream: '#dff0e2',
+            muted: '#6b8b72'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: #f8faf8;
+      overflow-x: hidden;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(25px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0.4); }
+      70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(58, 102, 66, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(58, 102, 66, 0); }
+    }
+
+    .animate-fade-up {
+      opacity: 0;
+      animation: fadeInUp 0.6s ease-out forwards;
+    }
+    .animate-fade-left {
+      opacity: 0;
+      animation: fadeInLeft 0.5s ease-out forwards;
+    }
+    .delay-100 { animation-delay: 0.1s; }
+    .delay-200 { animation-delay: 0.2s; }
+    .delay-300 { animation-delay: 0.3s; }
+    .delay-400 { animation-delay: 0.4s; }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Navbar */
+    .nav-scrolled {
+      background: rgba(26, 51, 34, 0.95) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 30px rgba(0,0,0,0.15);
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #dff0e2;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-menu.open {
+      max-height: 400px;
+    }
+
+    /* Sidebar */
+    .sidebar-link {
+      position: relative;
+      transition: all 0.3s ease;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(58,102,66,0.08) 0%, transparent 100%);
+      color: #1a3322;
+      border-left-color: #3a6642;
+    }
+    .sidebar-link:hover:not(.active) {
+      background: rgba(58,102,66,0.04);
+    }
+
+    /* Info cards */
+    .info-card {
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(78, 128, 86, 0.08);
+    }
+    .info-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 30px -8px rgba(26, 51, 34, 0.1);
+      border-color: rgba(78, 128, 86, 0.2);
+    }
+
+    /* Table styles */
+    .data-table {
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+    .data-table th {
+      background: #f0f5f0;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: #6b8b72;
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .data-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #f3f4f6;
+      transition: background 0.2s ease;
+    }
+    .data-table tbody tr:hover td {
+      background: #f8faf8;
+    }
+    .data-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* Status badges */
+    .badge-pending {
+      background: linear-gradient(135deg, #fef3c7, #fde68a);
+      color: #92400e;
+    }
+    .badge-confirmed {
+      background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+      color: #065f46;
+    }
+    .badge-rejected {
+      background: linear-gradient(135deg, #fee2e2, #fecaca);
+      color: #991b1b;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transform: translate(-50%, -50%);
+      transition: width 0.5s ease, height 0.5s ease;
+    }
+    .btn-primary:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+    .btn-primary:active {
+      transform: scale(0.97);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 14px 20px;
+      background: white;
+      border-left: 4px solid #3a6642;
+      border-radius: 10px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(150%);
+      transition: transform 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+    .toast.show { transform: translateX(0); }
+    .toast.error { border-left-color: #dc2626; }
+    .toast.info { border-left-color: #2563eb; }
+
+    /* Form inputs */
+    .form-input {
+      transition: all 0.3s ease;
+      background: #f8faf8;
+      border: 1px solid #e5e7eb;
+    }
+    .form-input:hover {
+      background: #f0f5f0;
+      border-color: #d1d5db;
+    }
+    .form-input:focus {
+      background: white;
+      border-color: #3a6642;
+      box-shadow: 0 0 0 4px rgba(58, 102, 66, 0.08);
+      outline: none;
+    }
+
+    /* Section cards */
+    .section-card {
+      background: white;
+      border-radius: 1rem;
+      border: 1px solid rgba(78, 128, 86, 0.1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      transition: box-shadow 0.3s ease;
+    }
+    .section-card:hover {
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      background: #1a3322;
+      color: #dff0e2;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(26,51,34,0.3);
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .back-to-top:hover {
+      background: #3a6642;
+      transform: translateY(-3px);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #f8faf8; }
+    ::-webkit-scrollbar-thumb { background: #b8d4bc; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #4e8056; }
+
+    /* Mobile bottom nav */
+    @media (max-width: 768px) {
+      .sidebar-desktop { display: none; }
+      .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 40;
+        background: white;
+        border-top: 1px solid rgba(78,128,86,0.1);
+        padding: 8px 16px;
+        display: flex;
+        justify-content: space-around;
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+      }
+      #manager_content {
+        padding-bottom: 80px;
+      }
+    }
+    @media (min-width: 769px) {
+      .mobile-bottom-nav { display: none; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 min-h-screen font-sans text-gray-900">
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i id="toast-icon" class="fa-solid fa-check-circle text-lg text-accent"></i>
+    <div>
+      <p id="toast-title" class="font-semibold text-sm text-dark">Success</p>
+      <p id="toast-message" class="text-xs text-muted">Operation completed.</p>
+    </div>
+  </div>
+
+  <!-- Back to Top -->
+  <div id="backToTop" class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <i class="fa-solid fa-arrow-up text-sm"></i>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbaar" class="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-6 py-4 bg-dark shadow-md transition-all duration-500">
+    <div id="nav_sec_1" class="flex items-center">
+      <a href="index.html" id="comfygo_logo" class="text-xl font-bold text-cream flex items-center gap-2 hover:opacity-80 transition-opacity" style="font-family: 'Cormorant Garamond', serif;">
+        <i class="fa-solid fa-leaf text-[#7aaa80]"></i>ComfyGo
+      </a>
+    </div>
+    <div id="nav_sec_2" class="hidden md:flex items-center gap-6">
+      <a href="about.html" id="nav_about" class="nav-link text-sage hover:text-cream text-sm font-medium transition-colors">About</a>
+      <a href="contact.html" id="nav_contact" class="nav-link text-sage hover:text-cream text-sm font-medium transition-colors">Contact</a>
+    </div>
+    <div id="nav_sec_3" class="hidden md:flex items-center gap-4">
+      <a href="login.html" id="nav_login" class="text-sage hover:text-cream text-sm font-medium transition-colors">Login</a>
+      <a href="signup.html" id="nav_signup" class="bg-accent text-cream px-5 py-2 rounded-lg text-sm font-medium hover:bg-accentHover transition-all shadow-lg shadow-accent/20">Signup</a>
+    </div>
+    <button id="nav_toggle" aria-label="Toggle menu" class="text-sage hover:text-cream p-2 hover:bg-white/10 rounded-lg transition-colors md:hidden">
+      <i id="menu-icon" class="fa-solid fa-bars"></i>
+    </button>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu absolute top-full left-0 right-0 bg-dark/98 backdrop-blur-xl border-t border-white/10 md:hidden">
+      <div class="px-6 py-5 flex flex-col gap-3">
+        <a href="about.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">About</a>
+        <a href="contact.html" class="text-sage hover:text-cream py-2 text-sm font-medium transition-colors border-b border-white/5">Contact</a>
+        <div class="flex gap-3 pt-2">
+          <a href="login.html" class="flex-1 text-center text-sage border border-sage/30 rounded-lg py-2.5 text-sm font-medium">Login</a>
+          <a href="signup.html" class="flex-1 text-center bg-accent text-cream rounded-lg py-2.5 text-sm font-medium">Signup</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Manager Page -->
+  <div id="manager_page" class="flex flex-col min-h-screen pt-16">
+
+    <!-- Topbar -->
+    <div id="manager_topbar" class="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 md:px-10 pt-8 pb-6 bg-white border-b border-gray-100 animate-fade-up">
+      <div id="manager_welcome">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold uppercase tracking-wider rounded-full">Manager</span>
+          <p id="manager_welcome_tag" class="text-xs font-semibold tracking-widest uppercase text-amber-700">Hotel Manager Dashboard</p>
+        </div>
+        <h1 id="manager_welcome_name" class="text-3xl font-bold text-dark mb-1" style="font-family: 'Cormorant Garamond', serif;">Welcome, Rahman</h1>
+        <p id="manager_welcome_id" class="text-sm text-gray-400 font-mono">Manager ID: MGR-1042</p>
+      </div>
+      <div class="flex items-center gap-3 mt-4 sm:mt-0">
+        <span class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 text-sm font-semibold rounded-xl border border-green-100">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Online
+        </span>
+        <button onclick="showToast('Logged Out', 'You have been successfully logged out.', 'info')" class="btn-primary bg-red-600 hover:bg-red-700 text-white text-sm font-medium py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-red-600/20">
+          <i class="fa-solid fa-arrow-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </div>
+
+    <!-- Body -->
+    <div id="manager_body" class="flex flex-1">
+
+      <!-- Sidebar Desktop -->
+      <div id="manager_sidebar" class="sidebar-desktop w-60 flex-shrink-0 bg-white border-r border-gray-100 py-6 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto animate-fade-left">
+        <nav id="manager_nav" class="flex flex-col gap-1 px-3">
+          <a href="#overview" class="sidebar-link active block py-3 px-4 rounded-r-xl text-sm font-medium text-dark flex items-center gap-3" onclick="setActive(this)">
+            <i class="fa-solid fa-chart-pie w-5 text-center text-accent"></i> Overview
+          </a>
+          <a href="#bookings" class="sidebar-link block py-3 px-4 rounded-r-xl text-sm font-medium text-gray-500 flex items-center gap-3" onclick="setActive(this)">
+            <i class="fa-solid fa-calendar-check w-5 text-center text-gray-400"></i> Bookings
+            <span class="ml-auto bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">2</span>
+          </a>
+          <a href="#hotel_edit" class="sidebar-link block py-3 px-4 rounded-r-xl text-sm font-medium text-gray-500 flex items-center gap-3" onclick="setActive(this)">
+            <i class="fa-solid fa-hotel w-5 text-center text-gray-400"></i> Hotel Details
+          </a>
+          <a href="#profile_edit" class="sidebar-link block py-3 px-4 rounded-r-xl text-sm font-medium text-gray-500 flex items-center gap-3" onclick="setActive(this)">
+            <i class="fa-solid fa-user-gear w-5 text-center text-gray-400"></i> My Profile
+          </a>
+        </nav>
+
+        <div class="mt-8 mx-4 pt-6 border-t border-gray-100">
+          <p class="text-[10px] uppercase tracking-wider text-gray-400 font-semibold mb-4">Performance</p>
+          <div class="space-y-4">
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-gray-500">Occupancy</span>
+                <span class="font-bold text-dark">78%</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-accent rounded-full" style="width: 78%"></div>
+              </div>
+            </div>
+            <div>
+              <div class="flex justify-between text-xs mb-1">
+                <span class="text-gray-500">Rating</span>
+                <span class="font-bold text-dark">4.2/5</span>
+              </div>
+              <div class="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-[#e6d38a] rounded-full" style="width: 84%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Bottom Nav -->
+      <nav class="mobile-bottom-nav">
+        <a href="#overview" class="sidebar-link active flex flex-col items-center py-2 px-3 rounded-lg text-dark text-xs font-medium gap-1" onclick="setActive(this)">
+          <i class="fa-solid fa-chart-pie text-accent text-lg"></i> Overview
+        </a>
+        <a href="#bookings" class="sidebar-link flex flex-col items-center py-2 px-3 rounded-lg text-gray-500 text-xs font-medium gap-1" onclick="setActive(this)">
+          <i class="fa-solid fa-calendar-check text-gray-400 text-lg"></i> Bookings
+        </a>
+        <a href="#hotel_edit" class="sidebar-link flex flex-col items-center py-2 px-3 rounded-lg text-gray-500 text-xs font-medium gap-1" onclick="setActive(this)">
+          <i class="fa-solid fa-hotel text-gray-400 text-lg"></i> Hotel
+        </a>
+        <a href="#profile_edit" class="sidebar-link flex flex-col items-center py-2 px-3 rounded-lg text-gray-500 text-xs font-medium gap-1" onclick="setActive(this)">
+          <i class="fa-solid fa-user-gear text-gray-400 text-lg"></i> Profile
+        </a>
+      </nav>
+
+      <!-- Content -->
+      <div id="manager_content" class="flex-1 p-6 md:p-10 flex flex-col gap-8">
+
+        <!-- Overview -->
+        <section class="section-card p-6 md:p-8 reveal" id="overview">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+              <i class="fa-solid fa-chart-pie text-accent text-sm"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">Overview</h2>
+          </div>
+          <p class="text-gray-400 text-sm mb-6 ml-11">Your hotel and account information at a glance.</p>
+
+          <!-- Quick Stats -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-gradient-to-br from-accent to-[#2c5a34] rounded-2xl p-5 text-white shadow-lg shadow-accent/20">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-white/70 uppercase tracking-wider">Total Bookings</span>
+                <i class="fa-solid fa-calendar-check text-white/30 text-lg"></i>
+              </div>
+              <p class="text-2xl font-bold">24</p>
+              <p class="text-[11px] text-white/60 mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+12% this month</p>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">Revenue</span>
+                <i class="fa-solid fa-sack-dollar text-accent/40 text-lg"></i>
+              </div>
+              <p class="text-2xl font-bold text-dark">৳45,200</p>
+              <p class="text-[11px] text-gray-400 mt-1">This month</p>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">Rating</span>
+                <i class="fa-solid fa-star text-[#e6d38a] text-lg"></i>
+              </div>
+              <p class="text-2xl font-bold text-dark">4.2<span class="text-sm text-gray-400 font-normal">/5</span></p>
+              <p class="text-[11px] text-gray-400 mt-1">Based on 18 reviews</p>
+            </div>
+            <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs text-gray-500 uppercase tracking-wider">Pending</span>
+                <i class="fa-solid fa-clock text-orange-400 text-lg"></i>
+              </div>
+              <p class="text-2xl font-bold text-dark">2</p>
+              <p class="text-[11px] text-gray-400 mt-1">Awaiting approval</p>
+            </div>
+          </div>
+
+          <h3 class="text-lg font-semibold text-amber-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-user-tie text-sm"></i> Manager Info
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Full Name</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-2"><i class="fa-solid fa-user text-gray-300 text-xs"></i> Rahman</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Email</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-2"><i class="fa-solid fa-envelope text-gray-300 text-xs"></i> rahman@comfygo.com</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Mobile</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-2"><i class="fa-solid fa-phone text-gray-300 text-xs"></i> +880 1700 000000</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Hotel Reg. No.</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-2"><i class="fa-solid fa-id-card text-gray-300 text-xs"></i> HTL-BD-2024-0142</p>
+            </div>
+          </div>
+
+          <h3 class="text-lg font-semibold text-amber-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-hotel text-sm"></i> Hotel Info
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Hotel Name</p>
+              <p class="text-sm font-bold text-dark">ComfyGo Grand Hotel</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Division</p>
+              <p class="text-sm font-bold text-dark">Sylhet</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">District</p>
+              <p class="text-sm font-bold text-dark">Sylhet</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Location</p>
+              <p class="text-sm font-bold text-dark">Sylhet Sadar</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Rating</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-1">4 Star <i class="fa-solid fa-star text-[#e6d38a] text-xs"></i></p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Price/Night</p>
+              <p class="text-sm font-bold text-dark">৳85 <span class="font-normal text-gray-400">/ person</span></p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100 sm:col-span-2 lg:col-span-4">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Description</p>
+              <p class="text-sm text-gray-700 leading-relaxed">A premium hotel located in the heart of Sylhet, offering stunning views of the surrounding tea gardens and mountains.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Bookings -->
+        <section class="section-card p-6 md:p-8 reveal" id="bookings">
+          <div class="flex items-center gap-3 mb-1">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+              <i class="fa-solid fa-calendar-check text-accent text-sm"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">Hotel Bookings</h2>
+          </div>
+          <p class="text-gray-400 text-sm mb-6 ml-11">All tourist bookings for your hotel.</p>
+
+          <h3 class="text-lg font-semibold text-amber-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-clock text-sm"></i> Pending Approvals
+            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">2</span>
+          </h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200 mb-8 shadow-sm">
+            <table class="data-table w-full text-sm">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Tourist Name</th>
+                  <th>Phone</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="pending-table">
+                <tr id="booking-1">
+                  <td class="font-semibold text-dark">BKG-2026-001</td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">FK</div>
+                      Fatima Khan
+                    </div>
+                  </td>
+                  <td class="text-gray-600">+880 1800 111222</td>
+                  <td class="text-gray-600">Jul 28, 2026</td>
+                  <td><span class="badge-pending px-3 py-1 rounded-full text-xs font-bold">Pending</span></td>
+                  <td>
+                    <div class="flex gap-2">
+                      <button onclick="handleBooking('approve', 'booking-1', 'BKG-2026-001')" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-check"></i> Approve
+                      </button>
+                      <button onclick="handleBooking('reject', 'booking-1', 'BKG-2026-001')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-xmark"></i> Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr id="booking-2">
+                  <td class="font-semibold text-dark">BKG-2026-002</td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center text-xs font-bold">TH</div>
+                      Tanvir Hasan
+                    </div>
+                  </td>
+                  <td class="text-gray-600">+880 1900 333444</td>
+                  <td class="text-gray-600">Jul 25, 2026</td>
+                  <td><span class="badge-pending px-3 py-1 rounded-full text-xs font-bold">Pending</span></td>
+                  <td>
+                    <div class="flex gap-2">
+                      <button onclick="handleBooking('approve', 'booking-2', 'BKG-2026-002')" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-check"></i> Approve
+                      </button>
+                      <button onclick="handleBooking('reject', 'booking-2', 'BKG-2026-002')" class="bg-white border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold py-1.5 px-3 rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-xmark"></i> Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="text-lg font-semibold text-amber-700 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-history text-sm"></i> Booking History
+          </h3>
+          <div class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+            <table class="data-table w-full text-sm">
+              <thead>
+                <tr>
+                  <th>Booking ID</th>
+                  <th>Tourist Name</th>
+                  <th>Phone</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="font-semibold text-dark">BKG-2026-003</td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">NJ</div>
+                      Nusrat Jahan
+                    </div>
+                  </td>
+                  <td class="text-gray-600">+880 1700 555666</td>
+                  <td class="text-gray-600">Jul 20, 2026</td>
+                  <td><span class="badge-confirmed px-3 py-1 rounded-full text-xs font-bold">Confirmed</span></td>
+                </tr>
+                <tr>
+                  <td class="font-semibold text-dark">BKG-2026-004</td>
+                  <td>
+                    <div class="flex items-center gap-2">
+                      <div class="w-7 h-7 rounded-full bg-green-100 text-green-700 flex items-center justify-center text-xs font-bold">KH</div>
+                      Karim Hassan
+                    </div>
+                  </td>
+                  <td class="text-gray-600">+880 1600 777888</td>
+                  <td class="text-gray-600">Jul 15, 2026</td>
+                  <td><span class="badge-confirmed px-3 py-1 rounded-full text-xs font-bold">Confirmed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Hotel Details -->
+        <section class="section-card p-6 md:p-8 reveal" id="hotel_edit">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-hotel text-accent text-sm"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">Hotel Details</h2>
+                <p class="text-gray-400 text-sm">Keep your hotel information accurate so tourists can find and book it.</p>
+              </div>
+            </div>
+            <button onclick="toggleEdit('hotel')" id="hotel-edit-btn" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white text-sm font-medium py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-accent/20">
+              <i class="fa-solid fa-pen"></i> <span>Edit</span>
+            </button>
+          </div>
+
+          <div id="hotel-view" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Hotel Name</p>
+              <p class="text-sm font-bold text-dark">ComfyGo Grand Hotel</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Division</p>
+              <p class="text-sm font-bold text-dark">Sylhet</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">District</p>
+              <p class="text-sm font-bold text-dark">Sylhet</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Location</p>
+              <p class="text-sm font-bold text-dark">Sylhet Sadar, Bangladesh</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Star Rating</p>
+              <p class="text-sm font-bold text-dark flex items-center gap-1">4 Star <i class="fa-solid fa-star text-[#e6d38a] text-xs"></i></p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Price per Person/Night</p>
+              <p class="text-sm font-bold text-dark">৳85</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100 sm:col-span-2">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Description</p>
+              <p class="text-sm text-gray-700 leading-relaxed">A premium hotel located in the heart of Sylhet, offering stunning views of the surrounding tea gardens and mountains.</p>
+            </div>
+          </div>
+
+          <form id="hotel-form" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-6" onsubmit="saveEdit(event, 'hotel')">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Hotel Name</label>
+              <input type="text" value="ComfyGo Grand Hotel" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Division</label>
+              <input type="text" value="Sylhet" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">District</label>
+              <input type="text" value="Sylhet" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Location</label>
+              <input type="text" value="Sylhet Sadar, Bangladesh" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Star Rating</label>
+              <select class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+                <option>3 Star</option>
+                <option selected>4 Star</option>
+                <option>5 Star</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Price per Night (৳)</label>
+              <input type="number" value="85" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Description</label>
+              <textarea rows="3" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm resize-none">A premium hotel located in the heart of Sylhet, offering stunning views of the surrounding tea gardens and mountains.</textarea>
+            </div>
+            <div class="sm:col-span-2 flex gap-3">
+              <button type="submit" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white font-semibold py-2.5 px-6 rounded-xl transition flex items-center gap-2">
+                <i class="fa-solid fa-check"></i> Save Changes
+              </button>
+              <button type="button" onclick="toggleEdit('hotel')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-6 rounded-xl transition">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Profile -->
+        <section class="section-card p-6 md:p-8 reveal" id="profile_edit">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                <i class="fa-solid fa-user-gear text-accent text-sm"></i>
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-dark" style="font-family: 'Cormorant Garamond', serif;">My Profile</h2>
+                <p class="text-gray-400 text-sm">Update your personal contact information.</p>
+              </div>
+            </div>
+            <button onclick="toggleEdit('profile')" id="profile-edit-btn" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white text-sm font-medium py-2.5 px-5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-accent/20">
+              <i class="fa-solid fa-pen"></i> <span>Edit</span>
+            </button>
+          </div>
+
+          <div id="profile-view" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Full Name</p>
+              <p class="text-sm font-bold text-dark">Rahman</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Email Address</p>
+              <p class="text-sm font-bold text-dark">rahman@comfygo.com</p>
+            </div>
+            <div class="info-card bg-gray-50/80 rounded-xl p-5 border border-gray-100">
+              <p class="text-[10px] font-semibold tracking-wider uppercase text-gray-400 mb-2">Mobile Number</p>
+              <p class="text-sm font-bold text-dark">+880 1700 000000</p>
+            </div>
+          </div>
+
+          <form id="profile-form" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-6" onsubmit="saveEdit(event, 'profile')">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Full Name</label>
+              <input type="text" value="Rahman" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Email Address</label>
+              <input type="email" value="rahman@comfygo.com" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Mobile Number</label>
+              <input type="tel" value="+880 1700 000000" class="form-input w-full rounded-xl px-4 py-3 text-dark text-sm">
+            </div>
+            <div class="sm:col-span-2 flex gap-3">
+              <button type="submit" class="btn-primary bg-accent hover:bg-[#2c5a34] text-white font-semibold py-2.5 px-6 rounded-xl transition flex items-center gap-2">
+                <i class="fa-solid fa-check"></i> Save Changes
+              </button>
+              <button type="button" onclick="toggleEdit('profile')" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-6 rounded-xl transition">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile Menu
+    const navToggle = document.getElementById('nav_toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let menuOpen = false;
+
+    navToggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open');
+      menuIcon.className = menuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    });
+
+    // Navbar Scroll
+    const navbar = document.getElementById('navbaar');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 20) {
+        navbar.classList.add('nav-scrolled');
+      } else {
+        navbar.classList.remove('nav-scrolled');
+      }
+
+      const backToTop = document.getElementById('backToTop');
+      if (window.pageYOffset > 500) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    // Scroll Reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Active Sidebar
+    function setActive(element) {
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active', 'text-dark');
+        link.classList.add('text-gray-500');
+        const icon = link.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-accent');
+          icon.classList.add('text-gray-400');
+        }
+      });
+      element.classList.add('active', 'text-dark');
+      element.classList.remove('text-gray-500');
+      const activeIcon = element.querySelector('i');
+      if (activeIcon) {
+        activeIcon.classList.add('text-accent');
+        activeIcon.classList.remove('text-gray-400');
+      }
+    }
+
+    // Scroll Spy
+    const sections = document.querySelectorAll('section[id]');
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      document.querySelectorAll('.sidebar-link').forEach(link => {
+        link.classList.remove('active', 'text-dark');
+        link.classList.add('text-gray-500');
+        const icon = link.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-accent');
+          icon.classList.add('text-gray-400');
+        }
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active', 'text-dark');
+          link.classList.remove('text-gray-500');
+          if (icon) {
+            icon.classList.add('text-accent');
+            icon.classList.remove('text-gray-400');
+          }
+        }
+      });
+    });
+
+    // Toast
+    function showToast(title, message, type = 'success') {
+      const toast = document.getElementById('toast');
+      const icon = document.getElementById('toast-icon');
+      const titleEl = document.getElementById('toast-title');
+      const msgEl = document.getElementById('toast-message');
+
+      toast.className = `toast ${type}`;
+      icon.className = type === 'success'
+        ? 'fa-solid fa-check-circle text-lg text-accent'
+        : type === 'error'
+        ? 'fa-solid fa-circle-exclamation text-lg text-red-600'
+        : 'fa-solid fa-info-circle text-lg text-blue-600';
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    // Booking Actions
+    async function handleBooking(action, rowId, bookingId) {
+      const row = document.getElementById(rowId);
+      const buttons = row.querySelector('td:last-child');
+      
+      buttons.innerHTML = '<span class="text-xs text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Processing...</span>';
+      
+      await new Promise(r => setTimeout(r, 800));
+
+      if (action === 'approve') {
+        row.querySelector('.badge-pending').className = 'badge-confirmed px-3 py-1 rounded-full text-xs font-bold';
+        row.querySelector('.badge-confirmed').textContent = 'Confirmed';
+        buttons.innerHTML = '<span class="text-green-600 text-xs font-semibold flex items-center gap-1"><i class="fa-solid fa-check-circle"></i> Approved</span>';
+        showToast('Booking Approved', `${bookingId} has been confirmed.`);
+      } else {
+        row.style.opacity = '0.6';
+        row.querySelector('.badge-pending').className = 'badge-rejected px-3 py-1 rounded-full text-xs font-bold';
+        row.querySelector('.badge-rejected').textContent = 'Rejected';
+        buttons.innerHTML = '<span class="text-red-600 text-xs font-semibold flex items-center gap-1"><i class="fa-solid fa-xmark-circle"></i> Rejected</span>';
+        showToast('Booking Rejected', `${bookingId} has been rejected.`, 'info');
+      }
+
+      // Update badge count
+      const pendingCount = document.querySelectorAll('.badge-pending').length;
+      document.querySelectorAll('.bg-red-500.text-white').forEach(badge => {
+        badge.textContent = pendingCount;
+      });
+    }
+
+    // Toggle Edit Mode
+    function toggleEdit(type) {
+      const view = document.getElementById(`${type}-view`);
+      const form = document.getElementById(`${type}-form`);
+      const btn = document.getElementById(`${type}-edit-btn`);
+      
+      if (form.classList.contains('hidden')) {
+        view.classList.add('hidden');
+        form.classList.remove('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-xmark"></i> <span>Cancel</span>';
+        btn.classList.remove('bg-accent', 'hover:bg-[#2c5a34]');
+        btn.classList.add('bg-gray-600', 'hover:bg-gray-700');
+      } else {
+        view.classList.remove('hidden');
+        form.classList.add('hidden');
+        btn.innerHTML = '<i class="fa-solid fa-pen"></i> <span>Edit</span>';
+        btn.classList.add('bg-accent', 'hover:bg-[#2c5a34]');
+        btn.classList.remove('bg-gray-600', 'hover:bg-gray-700');
+      }
+    }
+
+    // Save Edit
+    async function saveEdit(e, type) {
+      e.preventDefault();
+      const btn = e.target.querySelector('button[type="submit"]');
+      const originalText = btn.innerHTML;
+      
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+      btn.disabled = true;
+      
+      await new Promise(r => setTimeout(r, 1200));
+      
+      toggleEdit(type);
+      showToast('Changes Saved', `${type === 'hotel' ? 'Hotel details' : 'Profile'} updated successfully.`);
+      
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+    }
+
+    // Button Ripple
+    document.querySelectorAll('.btn-primary').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        if (this.disabled) return;
+        const rect = this.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const ripple = document.createElement('span');
+        ripple.style.cssText = `
+          position: absolute;
+          background: rgba(255,255,255,0.2);
+          border-radius: 50%;
+          transform: scale(0);
+          animation: ripple 0.5s ease-out;
+          pointer-events: none;
+          left: ${x}px;
+          top: ${y}px;
+          width: 80px;
+          height: 80px;
+          margin-left: -40px;
+          margin-top: -40px;
+        `;
+        this.appendChild(ripple);
+        setTimeout(() => ripple.remove(), 500);
+      });
+    });
+
+    const style = document.createElement('style');
+    style.textContent = `@keyframes ripple { to { transform: scale(4); opacity: 0; } }`;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

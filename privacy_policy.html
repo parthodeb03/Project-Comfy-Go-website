@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — ComfyGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Playfair Display', 'serif'],
+            sans: ['DM Sans', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { scroll-behavior: smooth; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background-color: #f8faf8;
+      color: #1a2e1e;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-slow {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    /* Scroll Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal-left.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Navbar */
+    #navbaar {
+      transition: all 0.4s ease;
+    }
+    .nav-scrolled {
+      background: rgba(255, 255, 255, 0.95) !important;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #1e40af;
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Mobile menu */
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-menu.open {
+      max-height: 400px;
+    }
+
+    /* Hero */
+    .hero-animate {
+      opacity: 0;
+      animation: fadeInDown 0.8s ease-out 0.2s forwards;
+    }
+    .hero-animate-delay {
+      opacity: 0;
+      animation: fadeInUp 0.8s ease-out 0.4s forwards;
+    }
+
+    /* Sidebar TOC */
+    .toc-link {
+      position: relative;
+      transition: all 0.3s ease;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin: 0 -12px;
+    }
+    .toc-link:hover {
+      background: rgba(30, 64, 175, 0.05);
+      color: #1e40af;
+    }
+    .toc-link.active {
+      background: rgba(30, 64, 175, 0.08);
+      color: #1e40af;
+      font-weight: 600;
+    }
+    .toc-link.active .toc-num {
+      background: #1e40af;
+      color: white;
+    }
+
+    /* Section cards */
+    .policy-section {
+      scroll-margin-top: 100px;
+      transition: all 0.3s ease;
+    }
+    .policy-card {
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border-left: 4px solid #1e40af;
+    }
+    .policy-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 8px 25px -5px rgba(30, 64, 175, 0.1);
+      border-left-width: 6px;
+    }
+
+    /* Info box */
+    .info-box {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      position: relative;
+      overflow: hidden;
+    }
+    .info-box::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 200px;
+      height: 200px;
+      background: radial-gradient(circle, rgba(30,64,175,0.05) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Contact cards */
+    .contact-card {
+      transition: all 0.3s ease;
+    }
+    .contact-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px -10px rgba(30, 64, 175, 0.15);
+    }
+
+    /* Back to top */
+    .back-to-top {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 45px;
+      height: 45px;
+      background: #1e40af;
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      z-index: 50;
+      box-shadow: 0 4px 20px rgba(30, 64, 175, 0.3);
+    }
+    .back-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .back-to-top:hover {
+      background: #1e3a8a;
+      transform: translateY(-3px);
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f8faf8; }
+    ::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #1e40af; }
+
+    /* Progress bar */
+    .reading-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #1e40af, #3b82f6);
+      z-index: 100;
+      transition: width 0.1s ease;
+    }
+
+    /* Sticky sidebar shadow on scroll */
+    .sidebar-card {
+      transition: box-shadow 0.3s ease;
+    }
+    .sidebar-card.scrolled {
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.1);
+    }
+
+    /* Button ripple */
+    .btn-ripple {
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-ripple::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s ease, height 0.6s ease;
+    }
+    .btn-ripple:hover::after {
+      width: 300px;
+      height: 300px;
+    }
+
+    @keyframes ripple {
+      to { transform: scale(4); opacity: 0; }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans antialiased">
+
+  <!-- Reading Progress -->
+  <div class="reading-progress" id="reading-progress" style="width: 0%"></div>
+
+  <!-- Back to Top -->
+  <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    <i class="fa-solid fa-arrow-up text-sm"></i>
+  </div>
+
+  <!-- Navbar -->
+  <nav id="navbaar" class="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200 transition-all duration-500">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <div id="nav_sec_1">
+          <a href="index.html" id="comfygo_logo" class="font-serif text-2xl font-bold text-gray-900 hover:opacity-80 transition-opacity flex items-center gap-2">
+            <i class="fa-solid fa-leaf text-green-700 text-lg"></i>ComfyGo
+          </a>
+        </div>
+        <div id="nav_sec_2" class="hidden md:flex items-center space-x-8">
+          <a href="about.html" id="nav_about" class="nav-link text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors">About</a>
+          <a href="contact.html" id="nav_contact" class="nav-link text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors">Contact</a>
+        </div>
+        <div id="nav_sec_3" class="hidden md:flex items-center space-x-4">
+          <a href="login.html" id="nav_login" class="text-gray-600 hover:text-gray-900 font-medium text-sm transition-colors">Login</a>
+          <a href="signup.html" id="nav_signup" class="btn-ripple bg-green-700 text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-green-800 transition-all shadow-lg shadow-green-700/20">Signup</a>
+        </div>
+        <button id="nav_toggle" aria-label="Toggle menu" class="md:hidden p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-colors">
+          <i id="menu-icon" class="fa-solid fa-bars"></i>
+        </button>
+      </div>
+    </div>
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="mobile-menu md:hidden bg-white border-b border-gray-200">
+      <div class="px-4 py-5 flex flex-col gap-3">
+        <a href="about.html" class="text-gray-600 hover:text-gray-900 py-2 text-sm font-medium transition-colors border-b border-gray-100">About</a>
+        <a href="contact.html" class="text-gray-600 hover:text-gray-900 py-2 text-sm font-medium transition-colors border-b border-gray-100">Contact</a>
+        <div class="flex gap-3 pt-2">
+          <a href="login.html" class="flex-1 text-center text-gray-600 border border-gray-300 rounded-lg py-2.5 text-sm font-medium">Login</a>
+          <a href="signup.html" class="flex-1 text-center bg-green-700 text-white rounded-lg py-2.5 text-sm font-medium">Signup</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <div class="bg-gradient-to-r from-blue-900 via-blue-800 to-blue-600 pt-32 pb-20 text-center relative overflow-hidden">
+    <!-- Decorative elements -->
+    <div class="absolute inset-0 opacity-10">
+      <i class="fa-solid fa-shield-halved absolute top-16 left-[15%] text-6xl text-white animate-[float_6s_ease-in-out_infinite]"></i>
+      <i class="fa-solid fa-lock absolute bottom-12 right-[15%] text-5xl text-white animate-[float_8s_ease-in-out_infinite]"></i>
+      <i class="fa-solid fa-file-shield absolute top-20 right-[25%] text-4xl text-white animate-[float_7s_ease-in-out_infinite]"></i>
+    </div>
+    
+    <div class="relative z-10 px-4">
+      <span class="hero-animate inline-flex items-center gap-2 bg-white/15 border border-white/25 backdrop-blur-sm text-white text-sm font-medium px-4 py-2 rounded-full mb-4">
+        <i class="fa-solid fa-star text-yellow-400 text-xs"></i>
+        ComfyGo Legal
+      </span>
+      <h1 class="hero-animate-delay font-serif text-4xl md:text-5xl font-bold text-white mb-3">Privacy Policy</h1>
+      <p class="hero-animate-delay text-blue-100 text-lg">Last updated: April 29, 2026</p>
+    </div>
+    
+    <!-- Wave bottom -->
+    <div class="absolute bottom-0 left-0 right-0">
+      <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full">
+        <path d="M0 60L48 55C96 50 192 40 288 35C384 30 480 30 576 33.3C672 37 768 43 864 45C960 47 1056 45 1152 40C1248 35 1344 27 1392 23L1440 20V60H1392C1344 60 1248 60 1152 60C1056 60 960 60 864 60C768 60 672 60 576 60C480 60 384 60 288 60C192 60 96 60 48 60H0Z" fill="#f8faf8"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-12">
+      
+      <!-- Sidebar TOC -->
+      <aside class="hidden lg:block lg:col-span-1 reveal-left">
+        <div class="sidebar-card sticky top-24 bg-white border border-gray-200 rounded-xl p-6 shadow-sm" id="sidebar-toc">
+          <div class="font-serif text-sm font-semibold text-blue-800 uppercase tracking-wider mb-4 pb-2 border-b-2 border-blue-100 flex items-center gap-2">
+            <i class="fa-solid fa-list text-xs"></i> Contents
+          </div>
+          <ol class="space-y-1 list-none">
+            <li><a href="#s1" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s1')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">01</span> Information We Collect</a></li>
+            <li><a href="#s2" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s2')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">02</span> How We Use Your Info</a></li>
+            <li><a href="#s3" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s3')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">03</span> Information Sharing</a></li>
+            <li><a href="#s4" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s4')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">04</span> Data Security</a></li>
+            <li><a href="#s5" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s5')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">05</span> Your Rights</a></li>
+            <li><a href="#s6" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s6')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">06</span> Cookies & Tracking</a></li>
+            <li><a href="#s7" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s7')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">07</span> Children's Privacy</a></li>
+            <li><a href="#s8" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s8')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">08</span> Third-Party Services</a></li>
+            <li><a href="#s9" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s9')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">09</span> Policy Changes</a></li>
+            <li><a href="#s10" class="toc-link flex items-start gap-2 text-sm text-gray-600" onclick="smoothScroll('s10')"><span class="toc-num text-xs font-semibold text-blue-800 bg-blue-50 px-1.5 py-0.5 rounded mt-0.5 transition-all">10</span> Contact Us</a></li>
+          </ol>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="lg:col-span-4">
+        
+        <!-- Intro Box -->
+        <div class="info-box border border-blue-200 rounded-xl p-6 mb-10 reveal relative">
+          <div class="flex items-start gap-4">
+            <div class="w-12 h-12 bg-blue-800 rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg shadow-blue-800/20">
+              <i class="fa-solid fa-shield-halved text-white text-xl"></i>
+            </div>
+            <div>
+              <p class="text-blue-900 leading-relaxed text-[15px]">At <strong>ComfyGo</strong>, we are committed to protecting your privacy and ensuring your personal information is handled safely and responsibly. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our website and services.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 1 -->
+        <section id="s1" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">1</span> 
+            Information We Collect
+          </h2>
+          <p class="text-gray-600 leading-relaxed mb-4">We collect information you provide directly to us when you:</p>
+          <ul class="space-y-3">
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-user-plus text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Create an account</strong> — name, email address, phone number, and user ID</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-calendar-check text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Make a booking</strong> — travel dates, hotel preferences, and guide selections</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-envelope text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Submit a contact or inquiry form</strong></span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-headset text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Communicate with our support team</strong></span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Section 2 -->
+        <section id="s2" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">2</span> 
+            How We Use Your Information
+          </h2>
+          <p class="text-gray-600 leading-relaxed mb-4">We use the information we collect to:</p>
+          <ul class="space-y-3">
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-wrench text-blue-800 mt-1 text-sm"></i>
+              <span>Provide, maintain, and continuously improve our services</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-credit-card text-blue-800 mt-1 text-sm"></i>
+              <span>Process bookings and financial transactions securely</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-paper-plane text-blue-800 mt-1 text-sm"></i>
+              <span>Send booking confirmations, receipts, and service updates</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-reply text-blue-800 mt-1 text-sm"></i>
+              <span>Respond to your comments, questions, and support requests</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-sliders text-blue-800 mt-1 text-sm"></i>
+              <span>Personalize your travel experience on our platform</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-lock text-blue-800 mt-1 text-sm"></i>
+              <span>Monitor and ensure the security of our platform</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Section 3 -->
+        <section id="s3" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">3</span> 
+            Information Sharing
+          </h2>
+          <p class="text-gray-600 leading-relaxed mb-4">We do <strong>not</strong> sell your personal information. We may share your information only with:</p>
+          <ul class="space-y-3">
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-hotel text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Service Providers:</strong> Hotels, guides, and transportation partners required to fulfill your booking</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-scale-balanced text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Legal Requirements:</strong> When required by law or to protect our rights, safety, or property</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-handshake text-blue-800 mt-1 text-sm"></i>
+              <span><strong>Business Transfers:</strong> In connection with a merger, acquisition, or sale of company assets</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Section 4 -->
+        <section id="s4" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">4</span> 
+            Data Security
+          </h2>
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p class="text-gray-600 leading-relaxed">We implement appropriate technical and organizational measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction. All passwords are stored using secure one-way hashing algorithms and are never stored in plain text.</p>
+            <div class="mt-4 flex items-center gap-2 text-sm text-blue-800 font-medium">
+              <i class="fa-solid fa-check-circle"></i>
+              <span>256-bit SSL Encryption</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full mx-1"></span>
+              <span>GDPR Compliant</span>
+              <span class="w-1 h-1 bg-gray-300 rounded-full mx-1"></span>
+              <span>Regular Security Audits</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 5 -->
+        <section id="s5" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">5</span> 
+            Your Rights
+          </h2>
+          <p class="text-gray-600 leading-relaxed mb-4">You have the right to:</p>
+          <ul class="space-y-3">
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-eye text-blue-800 mt-1 text-sm"></i>
+              <span>Access and review your personal information at any time</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-pen-to-square text-blue-800 mt-1 text-sm"></i>
+              <span>Correct or update inaccurate or incomplete data</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-trash-can text-blue-800 mt-1 text-sm"></i>
+              <span>Request permanent deletion of your account and associated data</span>
+            </li>
+            <li class="policy-card text-gray-600 leading-relaxed p-4 bg-white border border-gray-200 rounded-lg flex items-start gap-3">
+              <i class="fa-solid fa-ban text-blue-800 mt-1 text-sm"></i>
+              <span>Opt out of marketing and promotional communications</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Section 6 -->
+        <section id="s6" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">6</span> 
+            Cookies & Tracking
+          </h2>
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p class="text-gray-600 leading-relaxed">We use cookies and similar tracking technologies to enhance your browsing experience, analyze site traffic, and deliver personalized content. You can manage or disable cookie preferences through your browser settings at any time.</p>
+          </div>
+        </section>
+
+        <!-- Section 7 -->
+        <section id="s7" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">7</span> 
+            Children's Privacy
+          </h2>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+            <div class="flex items-start gap-3">
+              <i class="fa-solid fa-triangle-exclamation text-amber-600 mt-1"></i>
+              <p class="text-gray-700 leading-relaxed">Our services are not directed at children under the age of 13. We do not knowingly collect personal information from children under 13. If we become aware that we have inadvertently collected such data, we will promptly delete it.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section 8 -->
+        <section id="s8" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">8</span> 
+            Third-Party Services
+          </h2>
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p class="text-gray-600 leading-relaxed">Our website may contain links to third-party websites or services. We are not responsible for the privacy practices or content of those external sites and encourage you to review their respective privacy policies.</p>
+          </div>
+        </section>
+
+        <!-- Section 9 -->
+        <section id="s9" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">9</span> 
+            Policy Changes
+          </h2>
+          <div class="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
+            <p class="text-gray-600 leading-relaxed">We may update this Privacy Policy from time to time to reflect changes in our practices or legal requirements. We will notify users of any material changes by posting the updated policy on this page with a revised "Last updated" date.</p>
+          </div>
+        </section>
+
+        <!-- Section 10 -->
+        <section id="s10" class="policy-section mb-10 reveal">
+          <h2 class="font-serif text-2xl font-semibold text-blue-900 mb-5 flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-10 h-10 bg-blue-800 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-800/20">10</span> 
+            Contact Us
+          </h2>
+          <p class="text-gray-600 leading-relaxed mb-6">If you have any questions, concerns, or requests regarding this Privacy Policy, please reach out to us:</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="contact-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-envelope text-blue-800 text-lg"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-blue-800 uppercase tracking-wide mb-0.5">Email</div>
+                <div class="text-gray-900 text-sm font-medium">privacy@comfygo.com</div>
+              </div>
+            </div>
+            <div class="contact-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-phone text-blue-800 text-lg"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-blue-800 uppercase tracking-wide mb-0.5">Phone</div>
+                <div class="text-gray-900 text-sm font-medium">+880 1234 567890</div>
+              </div>
+            </div>
+            <div class="contact-card bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex items-center gap-4">
+              <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center flex-shrink-0">
+                <i class="fa-solid fa-location-dot text-blue-800 text-lg"></i>
+              </div>
+              <div>
+                <div class="text-xs font-semibold text-blue-800 uppercase tracking-wide mb-0.5">Address</div>
+                <div class="text-gray-900 text-sm font-medium">Sylhet, Bangladesh</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <p class="text-center text-sm text-gray-400 mt-12 pt-8 border-t border-gray-200">© 2026 ComfyGo. All rights reserved. This policy is effective as of April 29, 2026.</p>
+      </main>
+    </div>
+  </div>
+
+  <!-- Simple Footer -->
+  <footer class="bg-gray-900 text-gray-400 py-8 border-t border-gray-800">
+    <div class="max-w-7xl mx-auto px-4 text-center text-sm">
+      <a href="index.html" class="inline-flex items-center gap-2 text-white font-serif text-lg font-bold mb-2 hover:opacity-80 transition-opacity">
+        <i class="fa-solid fa-leaf text-green-500 text-sm"></i>ComfyGo
+      </a>
+      <p class="text-gray-500 text-xs">Travel with comfort, explore with ease.</p>
+    </div>
+  </footer>
+
+  <script>
+    // Mobile Menu
+    const navToggle = document.getElementById('nav_toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    let menuOpen = false;
+
+    navToggle.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open');
+      menuIcon.className = menuOpen ? 'fa-solid fa-xmark' : 'fa-solid fa-bars';
+    });
+
+    // Navbar Scroll Effect
+    const navbar = document.getElementById('navbaar');
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 20) {
+        navbar.classList.add('nav-scrolled');
+      } else {
+        navbar.classList.remove('nav-scrolled');
+      }
+
+      // Reading progress
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / docHeight) * 100;
+      document.getElementById('reading-progress').style.width = progress + '%';
+
+      // Back to top
+      const backToTop = document.getElementById('backToTop');
+      if (window.pageYOffset > 600) {
+        backToTop.classList.add('visible');
+      } else {
+        backToTop.classList.remove('visible');
+      }
+    });
+
+    // Smooth Scroll
+    function smoothScroll(id) {
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
+    // Scroll Reveal
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal, .reveal-left').forEach(el => observer.observe(el));
+
+    // Active TOC Link
+    const sections = document.querySelectorAll('.policy-section');
+    const tocLinks = document.querySelectorAll('.toc-link');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        if (scrollY >= sectionTop - 150) {
+          current = section.getAttribute('id');
+        }
+      });
+
+      tocLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+          link.classList.add('active');
+        }
+      });
+    });
+
+    // Sidebar shadow on scroll
+    const sidebar = document.getElementById('sidebar-toc');
+    if (sidebar) {
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 100) {
+          sidebar.classList.add('scrolled');
+        } else {
+          sidebar.classList.remove('scrolled');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

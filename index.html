@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ComfyGo — Travel Made Comfortable</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=DM+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        :root{
+            --bg: #F2ECDD;
+            --ink: #1C2620;
+            --deep: #14342C;
+            --deep-2: #1D4B40;
+            --brick: #B5502F;
+            --brick-2: #93401F;
+            --teal: #3B6E71;
+            --gold: #C99A2E;
+            --paper-line: rgba(28,38,32,0.12);
+        }
+        *{ box-sizing:border-box; }
+        html{ scroll-behavior:smooth; }
+        body{
+            background:var(--bg);
+            color:var(--ink);
+            font-family:'DM Sans', sans-serif;
+            margin:0;
+            -webkit-font-smoothing:antialiased;
+        }
+        @media (prefers-reduced-motion: reduce){
+            *{ animation-duration:0.01ms !important; transition-duration:0.01ms !important; }
+        }
+        a{ text-decoration:none; }
+
+        /* ---------- ANIMATIONS ---------- */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+        @keyframes floatSlow {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(2deg); }
+        }
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes drawLine {
+            from { width: 0; }
+            to { width: 60px; }
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        @keyframes ripple {
+            to { transform: scale(4); opacity: 0; }
+        }
+
+        /* Scroll Reveal Base */
+        .reveal {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.92);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(40px);
+            transition: all 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Stagger delays */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        .delay-400 { transition-delay: 0.4s; }
+        .delay-500 { transition-delay: 0.5s; }
+        .delay-600 { transition-delay: 0.6s; }
+
+        /* ---------- NAV ---------- */
+        #navbaar{
+            background:var(--bg);
+            box-shadow:none;
+            border-bottom:1px solid var(--paper-line);
+            padding:1.1rem 2rem !important;
+            position:sticky; top:0; z-index:50;
+            backdrop-filter:blur(6px);
+            transition: all 0.4s ease;
+        }
+        #navbaar.scrolled {
+            background: rgba(242, 236, 221, 0.95);
+            box-shadow: 0 4px 20px rgba(28, 38, 32, 0.08);
+        }
+        #comfygo_logo{
+            font-family:'Fraunces', serif;
+            font-style:italic;
+            font-weight:600;
+            font-size:1.5rem;
+            color:var(--deep) !important;
+            position:relative;
+            padding-left:2.1rem;
+        }
+        #comfygo_logo::before{
+            content:"";
+            position:absolute; left:0; top:50%;
+            width:1.6rem; height:1.6rem;
+            transform:translateY(-50%);
+            border-radius:50%;
+            border:1.5px solid var(--brick);
+            background:radial-gradient(circle at 50% 50%, transparent 0 3px, var(--brick) 3.5px 4px, transparent 4.5px);
+        }
+        #nav_sec_2 a, #nav_sec_3 a{
+            font-weight:500; font-size:0.95rem; color:var(--ink) !important;
+            border-bottom:1px solid transparent;
+            transition:border-color .2s ease, color .2s ease;
+        }
+        #nav_sec_2 a:hover, #nav_login:hover{ color:var(--brick) !important; border-bottom-color:var(--brick); }
+        #nav_signup{
+            background:var(--deep) !important;
+            color:var(--bg) !important;
+            padding:0.5rem 1.2rem !important;
+            border-radius:999px !important;
+            font-weight:600;
+            transition:background .2s ease;
+        }
+        #nav_signup:hover{ background:var(--brick-2) !important; }
+        #nav_toggle{ color:var(--ink) !important; display:none; }
+
+        /* Mobile menu */
+        .mobile-menu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--bg);
+            border-bottom: 1px solid var(--paper-line);
+            padding: 1rem 2rem;
+            box-shadow: 0 10px 30px rgba(28,38,32,0.08);
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .mobile-menu.open {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .mobile-menu a {
+            display: block;
+            padding: 0.75rem 0;
+            color: var(--ink);
+            font-weight: 500;
+            border-bottom: 1px solid var(--paper-line);
+        }
+        .mobile-menu a:last-child { border-bottom: none; }
+
+        .stamp{
+            display:inline-flex; align-items:center; justify-content:center;
+            width:2.2rem; height:2.2rem; border-radius:50%;
+            border:1.5px dashed var(--brick); color:var(--brick);
+            font-family:'Fraunces', serif; font-style:italic; font-size:0.75rem;
+            flex-shrink:0; position:relative;
+        }
+        .stamp::after{ content:""; position:absolute; inset:3px; border-radius:50%; border:1px solid var(--brick); opacity:.55; }
+
+        /* ---------- HERO ---------- */
+        #hero{
+            background:var(--deep);
+            background-image:radial-gradient(ellipse 80% 60% at 15% 0%, rgba(255,255,255,0.05), transparent 60%);
+            color:var(--bg);
+            padding:6rem 1.5rem 9rem;
+            text-align:center;
+            position:relative;
+            overflow:hidden;
+        }
+        /* Decorative floating elements */
+        .hero-deco {
+            position: absolute;
+            pointer-events: none;
+            opacity: 0.06;
+        }
+        .hero-deco-1 {
+            top: 15%; left: 10%;
+            font-size: 4rem;
+            color: var(--gold);
+            animation: floatSlow 8s ease-in-out infinite;
+        }
+        .hero-deco-2 {
+            bottom: 20%; right: 12%;
+            font-size: 3rem;
+            color: var(--teal);
+            animation: float 6s ease-in-out infinite;
+        }
+        .hero-deco-3 {
+            top: 30%; right: 20%;
+            font-size: 2rem;
+            color: var(--bg);
+            animation: floatSlow 10s ease-in-out infinite;
+        }
+
+        #hero_tag{
+            display:inline-flex; align-items:center; gap:0.5rem;
+            font-size:0.78rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+            color:var(--gold);
+            border:1px solid rgba(201,154,46,0.5);
+            border-radius:999px;
+            padding:0.4rem 1rem;
+            margin:0 auto 1.6rem;
+            opacity: 0;
+            animation: fadeInDown 0.7s ease-out 0.2s forwards;
+        }
+        #hero_title{
+            font-family:'Fraunces', serif;
+            font-weight:600;
+            font-size:clamp(2.4rem, 6.5vw, 4.6rem);
+            line-height:1.08;
+            margin:0 auto 1.3rem;
+            max-width:18ch;
+            letter-spacing:-0.01em;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.4s forwards;
+        }
+        #hero_title em{
+            font-style:italic;
+            color:var(--gold);
+        }
+        #hero_sub{
+            max-width:48ch; margin:0 auto 2.4rem;
+            font-weight:300; font-size:1.08rem; line-height:1.7;
+            color:#DCE6E1;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.6s forwards;
+        }
+        #hero_actions{ 
+            display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; margin-bottom:4rem;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 0.8s forwards;
+        }
+        #btn_explore{
+            background:var(--brick); color:var(--bg);
+            font-weight:600; font-size:0.95rem;
+            padding:0.85rem 1.8rem; border-radius:999px;
+            transition:background .2s ease, transform .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #btn_explore:hover{ background:var(--brick-2); transform:translateY(-2px); }
+        #btn_contact{
+            border:1px solid rgba(242,236,221,0.4); color:var(--bg);
+            font-weight:600; font-size:0.95rem;
+            padding:0.85rem 1.8rem; border-radius:999px;
+            transition:border-color .2s ease, background .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #btn_contact:hover{ border-color:var(--bg); background:rgba(242,236,221,0.08); }
+
+        /* Button ripple */
+        .btn-ripple {
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-ripple::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        .btn-ripple:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        #hero_stats{
+            display:flex; justify-content:center; gap:3.5rem; flex-wrap:wrap;
+            max-width:700px; margin:0 auto;
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out 1s forwards;
+        }
+        .hero_stat{ display:flex; flex-direction:column; align-items:center; gap:0.2rem; }
+        .stat_num{
+            font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+            font-size:2.2rem; color:var(--gold);
+        }
+        .stat_label{ font-size:0.78rem; letter-spacing:0.05em; text-transform:uppercase; color:#B9C9C2; }
+
+        #hero::after{
+            content:"";
+            position:absolute; left:0; right:0; bottom:-1px; height:70px;
+            background:var(--bg);
+            -webkit-mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 70' preserveAspectRatio='none'><path d='M0,35 C150,70 350,0 600,35 C850,70 1050,0 1200,35 L1200,70 L0,70 Z'/></svg>") bottom / 100% 100% no-repeat;
+            mask:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 70' preserveAspectRatio='none'><path d='M0,35 C150,70 350,0 600,35 C850,70 1050,0 1200,35 L1200,70 L0,70 Z'/></svg>") bottom / 100% 100% no-repeat;
+        }
+
+        /* ---------- SECTION HEAD SHARED ---------- */
+        .sec_tag{
+            display:block; text-align:center;
+            font-size:0.78rem; font-weight:600; letter-spacing:0.1em; text-transform:uppercase;
+            color:var(--brick); margin:0 0 0.7rem;
+        }
+        .sec_title{
+            text-align:center;
+            font-family:'Fraunces', serif; font-weight:600;
+            font-size:clamp(1.7rem, 3.5vw, 2.4rem);
+            color:var(--deep);
+            max-width:22ch; margin:0 auto 0.8rem;
+        }
+        .sec_sub{
+            text-align:center; max-width:52ch; margin:0 auto 3.2rem;
+            color:#4a544d; font-size:1rem; line-height:1.7;
+        }
+
+        /* ---------- FEATURES ---------- */
+        #features_sec{ max-width:1120px; margin:0 auto; padding:5.5rem 1.5rem 5rem; }
+        #features_grid{
+            display:grid; grid-template-columns:repeat(3, 1fr); gap:1.6rem;
+        }
+        .feature_card{
+            background:#fff; border:1px solid var(--paper-line);
+            border-radius:14px; padding:2rem 1.7rem;
+            position:relative;
+            transition:transform .35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow .35s ease;
+        }
+        .feature_card:hover{ transform:translateY(-6px); box-shadow:0 22px 40px -18px rgba(20,52,44,0.3); }
+        .feature_card::before{
+            content:"";
+            display:block; width:2.4rem; height:2.4rem; margin-bottom:1.1rem;
+            border-radius:50%; border:1.5px dashed var(--teal);
+            transition: all 0.3s ease;
+        }
+        .feature_card:hover::before {
+            background: var(--teal);
+            border-style: solid;
+        }
+        .feature_card h3{
+            font-family:'Fraunces', serif; font-weight:600; font-size:1.15rem;
+            color:var(--deep); margin:0 0 0.6rem;
+        }
+        .feature_card p{ font-size:0.92rem; line-height:1.7; color:#4a544d; margin:0; }
+
+        /* Feature icons via CSS */
+        .feature_card:nth-child(1)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(1):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z'/%3E%3C/svg%3E"); }
+
+        .feature_card:nth-child(2)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(2):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 10.5a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z'/%3E%3C/svg%3E"); }
+
+        .feature_card:nth-child(3)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(3):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M2.25 6.75c0 8.284 6.716 15 15 15h2.25a2.25 2.25 0 002.25-2.25v-1.372c0-.516-.351-.966-.852-1.091l-4.423-1.106c-.44-.11-.902.055-1.173.417l-.97 1.293c-.282.376-.769.542-1.21.38a12.035 12.035 0 01-7.143-7.143c-.162-.441.004-.928.38-1.21l1.293-.97c.363-.271.527-.734.417-1.173L6.963 3.102a1.125 1.125 0 00-1.091-.852H4.5A2.25 2.25 0 002.25 4.5v2.25z'/%3E%3C/svg%3E"); }
+
+        .feature_card:nth-child(4)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(4):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z'/%3E%3C/svg%3E"); }
+
+        .feature_card:nth-child(5)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 01-1.161.886l-.143.048a1.107 1.107 0 00-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 01-1.652.928l-.679-.906a1.125 1.125 0 00-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 00-8.862 12.872M12.75 3.031a9 9 0 016.69 14.036m0 0l-.177-.529A2.25 2.25 0 0017.128 15H16.5l-.324-.324a1.453 1.453 0 00-2.328.377l-.036.073a1.586 1.586 0 01-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 01-5.276 3.67m0 0a9 9 0 01-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(5):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 01-1.161.886l-.143.048a1.107 1.107 0 00-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 01-1.652.928l-.679-.906a1.125 1.125 0 00-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 00-8.862 12.872M12.75 3.031a9 9 0 016.69 14.036m0 0l-.177-.529A2.25 2.25 0 0017.128 15H16.5l-.324-.324a1.453 1.453 0 00-2.328.377l-.036.073a1.586 1.586 0 01-.982.816l-.99.282c-.55.157-.894.702-.8 1.267l.073.438c.08.474.49.821.97.821.846 0 1.598.542 1.865 1.345l.215.643m5.276-3.67a9.012 9.012 0 01-5.276 3.67m0 0a9 9 0 01-10.275-4.835M15.75 9c0 .896-.393 1.7-1.016 2.25'/%3E%3C/svg%3E"); }
+
+        .feature_card:nth-child(6)::before { 
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%233B6E71' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3C/svg%3E");
+            background-size: 60%;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .feature_card:nth-child(6):hover::before { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23F2ECDD' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z'/%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'/%3E%3C/svg%3E"); }
+
+        /* ---------- STEPS ---------- */
+        #steps_sec{ background:var(--deep); padding:5.5rem 1.5rem; position:relative; overflow: hidden; }
+        #steps_sec .sec_tag{ color:var(--gold); }
+        #steps_sec .sec_title{ color:var(--bg); }
+        #steps_grid{
+            max-width:1120px; margin:2.5rem auto 0;
+            display:grid; grid-template-columns:repeat(4, 1fr); gap:1.5rem;
+            position:relative;
+        }
+        .step{
+            background:rgba(242,236,221,0.05);
+            border:1px solid rgba(242,236,221,0.14);
+            border-radius:14px;
+            padding:1.8rem 1.5rem;
+            color:var(--bg);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--brick));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+        .step:hover {
+            transform: translateY(-6px);
+            background: rgba(242,236,221,0.08);
+            border-color: rgba(242,236,221,0.25);
+        }
+        .step:hover::before {
+            transform: scaleX(1);
+        }
+        .step_num{
+            font-family:'Fraunces', serif; font-style:italic; font-weight:600;
+            font-size:1.6rem; color:var(--gold); margin-bottom:0.8rem;
+            transition: transform 0.3s ease;
+        }
+        .step:hover .step_num {
+            transform: scale(1.1);
+        }
+        .step h4{ font-family:'Fraunces', serif; font-weight:600; font-size:1.05rem; margin:0 0 0.5rem; }
+        .step p{ font-size:0.88rem; line-height:1.6; color:#C7D3CD; margin:0; }
+
+        /* Connecting line between steps on desktop */
+        @media (min-width: 901px) {
+            #steps_grid::before {
+                content: '';
+                position: absolute;
+                top: 2.5rem;
+                left: 12%;
+                right: 12%;
+                height: 1px;
+                background: linear-gradient(90deg, transparent, rgba(201,154,46,0.3), transparent);
+                z-index: 0;
+            }
+        }
+
+        /* ---------- TESTIMONIALS ---------- */
+        #testimonials_sec{ max-width:1120px; margin:0 auto; padding:5.5rem 1.5rem; }
+        #testimonials_grid{ display:grid; grid-template-columns:repeat(3, 1fr); gap:1.6rem; }
+        .testimonial_card{
+            background:#fff; border:1px solid var(--paper-line);
+            border-radius:14px; padding:2rem 1.7rem;
+            position:relative;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .testimonial_card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 40px -15px rgba(20,52,44,0.15);
+        }
+        .testimonial_card::before{
+            content:""; 
+            font-family:'Fraunces', serif; font-style:italic;
+            font-size:3rem; color:var(--gold); line-height:1;
+            display:block; margin-bottom:0.4rem;
+            width: 2.4rem; height: 2.4rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='%23C99A2E' viewBox='0 0 24 24'%3E%3Cpath d='M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+        }
+        .testimonial_text{ font-size:0.95rem; line-height:1.7; color:var(--ink); margin:0 0 1.4rem; }
+        .testimonial_author{ display:flex; align-items:center; gap:0.8rem; }
+        .author_avatar{
+            width:2.6rem; height:2.6rem; border-radius:50%;
+            background:linear-gradient(155deg, var(--teal), var(--deep));
+            color:var(--bg); display:flex; align-items:center; justify-content:center;
+            font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+            transition: transform 0.3s ease;
+        }
+        .testimonial_card:hover .author_avatar {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .author_name{ font-weight:600; font-size:0.9rem; color:var(--deep); margin:0; }
+        .author_loc{ font-size:0.78rem; color:var(--teal); margin:0; }
+
+        /* ---------- CTA ---------- */
+        #cta_sec{
+            max-width:900px; margin:0 3rem 5.5rem; margin-inline:auto;
+            background:var(--brick);
+            background-image:radial-gradient(ellipse 70% 100% at 90% 0%, rgba(255,255,255,0.12), transparent 60%);
+            border-radius:24px;
+            padding:3.6rem 2rem;
+            text-align:center;
+            color:var(--bg);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        #cta_sec:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 25px 50px -12px rgba(181, 80, 47, 0.3);
+        }
+        #cta_sec::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        #cta_title{ font-family:'Fraunces', serif; font-weight:600; font-size:clamp(1.6rem,3vw,2.2rem); margin:0 0 0.7rem; position: relative; }
+        #cta_sub{ font-size:1rem; color:#F6E9E2; margin:0 0 2rem; position: relative; }
+        #cta_actions{ display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; position: relative; }
+        #cta_btn_primary{
+            background:var(--bg); color:var(--brick-2);
+            font-weight:600; font-size:0.95rem; padding:0.85rem 1.8rem; border-radius:999px;
+            transition:transform .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #cta_btn_primary:hover{ transform:translateY(-2px); }
+        #cta_btn_outline{
+            border:1px solid rgba(242,236,221,0.55); color:var(--bg);
+            font-weight:600; font-size:0.95rem; padding:0.85rem 1.8rem; border-radius:999px;
+            transition:background .2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        #cta_btn_outline:hover{ background:rgba(242,236,221,0.12); }
+
+        /* ---------- FOOTER ---------- */
+        #footer{ background:var(--deep); color:#C7D3CD; padding:4rem 1.5rem 0; position: relative; }
+        #footer_grid{
+            max-width:1120px; margin:0 auto;
+            display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:2.5rem;
+            padding-bottom:3rem;
+        }
+        #footer_logo{
+            font-family:'Fraunces', serif; font-style:italic; font-weight:600;
+            font-size:1.4rem; color:var(--bg);
+            transition: opacity 0.3s ease;
+        }
+        #footer_logo:hover { opacity: 0.8; }
+        #footer_logo span{ color:var(--gold); }
+        #footer_brand p{ font-size:0.88rem; line-height:1.7; color:#9FB0A9; margin-top:0.9rem; max-width:32ch; }
+        .footer_col h5{
+            font-family:'DM Sans', sans-serif; font-size:0.78rem; font-weight:600;
+            letter-spacing:0.08em; text-transform:uppercase; color:var(--gold); margin:0 0 1.1rem;
+        }
+        .footer_col a{
+            display:block; font-size:0.9rem; color:#C7D3CD; margin-bottom:0.75rem;
+            transition:color .2s ease, transform .2s ease;
+        }
+        .footer_col a:hover{ color:var(--bg); transform: translateX(4px); }
+        #footer_bottom{
+            border-top:1px solid rgba(242,236,221,0.12);
+            max-width:1120px; margin:0 auto; padding:1.4rem 0;
+            text-align:center; font-size:0.8rem; color:#8AA098;
+        }
+
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background: var(--deep);
+            color: var(--bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 40;
+            box-shadow: 0 4px 15px rgba(20, 52, 44, 0.3);
+            border: 1px solid rgba(242,236,221,0.2);
+        }
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .back-to-top:hover {
+            background: var(--brick);
+            transform: translateY(-3px);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 14px 22px;
+            background: var(--deep);
+            color: var(--bg);
+            border-radius: 12px;
+            box-shadow: 0 15px 40px rgba(20,52,44,0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 100;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .toast.show { transform: translateX(0); }
+        .toast i { color: var(--gold); }
+
+        /* ---------- RESPONSIVE ---------- */
+        @media (max-width:900px){
+            #features_grid, #testimonials_grid{ grid-template-columns:repeat(2, 1fr); }
+            #steps_grid{ grid-template-columns:repeat(2, 1fr); }
+            #footer_grid{ grid-template-columns:1fr 1fr; }
+        }
+        @media (max-width:600px){
+            #nav_sec_2, #nav_sec_3 { display:none; }
+            #nav_toggle{ display:block !important; }
+            #features_grid, #testimonials_grid, #steps_grid{ grid-template-columns:1fr; }
+            #footer_grid{ grid-template-columns:1fr; }
+            .mobile-menu { display: none; }
+            .mobile-menu.open { display: block; }
+        }
+
+        a:focus-visible, button:focus-visible{ outline:2px solid var(--brick); outline-offset:3px; }
+    </style>
+</head>
+
+<body>
+
+    <!-- Back to Top -->
+    <div class="back-to-top" id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fa-solid fa-arrow-up text-sm"></i>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle"></i>
+        <span id="toast-message">Welcome to ComfyGo!</span>
+    </div>
+
+    <nav id="navbaar" class="flex items-center justify-between">
+        <div id="nav_sec_1" class="flex items-center">
+            <a href="index.html" id="comfygo_logo">ComfyGo</a>
+        </div>
+        <div id="nav_sec_2" class="flex items-center gap-6">
+            <a href="about.html" id="nav_about">About</a>
+            <a href="contact.html" id="nav_contact">Contact</a>
+        </div>
+        <div id="nav_sec_3" class="flex items-center gap-4">
+            <a href="login.html" id="nav_login">Login</a>
+            <a href="signup.html" id="nav_signup">Signup</a>
+        </div>
+        <button id="nav_toggle" aria-label="Toggle menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobile-menu">
+            <a href="about.html">About</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+            <a href="signup.html" style="color: var(--brick); font-weight: 600;">Signup</a>
+        </div>
+    </nav>
+
+    <div id="hero">
+        <!-- Decorative floating elements -->
+        <i class="fa-solid fa-leaf hero-deco hero-deco-1"></i>
+        <i class="fa-solid fa-compass hero-deco hero-deco-2"></i>
+        <i class="fa-solid fa-paper-plane hero-deco hero-deco-3"></i>
+
+        <p id="hero_tag"><i class="fa-solid fa-star text-[10px]"></i> Bangladesh's Trusted Travel Agency</p>
+        <h1 id="hero_title">Travel with <em>comfort</em>,<br>explore with ease.</h1>
+        <p id="hero_sub">Handpicked destinations, certified guides, and trusted hotels across Bangladesh — all in one
+            place.</p>
+        <div id="hero_actions">
+            <a href="about.html" id="btn_explore" class="btn-ripple">Explore Destinations</a>
+            <a href="contact.html" id="btn_contact" class="btn-ripple">Talk to Us</a>
+        </div>
+        <div id="hero_stats">
+            <div class="hero_stat">
+                <span class="stat_num" data-target="3">0</span>
+                <span class="stat_label">Certified Cities</span>
+            </div>
+            <div class="hero_stat">
+                <span class="stat_num" data-target="50">0</span>
+                <span class="stat_label">Partner Hotels</span>
+            </div>
+            <div class="hero_stat">
+                <span class="stat_num" data-target="200">0</span>
+                <span class="stat_label">Happy Travellers</span>
+            </div>
+        </div>
+    </div>
+
+    <section id="features_sec" class="reveal">
+        <p class="sec_tag reveal delay-100">Why ComfyGo</p>
+        <h2 class="sec_title reveal delay-200">Everything you need for a perfect trip</h2>
+        <p class="sec_sub reveal delay-300">From planning to arrival, we handle every detail so you can simply enjoy the journey.</p>
+        <div id="features_grid">
+            <div class="feature_card reveal delay-100">
+                <h3>Verified &amp; Certified</h3>
+                <p>Every hotel, guide, and transport partner goes through our rigorous certification process before we
+                    recommend them.</p>
+            </div>
+            <div class="feature_card reveal delay-200">
+                <h3>Local Expertise</h3>
+                <p>Our guides are born and raised in their destinations — they know the hidden gems and stories behind
+                    every sight.</p>
+            </div>
+            <div class="feature_card reveal delay-300">
+                <h3>24/7 Support</h3>
+                <p>Travel confidently knowing our team is always reachable for last-minute changes or urgent needs.</p>
+            </div>
+            <div class="feature_card reveal delay-100">
+                <h3>Best Price Guarantee</h3>
+                <p>We negotiate directly with hotels and service providers so you always get competitive rates — no
+                    hidden fees.</p>
+            </div>
+            <div class="feature_card reveal delay-200">
+                <h3>Responsible Tourism</h3>
+                <p>We partner with eco-conscious providers and support local communities across Bangladesh.</p>
+            </div>
+            <div class="feature_card reveal delay-300">
+                <h3>Fully Customisable</h3>
+                <p>Solo, couple, family, or group — every itinerary is tailored to your pace, preferences, and budget.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <section id="steps_sec" class="reveal">
+        <p class="sec_tag reveal delay-100">How It Works</p>
+        <h2 class="sec_title reveal delay-200">Plan your trip in 4 simple steps</h2>
+        <div id="steps_grid">
+            <div class="step reveal-scale delay-100">
+                <div class="step_num">01</div>
+                <h4>Choose a Destination</h4>
+                <p>Browse our certified cities — Sylhet, Dhaka, or Chittagong.</p>
+            </div>
+            <div class="step reveal-scale delay-200">
+                <div class="step_num">02</div>
+                <h4>Pick Your Services</h4>
+                <p>Select from certified hotels, guides, and transport options.</p>
+            </div>
+            <div class="step reveal-scale delay-300">
+                <div class="step_num">03</div>
+                <h4>Confirm &amp; Book</h4>
+                <p>Review your itinerary and complete your booking with ease.</p>
+            </div>
+            <div class="step reveal-scale delay-400">
+                <div class="step_num">04</div>
+                <h4>Travel with Comfort</h4>
+                <p>Arrive, explore, and enjoy — with our team on standby.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="testimonials_sec">
+        <p class="sec_tag reveal">Testimonials</p>
+        <h2 class="sec_title reveal delay-100">What our travellers say</h2>
+        <div id="testimonials_grid">
+            <div class="testimonial_card reveal delay-100">
+                <p class="testimonial_text">"ComfyGo made our family trip to Sylhet absolutely seamless. The hotel was
+                    stunning and our guide knew every hidden spot in Jaflong."</p>
+                <div class="testimonial_author">
+                    <div class="author_avatar">R</div>
+                    <div>
+                        <p class="author_name">Rahim Uddin</p>
+                        <p class="author_loc">Dhaka, Bangladesh</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial_card reveal delay-200">
+                <p class="testimonial_text">"I was travelling solo for the first time and ComfyGo's team was incredibly
+                    supportive. Everything was arranged perfectly."</p>
+                <div class="testimonial_author">
+                    <div class="author_avatar">N</div>
+                    <div>
+                        <p class="author_name">Nusrat Jahan</p>
+                        <p class="author_loc">Sylhet, Bangladesh</p>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial_card reveal delay-300">
+                <p class="testimonial_text">"The certified guide in Chittagong was exceptional — knowledgeable, fun, and
+                    punctual. Highly recommend ComfyGo."</p>
+                <div class="testimonial_author">
+                    <div class="author_avatar">K</div>
+                    <div>
+                        <p class="author_name">Karim Hassan</p>
+                        <p class="author_loc">Chittagong, Bangladesh</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="cta_sec" class="reveal-scale">
+        <h2 id="cta_title">Ready to start your journey?</h2>
+        <p id="cta_sub">Get in touch and let us craft the perfect trip for you.</p>
+        <div id="cta_actions">
+            <a href="contact.html" id="cta_btn_primary" class="btn-ripple">Contact Us</a>
+            <a href="about.html" id="cta_btn_outline" class="btn-ripple">Learn More</a>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <div id="footer_grid">
+            <div id="footer_brand">
+                <a href="index.html" id="footer_logo">Comfy<span>Go</span></a>
+                <p>Bangladesh's trusted travel agency for comfortable, certified, and memorable journeys.</p>
+            </div>
+            <div class="footer_col">
+                <h5>Explore</h5>
+                <a href="about.html">About Us</a>
+                <a href="about.html">Certified Hotels</a>
+                <a href="about.html">Certified Guides</a>
+                <a href="about.html">Destinations</a>
+            </div>
+            <div class="footer_col">
+                <h5>Company</h5>
+                <a href="about.html">Our Mission</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy_policy.html">Privacy Policy</a>
+                <a href="terms_of_service.html">Terms of Service</a>
+            </div>
+            <div class="footer_col">
+                <h5>Contact</h5>
+                <a href="https://maps.google.com/?q=Sylhet,Bangladesh" target="_blank">Sylhet, Bangladesh</a>
+                <a href="tel:+8801234567890">+880 1234 567890</a>
+                <a href="mailto:info@comfygo.com">info@comfygo.com</a>
+            </div>
+        </div>
+        <div id="footer_bottom">
+            <p>&copy; 2026 ComfyGo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const navToggle = document.getElementById('nav_toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let menuOpen = false;
+
+        navToggle.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open');
+            navToggle.innerHTML = menuOpen ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbaar');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+
+            // Back to top
+            const backToTop = document.getElementById('backToTop');
+            if (window.pageYOffset > 600) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        // Scroll Reveal
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -60px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .reveal-right').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Counter Animation
+        function animateCounter(el) {
+            const target = parseInt(el.getAttribute('data-target'));
+            const duration = 2000;
+            const start = performance.now();
+            
+            function update(currentTime) {
+                const elapsed = currentTime - start;
+                const progress = Math.min(elapsed / duration, 1);
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const current = Math.floor(easeOut * target);
+                el.textContent = current + (target > 100 ? '+' : '+');
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            requestAnimationFrame(update);
+        }
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const nums = entry.target.querySelectorAll('.stat_num');
+                    nums.forEach(num => animateCounter(num));
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        const heroStats = document.getElementById('hero_stats');
+        if (heroStats) statsObserver.observe(heroStats);
+
+        // Toast Notification
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toast-message');
+            msg.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // Show welcome toast after a delay
+        setTimeout(() => showToast('Welcome to ComfyGo!'), 1500);
+
+        // Button Ripple Effect
+        document.querySelectorAll('.btn-ripple').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const ripple = document.createElement('span');
+                ripple.style.cssText = `
+                    position: absolute;
+                    background: rgba(255,255,255,0.25);
+                    border-radius: 50%;
+                    transform: scale(0);
+                    animation: ripple 0.6s ease-out;
+                    pointer-events: none;
+                    left: ${x}px;
+                    top: ${y}px;
+                    width: 100px;
+                    height: 100px;
+                    margin-left: -50px;
+                    margin-top: -50px;
+                `;
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+    </script>
+</body>
+
+</html>

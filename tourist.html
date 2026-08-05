@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — ComfyGo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'Georgia', 'serif'],
+            sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            comfy: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              200: '#bbf7d0',
+              300: '#86efac',
+              400: '#4ade80',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              950: '#052e16',
+            },
+            warm: {
+              50: '#fafaf9',
+              100: '#f5f5f4',
+              200: '#e7e5e4',
+              300: '#d6d3d1',
+              400: '#a8a29e',
+              500: '#78716c',
+              600: '#57534e',
+              700: '#44403c',
+              800: '#292524',
+              900: '#1c1917',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+
+    /* Reveal animation */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* Card hover lift */
+    .card-lift {
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .card-lift:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px -12px rgba(0,0,0,0.1);
+    }
+
+    /* Sidebar link active */
+    .sidebar-link {
+      position: relative;
+      transition: all 0.2s ease;
+    }
+    .sidebar-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #16a34a;
+      border-radius: 0 4px 4px 0;
+      transform: scaleY(0);
+      transition: transform 0.2s ease;
+    }
+    .sidebar-link.active,
+    .sidebar-link:hover {
+      background: #f0fdf4;
+      color: #15803d;
+    }
+    .sidebar-link.active::before,
+    .sidebar-link:hover::before {
+      transform: scaleY(1);
+    }
+
+    /* Filter pill */
+    .filter-pill {
+      transition: all 0.2s ease;
+    }
+    .filter-pill.active {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: white;
+      border-color: transparent;
+      box-shadow: 0 4px 14px rgba(22, 163, 74, 0.3);
+    }
+
+    /* Status badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    /* Mobile sidebar */
+    .mobile-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Section heading accent */
+    .section-accent {
+      width: 40px;
+      height: 4px;
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      border-radius: 2px;
+    }
+
+    /* Booking row hover */
+    .booking-row {
+      transition: all 0.2s ease;
+    }
+    .booking-row:hover {
+      background: #fafaf9;
+      border-color: #d6d3d1;
+    }
+
+    /* Profile input styling */
+    .profile-field {
+      background: #fafaf9;
+      border: 1px solid #e7e5e4;
+      border-radius: 12px;
+      padding: 12px 16px;
+      transition: all 0.2s ease;
+    }
+    .profile-field:focus-within {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+      background: white;
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Stagger children */
+    .stagger-children > * {
+      opacity: 0;
+      transform: translateY(16px);
+      animation: staggerIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+    .stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+    .stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+    .stagger-children > *:nth-child(4) { animation-delay: 0.2s; }
+    .stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+    .stagger-children > *:nth-child(6) { animation-delay: 0.3s; }
+    @keyframes staggerIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Toast notification */
+    .toast {
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+<base target="_blank">
+</head>
+<body class="bg-warm-50 text-warm-800 font-sans antialiased min-h-screen">
+
+  <!-- Mobile Sidebar Overlay -->
+  <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden opacity-0 transition-opacity duration-300 lg:hidden"></div>
+
+  <!-- Mobile Sidebar -->
+  <aside id="mobileSidebar" class="mobile-sidebar fixed top-0 left-0 w-72 h-full bg-white z-50 shadow-2xl lg:hidden overflow-y-auto">
+    <div class="p-6 border-b border-warm-200 flex items-center justify-between">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 bg-gradient-to-br from-comfy-500 to-comfy-700 rounded-lg flex items-center justify-center">
+          <i class="fa-solid fa-leaf text-white text-sm"></i>
+        </div>
+        <span class="font-serif text-xl font-bold text-warm-900">ComfyGo</span>
+      </div>
+      <button id="closeSidebar" class="p-2 rounded-lg text-warm-500 hover:text-warm-900 hover:bg-warm-100 transition-all">
+        <i class="fa-solid fa-xmark text-xl"></i>
+      </button>
+    </div>
+    <div class="py-4">
+      <div class="text-xs font-semibold text-warm-400 uppercase tracking-widest px-6 mb-2">Navigate</div>
+      <a href="#transport" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">🚌</span> Transport
+      </a>
+      <a href="#hotels" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">🏨</span> Hotels
+      </a>
+      <a href="#guides" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">🧭</span> Guides
+      </a>
+      <div class="h-px bg-warm-200 mx-6 my-2"></div>
+      <a href="#bookings" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">📋</span> My Bookings
+      </a>
+      <a href="destinations.html" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600">
+        <span class="mr-3">🗺️</span> Destinations
+      </a>
+      <a href="#packages" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">👑</span> Packages
+      </a>
+      <div class="h-px bg-warm-200 mx-6 my-2"></div>
+      <a href="#profile" class="sidebar-link block px-6 py-3 text-sm font-medium text-warm-600" onclick="closeMobileSidebar()">
+        <span class="mr-3">👤</span> Profile
+      </a>
+    </div>
+  </aside>
+
+  <!-- Top Navigation -->
+  <nav id="navbar" class="sticky top-0 z-50 bg-gradient-to-r from-comfy-800 to-comfy-700 text-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <div class="flex items-center space-x-3">
+          <button id="sidebarToggle" class="lg:hidden p-2 rounded-lg hover:bg-white/10 transition mr-1">
+            <i class="fa-solid fa-bars text-lg"></i>
+          </button>
+          <a href="index.html" class="flex items-center space-x-2">
+            <div class="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center backdrop-blur-sm">
+              <i class="fa-solid fa-leaf text-white text-sm"></i>
+            </div>
+            <span class="font-serif text-2xl font-bold tracking-tight">Comfy<span class="text-comfy-300">Go</span></span>
+          </a>
+        </div>
+        <div class="hidden md:flex items-center space-x-1">
+          <a href="about.html" class="px-4 py-2 text-comfy-100 hover:text-white hover:bg-white/10 rounded-lg text-sm font-medium transition-all">About</a>
+          <a href="contact.html" class="px-4 py-2 text-comfy-100 hover:text-white hover:bg-white/10 rounded-lg text-sm font-medium transition-all">Contact</a>
+          <div class="w-px h-5 bg-comfy-600 mx-2"></div>
+          <a href="login.html" class="px-4 py-2 text-comfy-100 hover:text-white text-sm font-medium transition-all">Login</a>
+          <a href="signup.html" class="ml-1 bg-white text-comfy-800 px-5 py-2 rounded-xl text-sm font-bold hover:bg-comfy-50 hover:shadow-lg transition-all">Signup</a>
+        </div>
+        <button id="mobileNavToggle" class="md:hidden p-2 rounded-lg hover:bg-white/10 transition">
+          <i class="fa-solid fa-ellipsis-vertical text-lg"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Dashboard Header -->
+  <header id="topbar" class="sticky top-16 z-40 bg-white border-b border-warm-200 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-14">
+        <div class="flex items-center space-x-3">
+          <h1 class="text-lg font-bold text-warm-900">Dashboard</h1>
+          <span class="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">
+            <span class="w-1.5 h-1.5 bg-comfy-500 rounded-full mr-1.5 animate-pulse"></span>
+            Online
+          </span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <div class="hidden sm:flex items-center space-x-3">
+            <div class="text-right">
+              <div class="text-sm font-semibold text-warm-900">Ahmed Rahman</div>
+              <div class="text-xs text-warm-500 font-mono">USR-1042</div>
+            </div>
+            <div class="w-9 h-9 bg-gradient-to-br from-comfy-500 to-comfy-700 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md">
+              AR
+            </div>
+          </div>
+          <button type="button" class="flex items-center space-x-2 bg-warm-100 hover:bg-warm-200 text-warm-700 px-4 py-2 rounded-xl text-sm font-semibold transition-all">
+            <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+            <span class="hidden sm:inline">Logout</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="flex min-h-[calc(100vh-7.5rem)]">
+
+    <!-- Desktop Sidebar -->
+    <aside id="sidebar" class="hidden lg:block w-64 flex-shrink-0 bg-white border-r border-warm-200 sticky top-[7.5rem] h-[calc(100vh-7.5rem)] overflow-y-auto">
+      <div class="py-6">
+        <div class="text-xs font-semibold text-warm-400 uppercase tracking-widest px-6 mb-3">Navigate</div>
+        <nav class="space-y-0.5 px-3">
+          <a href="#transport" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">🚌</span> Transport
+          </a>
+          <a href="#hotels" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">🏨</span> Hotels
+          </a>
+          <a href="#guides" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">🧭</span> Guides
+          </a>
+        </nav>
+        <div class="h-px bg-warm-200 mx-6 my-3"></div>
+        <nav class="space-y-0.5 px-3">
+          <a href="#bookings" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">📋</span> My Bookings
+          </a>
+          <a href="destinations.html" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">🗺️</span> Destinations
+          </a>
+          <a href="#packages" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">👑</span> Packages
+          </a>
+        </nav>
+        <div class="h-px bg-warm-200 mx-6 my-3"></div>
+        <nav class="space-y-0.5 px-3">
+          <a href="#profile" class="sidebar-link flex items-center px-4 py-2.5 rounded-xl text-sm font-medium text-warm-600">
+            <span class="w-8 text-lg mr-2">👤</span> Profile
+          </a>
+        </nav>
+
+        <!-- Sidebar Promo Card -->
+        <div class="mx-4 mt-6 p-4 bg-gradient-to-br from-comfy-600 to-comfy-700 rounded-2xl text-white">
+          <div class="flex items-center space-x-2 mb-2">
+            <i class="fa-solid fa-crown text-amber-300 text-sm"></i>
+            <span class="text-xs font-bold uppercase tracking-wider text-comfy-100">Premium</span>
+          </div>
+          <p class="text-sm text-comfy-100 mb-3">Unlock exclusive deals and priority booking.</p>
+          <button class="w-full bg-white/20 hover:bg-white/30 text-white text-xs font-bold py-2 rounded-lg transition-all">
+            Upgrade Now
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main" class="flex-1 p-6 lg:p-10 max-w-6xl">
+
+      <!-- Stats Overview -->
+      <div class="reveal grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="bg-white rounded-2xl p-5 border border-warm-200 shadow-sm card-lift">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-comfy-50 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-suitcase text-comfy-600"></i>
+            </div>
+            <span class="text-xs font-bold text-comfy-600 bg-comfy-50 px-2 py-0.5 rounded-full">+2</span>
+          </div>
+          <div class="text-2xl font-bold text-warm-900">4</div>
+          <div class="text-xs text-warm-500 font-medium mt-0.5">Active Bookings</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-warm-200 shadow-sm card-lift">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-clock text-amber-600"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-warm-900">2</div>
+          <div class="text-xs text-warm-500 font-medium mt-0.5">Pending</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-warm-200 shadow-sm card-lift">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-check-circle text-emerald-600"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-warm-900">12</div>
+          <div class="text-xs text-warm-500 font-medium mt-0.5">Completed</div>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-warm-200 shadow-sm card-lift">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 bg-rose-50 rounded-xl flex items-center justify-center">
+              <i class="fa-solid fa-ban text-rose-600"></i>
+            </div>
+          </div>
+          <div class="text-2xl font-bold text-warm-900">1</div>
+          <div class="text-xs text-warm-500 font-medium mt-0.5">Cancelled</div>
+        </div>
+      </div>
+
+      <!-- Transport Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="transport">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">Book Transport</h2>
+            <p class="text-warm-500 text-sm mt-1">Select your route and preferred travel type.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6 stagger-children">
+          <button class="filter-pill active px-5 py-2 rounded-full border border-warm-300 text-sm font-semibold">All Routes</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Dhaka</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Sylhet</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Chittagong</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🚌</div>
+              <div>
+                <div class="font-bold text-warm-900">Air-conditioned Bus</div>
+                <div class="text-xs text-warm-500">Dhaka – Sylhet</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Dhaka–Sylhet</span>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-bold gradient-text">৳1,200</span>
+              <span class="text-xs text-warm-400">/ person</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Aug 15, 2026</span>
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🚆</div>
+              <div>
+                <div class="font-bold text-warm-900">Train (Sylhet Express)</div>
+                <div class="text-xs text-warm-500">Dhaka – Sylhet</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Dhaka–Sylhet</span>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-bold gradient-text">৳850</span>
+              <span class="text-xs text-warm-400">/ person</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Aug 18, 2026</span>
+              <span class="badge bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">✈️</div>
+              <div>
+                <div class="font-bold text-warm-900">Domestic Flight</div>
+                <div class="text-xs text-warm-500">Dhaka – Chittagong</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Dhaka–Chittagong</span>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-2xl font-bold gradient-text">৳3,500</span>
+              <span class="text-xs text-warm-400">/ person</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Sep 1, 2026</span>
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Hotels Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="hotels">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">Book a Hotel</h2>
+            <p class="text-warm-500 text-sm mt-1">Filter by division to find certified stays.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6 stagger-children">
+          <button class="filter-pill active px-5 py-2 rounded-full border border-warm-300 text-sm font-semibold">All</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Dhaka</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Sylhet</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Chittagong</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🏨</div>
+              <div>
+                <div class="font-bold text-warm-900">The Sylhet Grand</div>
+                <div class="text-xs text-warm-500">Sylhet District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Sylhet</span>
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Sylhet District</span>
+            </div>
+            <div class="flex items-center gap-1 text-amber-500 text-sm">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-regular fa-star text-warm-300"></i>
+              <span class="text-warm-400 ml-1 text-xs font-medium">4.2</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Aug 15 – Aug 18</span>
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🏨</div>
+              <div>
+                <div class="font-bold text-warm-900">River View Resort</div>
+                <div class="text-xs text-warm-500">Chittagong District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Chittagong</span>
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Chittagong District</span>
+            </div>
+            <div class="flex items-center gap-1 text-amber-500 text-sm">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <span class="text-warm-400 ml-1 text-xs font-medium">4.8</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Sep 1 – Sep 5</span>
+              <span class="badge bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-warm-100 rounded-xl flex items-center justify-center text-2xl shadow-sm">🏨</div>
+              <div>
+                <div class="font-bold text-warm-900">Dhaka Central Inn</div>
+                <div class="text-xs text-warm-500">Dhaka District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Dhaka</span>
+              <span class="px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-semibold border border-warm-200">Dhaka District</span>
+            </div>
+            <div class="flex items-center gap-1 text-amber-500 text-sm">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-regular fa-star text-warm-300"></i>
+              <i class="fa-regular fa-star text-warm-300"></i>
+              <span class="text-warm-400 ml-1 text-xs font-medium">3.5</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Jul 20 – Jul 22</span>
+              <span class="badge bg-warm-100 text-warm-500 border border-warm-200">
+                <span class="w-1.5 h-1.5 bg-warm-400 rounded-full"></span> Cancelled
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Guides Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="guides">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">Book a Guide</h2>
+            <p class="text-warm-500 text-sm mt-1">Certified local guides available by division.</p>
+          </div>
+        </div>
+
+        <div class="flex flex-wrap gap-2 mb-6 stagger-children">
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">All</button>
+          <button class="filter-pill active px-5 py-2 rounded-full border border-warm-300 text-sm font-semibold">Dhaka</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Sylhet</button>
+          <button class="filter-pill px-5 py-2 rounded-full border border-warm-300 bg-white text-warm-600 text-sm font-semibold hover:border-comfy-400 hover:text-comfy-700">Chittagong</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🧭</div>
+              <div>
+                <div class="font-bold text-warm-900">Karim Uddin</div>
+                <div class="text-xs text-warm-500">Dhaka District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Dhaka</span>
+              <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200">✓ Certified</span>
+            </div>
+            <div class="flex items-center gap-2 text-warm-600 text-sm">
+              <i class="fa-solid fa-phone text-xs text-warm-400"></i>
+              <span class="text-xs font-medium">+880 1711 123456</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Aug 20, 2026</span>
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🧭</div>
+              <div>
+                <div class="font-bold text-warm-900">Nadia Begum</div>
+                <div class="text-xs text-warm-500">Sylhet District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Sylhet</span>
+              <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200">✓ Certified</span>
+            </div>
+            <div class="flex items-center gap-2 text-warm-600 text-sm">
+              <i class="fa-solid fa-phone text-xs text-warm-400"></i>
+              <span class="text-xs font-medium">+880 1811 987654</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Sep 5, 2026</span>
+              <span class="badge bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+              </span>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col gap-4 card-lift">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl shadow-sm">🧭</div>
+              <div>
+                <div class="font-bold text-warm-900">Rashid Chowdhury</div>
+                <div class="text-xs text-warm-500">Chittagong District</div>
+              </div>
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <span class="px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-semibold border border-comfy-200">Chittagong</span>
+              <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold border border-amber-200">✓ Certified</span>
+            </div>
+            <div class="flex items-center gap-2 text-warm-600 text-sm">
+              <i class="fa-solid fa-phone text-xs text-warm-400"></i>
+              <span class="text-xs font-medium">+880 1911 456789</span>
+            </div>
+            <div class="h-px bg-warm-100"></div>
+            <div class="flex items-center justify-between">
+              <span class="text-warm-400 text-xs font-medium">Oct 10, 2026</span>
+              <span class="badge bg-warm-100 text-warm-500 border border-warm-200">
+                <span class="w-1.5 h-1.5 bg-warm-400 rounded-full"></span> Cancelled
+              </span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- My Bookings Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="bookings">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">My Bookings</h2>
+            <p class="text-warm-500 text-sm mt-1">Your past and upcoming travel bookings.</p>
+          </div>
+        </div>
+
+        <div class="space-y-3 stagger-children">
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-5 flex items-center justify-between gap-4 flex-wrap booking-row cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">🚌</div>
+              <div>
+                <div class="text-xs text-warm-400 font-mono tracking-wider mb-0.5">BK5F8A2B</div>
+                <div class="font-bold text-warm-900">Transport</div>
+                <div class="text-xs text-warm-500 flex items-center gap-1 mt-0.5">
+                  <i class="fa-regular fa-calendar text-[10px]"></i> Aug 15, 2026
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 flex-wrap">
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+              <div class="text-comfy-700 font-bold text-lg">৳1,200</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-5 flex items-center justify-between gap-4 flex-wrap booking-row cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">🧭</div>
+              <div>
+                <div class="text-xs text-warm-400 font-mono tracking-wider mb-0.5">BK7C3D9E</div>
+                <div class="font-bold text-warm-900">Guide</div>
+                <div class="text-xs text-warm-500 flex items-center gap-1 mt-0.5">
+                  <i class="fa-regular fa-calendar text-[10px]"></i> Aug 20, 2026
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 flex-wrap">
+              <span class="badge bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Confirmed
+              </span>
+              <div class="text-comfy-700 font-bold text-lg">৳500</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-5 flex items-center justify-between gap-4 flex-wrap booking-row cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-comfy-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">🏨</div>
+              <div>
+                <div class="text-xs text-warm-400 font-mono tracking-wider mb-0.5">BK2E6F1A</div>
+                <div class="font-bold text-warm-900">Hotel</div>
+                <div class="text-xs text-warm-500 flex items-center gap-1 mt-0.5">
+                  <i class="fa-regular fa-calendar text-[10px]"></i> Aug 15, 2026
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 flex-wrap">
+              <span class="badge bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+              </span>
+              <div class="text-comfy-700 font-bold text-lg">৳3,600</div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-5 flex items-center justify-between gap-4 flex-wrap booking-row cursor-pointer">
+            <div class="flex items-center gap-4">
+              <div class="w-12 h-12 bg-amber-50 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 shadow-sm">🚆</div>
+              <div>
+                <div class="text-xs text-warm-400 font-mono tracking-wider mb-0.5">BK9B4C7D</div>
+                <div class="font-bold text-warm-900">Transport</div>
+                <div class="text-xs text-warm-500 flex items-center gap-1 mt-0.5">
+                  <i class="fa-regular fa-calendar text-[10px]"></i> Aug 18, 2026
+                </div>
+              </div>
+            </div>
+            <div class="flex items-center gap-4 flex-wrap">
+              <span class="badge bg-amber-50 text-amber-700 border border-amber-200">
+                <span class="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span> Pending
+              </span>
+              <div class="text-comfy-700 font-bold text-lg">৳850</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Destinations CTA -->
+      <section class="reveal mb-14 scroll-mt-32" id="destinations">
+        <div class="bg-gradient-to-br from-comfy-700 to-comfy-600 rounded-2xl p-8 md:p-10 text-white relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+          <div class="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
+          <div class="relative flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <div class="inline-flex items-center space-x-2 bg-white/15 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-semibold mb-4">
+                <i class="fa-solid fa-compass text-comfy-300"></i>
+                <span>Discover More</span>
+              </div>
+              <h3 class="font-serif text-2xl md:text-3xl font-bold mb-2">Explore Bangladesh</h3>
+              <p class="text-comfy-100 text-sm max-w-md">Curated destinations, trip cost estimator, and travel guides across the country.</p>
+            </div>
+            <a href="destinations.html" class="inline-flex items-center space-x-2 bg-white text-comfy-700 px-6 py-3 rounded-xl text-sm font-bold hover:bg-comfy-50 hover:shadow-lg transition-all whitespace-nowrap flex-shrink-0">
+              <span>Browse Destinations</span>
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+          </div>
+        </div>
+      </section>
+
+            <!-- Premium Packages Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="packages">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">Premium Packages</h2>
+            <p class="text-warm-500 text-sm mt-1">Choose the plan that fits your travel style.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 stagger-children">
+
+          <!-- Basic Plan -->
+          <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-6 flex flex-col card-lift relative">
+            <div class="mb-5">
+              <div class="inline-flex items-center px-3 py-1 rounded-full bg-warm-100 text-warm-600 text-xs font-bold uppercase tracking-wider mb-3">Basic</div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-warm-900">৳0</span>
+                <span class="text-warm-400 text-sm">/ month</span>
+              </div>
+              <p class="text-warm-500 text-sm mt-2">Perfect for occasional travelers exploring Bangladesh.</p>
+            </div>
+            <div class="h-px bg-warm-100 mb-5"></div>
+            <ul class="space-y-3 mb-8 flex-1">
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>Standard booking access</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>Email support</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>Basic trip planner</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-400">
+                <div class="w-5 h-5 bg-warm-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-xmark text-warm-400 text-[10px]"></i>
+                </div>
+                <span>Priority booking</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-400">
+                <div class="w-5 h-5 bg-warm-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-xmark text-warm-400 text-[10px]"></i>
+                </div>
+                <span>Exclusive deals</span>
+              </li>
+            </ul>
+            <button class="w-full py-3 rounded-xl border-2 border-warm-200 text-warm-700 font-bold text-sm hover:border-comfy-400 hover:text-comfy-700 hover:bg-comfy-50 transition-all">
+              Current Plan
+            </button>
+          </div>
+
+          <!-- Pro Plan -->
+          <div class="bg-white rounded-2xl border-2 border-comfy-500 shadow-lg shadow-comfy-500/10 p-6 flex flex-col card-lift relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-gradient-to-l from-comfy-500 to-comfy-600 text-white text-xs font-bold px-4 py-1.5 rounded-bl-xl">
+              MOST POPULAR
+            </div>
+            <div class="mb-5 mt-2">
+              <div class="inline-flex items-center px-3 py-1 rounded-full bg-comfy-50 text-comfy-700 text-xs font-bold uppercase tracking-wider mb-3 border border-comfy-200">
+                <i class="fa-solid fa-bolt text-comfy-500 mr-1.5 text-[10px]"></i> Pro
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold gradient-text">৳499</span>
+                <span class="text-warm-400 text-sm">/ month</span>
+              </div>
+              <p class="text-warm-500 text-sm mt-2">For frequent travelers who want more flexibility.</p>
+            </div>
+            <div class="h-px bg-warm-100 mb-5"></div>
+            <ul class="space-y-3 mb-8 flex-1">
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>Everything in Basic</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>Priority booking access</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>10% off on all bookings</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-700">
+                <div class="w-5 h-5 bg-comfy-50 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-600 text-[10px]"></i>
+                </div>
+                <span>WhatsApp support</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-400">
+                <div class="w-5 h-5 bg-warm-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-xmark text-warm-400 text-[10px]"></i>
+                </div>
+                <span>Personal travel concierge</span>
+              </li>
+            </ul>
+            <button class="w-full py-3 rounded-xl bg-gradient-to-r from-comfy-600 to-comfy-700 text-white font-bold text-sm hover:shadow-lg hover:shadow-comfy-500/25 hover:-translate-y-0.5 transition-all">
+              Upgrade to Pro
+            </button>
+          </div>
+
+          <!-- Premium Plan -->
+          <div class="bg-gradient-to-br from-warm-900 to-warm-800 rounded-2xl border border-warm-700 shadow-xl p-6 flex flex-col card-lift relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+            <div class="mb-5 relative">
+              <div class="inline-flex items-center px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-3 border border-amber-500/30">
+                <i class="fa-solid fa-crown text-amber-400 mr-1.5 text-[10px]"></i> Premium
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-white">৳999</span>
+                <span class="text-warm-400 text-sm">/ month</span>
+              </div>
+              <p class="text-warm-300 text-sm mt-2">The ultimate experience for travel enthusiasts.</p>
+            </div>
+            <div class="h-px bg-warm-700 mb-5 relative"></div>
+            <ul class="space-y-3 mb-8 flex-1 relative">
+              <li class="flex items-start gap-3 text-sm text-warm-200">
+                <div class="w-5 h-5 bg-comfy-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-400 text-[10px]"></i>
+                </div>
+                <span>Everything in Pro</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-200">
+                <div class="w-5 h-5 bg-comfy-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-400 text-[10px]"></i>
+                </div>
+                <span>Personal travel concierge</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-200">
+                <div class="w-5 h-5 bg-comfy-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-400 text-[10px]"></i>
+                </div>
+                <span>20% off on all bookings</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-200">
+                <div class="w-5 h-5 bg-comfy-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-400 text-[10px]"></i>
+                </div>
+                <span>Free cancellation on any booking</span>
+              </li>
+              <li class="flex items-start gap-3 text-sm text-warm-200">
+                <div class="w-5 h-5 bg-comfy-500/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <i class="fa-solid fa-check text-comfy-400 text-[10px]"></i>
+                </div>
+                <span>24/7 dedicated phone support</span>
+              </li>
+            </ul>
+            <button class="w-full py-3 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold text-sm hover:shadow-lg hover:shadow-amber-500/25 hover:-translate-y-0.5 transition-all relative">
+              Go Premium
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Profile Section -->
+      <section class="reveal mb-14 scroll-mt-32" id="profile">
+        <div class="flex items-end justify-between mb-6 flex-wrap gap-4">
+          <div>
+            <div class="section-accent mb-3"></div>
+            <h2 class="font-serif text-3xl font-bold text-warm-900">Update Profile</h2>
+            <p class="text-warm-500 text-sm mt-1">Edit your account information.</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-warm-200 shadow-sm p-8 max-w-xl">
+          <div class="flex items-center gap-4 mb-8 pb-6 border-b border-warm-100">
+            <div class="w-16 h-16 bg-gradient-to-br from-comfy-500 to-comfy-700 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+              AR
+            </div>
+            <div>
+              <div class="font-bold text-warm-900 text-lg">Ahmed Rahman</div>
+              <div class="text-xs text-warm-500 font-mono">USR-1042</div>
+            </div>
+          </div>
+
+          <form id="profileForm" class="space-y-5">
+            <div>
+              <label class="text-xs font-bold text-warm-500 uppercase tracking-wider mb-2 block">Full Name</label>
+              <div class="profile-field">
+                <input type="text" value="Ahmed Rahman" class="w-full bg-transparent text-warm-900 text-sm font-medium outline-none" placeholder="Enter your full name">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-warm-500 uppercase tracking-wider mb-2 block">Email Address</label>
+              <div class="profile-field">
+                <input type="email" value="ahmed.rahman@email.com" class="w-full bg-transparent text-warm-900 text-sm font-medium outline-none" placeholder="Enter your email">
+              </div>
+            </div>
+            <div>
+              <label class="text-xs font-bold text-warm-500 uppercase tracking-wider mb-2 block">Phone Number</label>
+              <div class="profile-field">
+                <input type="tel" value="+880 1XXX XXXXXX" class="w-full bg-transparent text-warm-900 text-sm font-medium outline-none" placeholder="Enter your phone number">
+              </div>
+            </div>
+            <div class="pt-4 flex items-center gap-4">
+              <button type="submit" class="bg-gradient-to-r from-comfy-600 to-comfy-700 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:shadow-lg hover:shadow-comfy-500/25 hover:-translate-y-0.5 transition-all">
+                Save Changes
+              </button>
+              <button type="button" class="text-warm-500 hover:text-warm-700 text-sm font-semibold transition-colors">
+                Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="bg-warm-900 text-warm-300 py-12 border-t border-warm-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 bg-gradient-to-br from-comfy-500 to-comfy-600 rounded-lg flex items-center justify-center">
+            <i class="fa-solid fa-leaf text-white text-sm"></i>
+          </div>
+          <span class="font-serif text-xl font-bold text-white">ComfyGo</span>
+        </div>
+        <div class="flex items-center space-x-6 text-sm">
+          <a href="terms.html" class="hover:text-white transition-colors">Terms</a>
+          <a href="privacy.html" class="hover:text-white transition-colors">Privacy</a>
+          <a href="help.html" class="hover:text-white transition-colors">Help</a>
+        </div>
+        <p class="text-sm text-warm-600">&copy; 2026 ComfyGo. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast fixed bottom-6 right-6 z-50 bg-warm-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3">
+    <div class="w-8 h-8 bg-comfy-500 rounded-full flex items-center justify-center flex-shrink-0">
+      <i class="fa-solid fa-check text-white text-sm"></i>
+    </div>
+    <div>
+      <div class="font-semibold text-sm">Profile Updated</div>
+      <div class="text-warm-400 text-xs">Your changes have been saved successfully.</div>
+    </div>
+  </div>
+
+  <script>
+    // Mobile sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const mobileSidebar = document.getElementById('mobileSidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const closeSidebarBtn = document.getElementById('closeSidebar');
+
+    function openMobileSidebar() {
+      mobileSidebar.classList.add('open');
+      sidebarOverlay.classList.remove('hidden');
+      setTimeout(() => sidebarOverlay.classList.add('opacity-100'), 10);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileSidebar() {
+      mobileSidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('opacity-100');
+      setTimeout(() => sidebarOverlay.classList.add('hidden'), 300);
+      document.body.style.overflow = '';
+    }
+
+    sidebarToggle.addEventListener('click', openMobileSidebar);
+    closeSidebarBtn.addEventListener('click', closeMobileSidebar);
+    sidebarOverlay.addEventListener('click', closeMobileSidebar);
+
+    // Scroll reveal
+    const revealElements = document.querySelectorAll('.reveal');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Active sidebar link based on scroll
+    const sections = document.querySelectorAll('section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link[href^="#"]');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          sidebarLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + entry.target.id) {
+              link.classList.add('active');
+            }
+          });
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+    sections.forEach(section => sectionObserver.observe(section));
+
+    // Filter pills interaction
+    document.querySelectorAll('.filter-pill').forEach(pill => {
+      pill.addEventListener('click', function() {
+        const siblings = this.parentElement.querySelectorAll('.filter-pill');
+        siblings.forEach(s => s.classList.remove('active'));
+        this.classList.add('active');
+      });
+    });
+
+    // Profile form submission
+    const profileForm = document.getElementById('profileForm');
+    const toast = document.getElementById('toast');
+
+    profileForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    });
+
+    // Booking row click feedback
+    document.querySelectorAll('.booking-row').forEach(row => {
+      row.addEventListener('click', function() {
+        this.style.transform = 'scale(0.99)';
+        setTimeout(() => {
+          this.style.transform = '';
+        }, 150);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - ComfyGo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2c3e23',
+                        secondary: '#5a7a4a',
+                        accent: '#3d5c2e',
+                        muted: '#4a5e3a',
+                        cream: '#fafaf7',
+                        sage: '#f7faf4'
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'serif'],
+                        sans: ['Jost', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: #fafaf7;
+            overflow-x: hidden;
+        }
+
+        /* Custom Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+        
+        @keyframes float-delayed {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(-5deg); }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from { opacity: 0; transform: translateX(-60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(60px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes blob-morph {
+            0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+            50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        .animate-float-delayed { animation: float-delayed 8s ease-in-out infinite; }
+        .animate-blob { animation: blob-morph 8s ease-in-out infinite; }
+        
+        .fade-in-up {
+            opacity: 0;
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+        
+        .slide-in-left {
+            opacity: 0;
+            animation: slideInLeft 0.8s ease-out forwards;
+        }
+        
+        .slide-in-right {
+            opacity: 0;
+            animation: slideInRight 0.8s ease-out forwards;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+        .delay-400 { animation-delay: 0.4s; }
+        .delay-500 { animation-delay: 0.5s; }
+
+        /* Scroll reveal base state */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal-left.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal-right.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .reveal-scale {
+            opacity: 0;
+            transform: scale(0.95);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        
+        .reveal-scale.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Glassmorphism */
+        .glass {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Card hover effects */
+        .hover-lift {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px -15px rgba(44, 62, 35, 0.2);
+        }
+
+        /* Input focus animations */
+        .input-group {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .input-group:focus-within {
+            transform: translateX(4px);
+        }
+        
+        .input-group:focus-within i {
+            color: #3d5c2e;
+            transform: scale(1.1);
+        }
+        
+        .input-group i {
+            transition: all 0.3s ease;
+        }
+
+        /* Button effects */
+        .btn-primary {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        
+        .btn-primary:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        /* Loading spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: none;
+        }
+        
+        .loading .spinner { display: inline-block; }
+        .loading .btn-text { display: none; }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            background: white;
+            border-left: 4px solid #3d5c2e;
+            border-radius: 8px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transform: translateX(150%);
+            transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(0);
+        }
+        
+        .toast.success { border-left-color: #3d5c2e; }
+        .toast.error { border-left-color: #e74c3c; }
+
+        /* Mobile menu */
+        .mobile-menu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out;
+        }
+        
+        .mobile-menu.open {
+            max-height: 300px;
+        }
+
+        /* Decorative blobs */
+        .blob {
+            position: absolute;
+            filter: blur(60px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        /* Social icon hover */
+        .social-icon {
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: translateY(-3px) scale(1.1);
+            color: #2c3e23;
+        }
+
+        /* Nav link underline animation */
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #2c3e23;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Back to top */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 45px;
+            height: 45px;
+            background: #3d5c2e;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(61, 92, 46, 0.3);
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .back-to-top:hover {
+            background: #2c3e23;
+            transform: translateY(-3px);
+        }
+
+        /* Form validation styles */
+        .input-error {
+            border-color: #e74c3c !important;
+            background-color: #fdf2f2 !important;
+        }
+        
+        .input-success {
+            border-color: #3d5c2e !important;
+        }
+        
+        .error-message {
+            color: #e74c3c;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f7faf4;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #5a7a4a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3d5c2e;
+        }
+
+        /* Grain texture overlay */
+        .grain::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.03;
+            pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-cream text-primary antialiased">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-xl text-accent"></i>
+        <div>
+            <p id="toast-title" class="font-semibold text-sm text-primary">Success!</p>
+            <p id="toast-message" class="text-xs text-muted">Your message has been sent.</p>
+        </div>
+    </div>
+
+    <!-- Back to Top -->
+    <div id="backToTop" class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        <i class="fa-solid fa-arrow-up"></i>
+    </div>
+
+    <!-- Navbar -->
+    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 bg-white/90 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div id="nav_sec_1" class="flex items-center">
+                    <a href="index.html" id="comfygo_logo" class="text-2xl font-bold italic text-primary tracking-wide hover:opacity-80 transition-opacity" style="font-family: 'Playfair Display', serif;">
+                        <i class="fa-solid fa-leaf mr-2 text-secondary text-lg"></i>ComfyGo
+                    </a>
+                </div>
+
+                <!-- Desktop Nav -->
+                <div id="nav_sec_2" class="hidden md:flex items-center gap-8">
+                    <a href="about.html" id="nav_about" class="nav-link text-muted hover:text-primary uppercase tracking-widest text-xs font-medium transition-colors">About</a>
+                    <a href="contact.html" id="nav_contact" class="nav-link text-primary uppercase tracking-widest text-xs font-medium transition-colors">Contact</a>
+                </div>
+
+                <!-- Auth Buttons -->
+                <div id="nav_sec_3" class="hidden md:flex items-center gap-3">
+                    <a href="login.html" id="nav_login" class="text-secondary hover:text-primary uppercase tracking-wider text-xs font-medium px-5 py-2 border border-secondary/40 rounded-lg hover:border-primary hover:bg-sage transition-all">
+                        Login
+                    </a>
+                    <a href="signup.html" id="nav_signup" class="bg-accent hover:bg-primary text-white uppercase tracking-wider text-xs font-medium px-6 py-2 rounded-lg hover:shadow-lg hover:shadow-accent/30 transition-all btn-primary">
+                        Signup
+                    </a>
+                </div>
+
+                <!-- Mobile Toggle -->
+                <button id="nav_toggle" aria-label="Toggle menu" class="md:hidden text-primary focus:outline-none p-2 hover:bg-sage rounded-lg transition-colors">
+                    <i id="menu-icon" class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="mobile-menu md:hidden mt-4 pb-4 border-t border-secondary/10">
+                <div class="flex flex-col gap-4 pt-4">
+                    <a href="about.html" class="text-muted hover:text-primary uppercase tracking-widest text-xs font-medium py-2 transition-colors">About</a>
+                    <a href="contact.html" class="text-primary uppercase tracking-widest text-xs font-medium py-2 transition-colors">Contact</a>
+                    <div class="flex gap-3 pt-2">
+                        <a href="login.html" class="flex-1 text-center text-secondary uppercase tracking-wider text-xs font-medium px-4 py-2 border border-secondary/40 rounded-lg">Login</a>
+                        <a href="signup.html" class="flex-1 text-center bg-accent text-white uppercase tracking-wider text-xs font-medium px-4 py-2 rounded-lg">Signup</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contact Section -->
+    <div id="contact" class="min-h-screen pt-20" style="font-family: 'Jost', sans-serif;">
+        
+        <!-- Hero Section -->
+        <div id="contact_sec_1" class="relative bg-gradient-to-br from-green-50 via-yellow-50/30 to-green-50 p-[120px_24px_100px] md:p-[140px_60px_100px] text-center overflow-hidden border-b border-secondary/10 grain">
+            <!-- Decorative Blobs -->
+            <div class="blob bg-secondary w-96 h-96 rounded-full top-[-100px] left-[-100px] animate-blob"></div>
+            <div class="blob bg-accent w-80 h-80 rounded-full bottom-[-80px] right-[-80px] animate-blob" style="animation-delay: 2s;"></div>
+            <div class="blob bg-yellow-200 w-64 h-64 rounded-full top-[20%] right-[10%] animate-float opacity-10"></div>
+            
+            <!-- Floating Leaves -->
+            <i class="fa-solid fa-leaf absolute top-20 left-[15%] text-secondary/10 text-4xl animate-float"></i>
+            <i class="fa-solid fa-leaf absolute bottom-20 right-[20%] text-accent/10 text-3xl animate-float-delayed"></i>
+            <i class="fa-solid fa-seedling absolute top-32 right-[25%] text-secondary/10 text-2xl animate-float" style="animation-delay: 1s;"></i>
+
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <p id="p1" class="fade-in-up text-secondary text-xs font-semibold tracking-[4px] uppercase mb-6">GET IN TOUCH</p>
+                <p id="p2" class="fade-in-up delay-100 text-4xl md:text-5xl lg:text-[56px] font-extrabold italic text-primary leading-tight" style="font-family: 'Playfair Display', serif;">
+                    Questions or feedback?
+                </p>
+                <p id="p3" class="fade-in-up delay-200 text-lg md:text-xl lg:text-[26px] font-bold text-muted mt-4" style="font-family: 'Playfair Display', serif;">
+                    We'd love to hear from you!
+                </p>
+                <div class="fade-in-up delay-300 mt-8 flex justify-center gap-2">
+                    <span class="w-12 h-1 bg-secondary/30 rounded-full"></span>
+                    <span class="w-6 h-1 bg-accent/50 rounded-full"></span>
+                    <span class="w-12 h-1 bg-secondary/30 rounded-full"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Grid -->
+        <div id="contact_sub_sec_1" class="grid grid-cols-1 lg:grid-cols-[1fr_1.65fr] gap-8 p-[60px_24px_80px] md:p-[80px_60px_100px] max-w-[1200px] mx-auto">
+            
+            <!-- Contact Info Card -->
+            <div id="contact_info" class="reveal-left bg-white rounded-2xl p-8 md:p-10 border-t-4 border-secondary shadow-lg shadow-primary/5 hover-lift flex flex-col gap-8 h-fit">
+                <div>
+                    <p id="p4" class="text-xl md:text-2xl font-bold text-primary pb-4 border-b border-secondary/15 flex items-center gap-3" style="font-family: 'Playfair Display', serif;">
+                        <i class="fa-solid fa-address-card text-secondary"></i>
+                        Contact Information
+                    </p>
+                </div>
+
+                <div id="contact_info_des" class="flex flex-col gap-6">
+                    <div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-sage/50 transition-colors cursor-default">
+                        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                            <i class="fa-solid fa-map-pin text-secondary text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted uppercase tracking-wider font-medium mb-1">Address</p>
+                            <p class="text-primary text-[15px] leading-relaxed">Sylhet, Bangladesh</p>
+                        </div>
+                    </div>
+
+                    <div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-sage/50 transition-colors cursor-default">
+                        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                            <i class="fa-solid fa-phone text-accent text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted uppercase tracking-wider font-medium mb-1">Phone</p>
+                            <p class="text-primary text-[15px] leading-relaxed">+8801234567890</p>
+                        </div>
+                    </div>
+
+                    <div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-sage/50 transition-colors cursor-default">
+                        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                            <i class="fa-solid fa-envelope text-secondary text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted uppercase tracking-wider font-medium mb-1">Email</p>
+                            <p class="text-primary text-[15px] leading-relaxed">info@comfygo.com</p>
+                        </div>
+                    </div>
+
+                    <!-- Business Hours -->
+                    <div class="group flex items-start gap-4 p-3 rounded-xl hover:bg-sage/50 transition-colors cursor-default">
+                        <div class="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-secondary/20 transition-colors">
+                            <i class="fa-regular fa-clock text-secondary text-sm"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs text-muted uppercase tracking-wider font-medium mb-1">Business Hours</p>
+                            <p class="text-primary text-[15px] leading-relaxed">Mon - Fri: 9:00 AM - 6:00 PM</p>
+                            <p class="text-muted text-[13px]">Sat - Sun: Closed</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Social Links -->
+                <div class="pt-6 border-t border-secondary/10">
+                    <p class="text-xs text-muted uppercase tracking-wider font-medium mb-4">Follow Us</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="social-icon w-10 h-10 rounded-full bg-sage flex items-center justify-center text-secondary hover:bg-secondary hover:text-white">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon w-10 h-10 rounded-full bg-sage flex items-center justify-center text-secondary hover:bg-secondary hover:text-white">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon w-10 h-10 rounded-full bg-sage flex items-center justify-center text-secondary hover:bg-secondary hover:text-white">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon w-10 h-10 rounded-full bg-sage flex items-center justify-center text-secondary hover:bg-secondary hover:text-white">
+                            <i class="fa-brands fa-linkedin-in"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Trust Badge -->
+                <div class="bg-gradient-to-r from-sage to-green-50 rounded-xl p-4 flex items-center gap-3 border border-secondary/10">
+                    <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-bolt text-secondary"></i>
+                    </div>
+                    <div>
+                        <p class="text-primary font-semibold text-sm">Fast Response</p>
+                        <p class="text-muted text-xs">We typically reply within 2 hours</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form Card -->
+            <div id="SendMessage" class="reveal-right bg-white rounded-2xl p-6 md:p-[40px_60px] border-t-4 border-secondary shadow-lg shadow-primary/5 hover-lift">
+                <p id="p8" class="text-xl md:text-2xl font-bold text-primary pb-4 border-b border-secondary/15 mb-8 flex items-center gap-3" style="font-family: 'Playfair Display', serif;">
+                    <i class="fa-solid fa-paper-plane text-secondary"></i>
+                    Send a Message
+                </p>
+
+                <form id="contactForm" action="contact.html" method="post" class="flex flex-col gap-5" novalidate>
+                    
+                    <!-- Name Input -->
+                    <div class="input-group">
+                        <label class="block text-xs text-muted uppercase tracking-wider font-medium mb-2 ml-1">Your Name</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-secondary/50"></i>
+                            <input type="text" name="name" placeholder="John Doe" id="name" required 
+                                class="pl-11 text-sm text-primary bg-sage border border-secondary/20 rounded-xl p-3.5 w-full outline-none transition-all duration-300 focus:border-secondary focus:bg-white focus:shadow-[0_0_0_4px_rgba(90,122,74,0.1)] placeholder:text-secondary/30"
+                                style="font-family: 'Jost', sans-serif;">
+                        </div>
+                        <p class="error-message" id="name-error">Please enter your name</p>
+                    </div>
+
+                    <!-- Email Input -->
+                    <div class="input-group">
+                        <label class="block text-xs text-muted uppercase tracking-wider font-medium mb-2 ml-1">Your Email</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-secondary/50"></i>
+                            <input type="email" name="email" placeholder="john@example.com" id="email" required 
+                                class="pl-11 text-sm text-primary bg-sage border border-secondary/20 rounded-xl p-3.5 w-full outline-none transition-all duration-300 focus:border-secondary focus:bg-white focus:shadow-[0_0_0_4px_rgba(90,122,74,0.1)] placeholder:text-secondary/30"
+                                style="font-family: 'Jost', sans-serif;">
+                        </div>
+                        <p class="error-message" id="email-error">Please enter a valid email address</p>
+                    </div>
+
+                    <!-- Phone Input -->
+                    <div class="input-group">
+                        <label class="block text-xs text-muted uppercase tracking-wider font-medium mb-2 ml-1">Your Phone <span class="text-secondary/40 normal-case">(Optional)</span></label>
+                        <div class="relative">
+                            <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-secondary/50"></i>
+                            <input type="tel" name="phone" placeholder="+880 1234 567890" id="phone" 
+                                class="pl-11 text-sm text-primary bg-sage border border-secondary/20 rounded-xl p-3.5 w-full outline-none transition-all duration-300 focus:border-secondary focus:bg-white focus:shadow-[0_0_0_4px_rgba(90,122,74,0.1)] placeholder:text-secondary/30"
+                                style="font-family: 'Jost', sans-serif;">
+                        </div>
+                    </div>
+
+                    <!-- Message Input -->
+                    <div class="input-group">
+                        <label class="block text-xs text-muted uppercase tracking-wider font-medium mb-2 ml-1">Your Message</label>
+                        <div class="relative">
+                            <i class="fa-solid fa-comment absolute left-4 top-4 text-secondary/50"></i>
+                            <textarea name="message" placeholder="Tell us what's on your mind..." id="message" required 
+                                class="pl-11 text-sm text-primary bg-sage border border-secondary/20 rounded-xl p-3.5 w-full outline-none min-h-[140px] resize-y transition-all duration-300 focus:border-secondary focus:bg-white focus:shadow-[0_0_0_4px_rgba(90,122,74,0.1)] placeholder:text-secondary/30"
+                                style="font-family: 'Jost', sans-serif;"></textarea>
+                        </div>
+                        <div class="flex justify-between mt-1">
+                            <p class="error-message" id="message-error">Please enter your message</p>
+                            <p class="text-xs text-secondary/40" id="char-count">0 / 500</p>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" id="submit" class="btn-primary mt-2 text-sm font-semibold tracking-[2px] uppercase text-white bg-accent border-0 rounded-xl px-8 py-3.5 cursor-pointer self-start hover:bg-primary hover:shadow-xl hover:shadow-accent/20 transition-all flex items-center gap-3 min-w-[180px] justify-center" style="font-family: 'Jost', sans-serif;">
+                        <span class="spinner"></span>
+                        <span class="btn-text">Send Message</span>
+                        <i class="fa-solid fa-paper-plane btn-text text-xs"></i>
+                    </button>
+                </form>
+
+                <!-- Decorative element -->
+                <div class="mt-8 pt-6 border-t border-secondary/10 flex items-center gap-3 text-secondary/40">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <p class="text-xs">Your information is secure and will never be shared with third parties.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Section -->
+        <div class="reveal-scale max-w-[1200px] mx-auto px-6 pb-20">
+            <div class="bg-white rounded-2xl overflow-hidden shadow-lg shadow-primary/5 border border-secondary/10">
+                <div class="bg-gradient-to-r from-sage to-green-50 p-4 md:p-6 flex items-center gap-4 border-b border-secondary/10">
+                    <div class="w-12 h-12 rounded-full bg-secondary/20 flex items-center justify-center">
+                        <i class="fa-solid fa-location-dot text-secondary text-lg"></i>
+                    </div>
+                    <div>
+                        <p class="text-primary font-bold text-lg" style="font-family: 'Playfair Display', serif;">Find Us on the Map</p>
+                        <p class="text-muted text-sm">Sylhet, Bangladesh</p>
+                    </div>
+                </div>
+                <div class="relative w-full h-[300px] md:h-[400px] bg-sage flex items-center justify-center overflow-hidden group">
+                    <!-- Stylized Map Placeholder -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-green-50 via-yellow-50/20 to-green-50"></div>
+                    <div class="relative z-10 text-center p-8">
+                        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-secondary/10 flex items-center justify-center animate-bounce">
+                            <i class="fa-solid fa-map-location-dot text-3xl text-secondary"></i>
+                        </div>
+                        <p class="text-primary font-semibold text-lg mb-2">Interactive Map</p>
+                        <p class="text-muted text-sm max-w-md mx-auto mb-4">Integrate Google Maps or Mapbox here for a fully interactive location experience.</p>
+                        <a href="https://maps.google.com/?q=Sylhet,Bangladesh" target="_blank" class="inline-flex items-center gap-2 text-secondary hover:text-primary text-sm font-medium transition-colors">
+                            Open in Google Maps <i class="fa-solid fa-external-link-alt text-xs"></i>
+                        </a>
+                    </div>
+                    <!-- Grid pattern overlay -->
+                    <div class="absolute inset-0 opacity-5" style="background-image: radial-gradient(circle, #2c3e23 1px, transparent 1px); background-size: 30px 30px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="bg-primary text-white/80 py-12 border-t border-secondary/20">
+        <div class="max-w-[1200px] mx-auto px-6 text-center">
+            <a href="index.html" class="text-2xl font-bold italic tracking-wide inline-block mb-4 hover:text-white transition-colors" style="font-family: 'Playfair Display', serif;">
+                <i class="fa-solid fa-leaf mr-2 text-secondary"></i>ComfyGo
+            </a>
+            <p class="text-sm text-white/50 mb-6">Making your journey comfortable, one trip at a time.</p>
+            <div class="flex justify-center gap-6 text-sm">
+                <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                <a href="#" class="hover:text-white transition-colors">Support</a>
+            </div>
+            <p class="text-xs text-white/30 mt-8"> ComfyGo. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile Menu Toggle
+        const navToggle = document.getElementById('nav_toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuIcon = document.getElementById('menu-icon');
+        let menuOpen = false;
+
+        navToggle.addEventListener('click', () => {
+            menuOpen = !menuOpen;
+            mobileMenu.classList.toggle('open');
+            menuIcon.className = menuOpen ? 'fa-solid fa-xmark text-xl' : 'fa-solid fa-bars text-xl';
+        });
+
+        // Navbar Scroll Effect
+        const navbar = document.getElementById('navbar');
+        let lastScroll = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 50) {
+                navbar.classList.add('shadow-md');
+            } else {
+                navbar.classList.remove('shadow-md');
+            }
+            
+            // Back to top visibility
+            const backToTop = document.getElementById('backToTop');
+            if (currentScroll > 500) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+            
+            lastScroll = currentScroll;
+        });
+
+        // Scroll Reveal Animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Form Handling
+        const form = document.getElementById('contactForm');
+        const submitBtn = document.getElementById('submit');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const messageInput = document.getElementById('message');
+        const charCount = document.getElementById('char-count');
+
+        // Character counter
+        messageInput.addEventListener('input', (e) => {
+            const len = e.target.value.length;
+            charCount.textContent = `${len} / 500`;
+            if (len > 500) {
+                charCount.classList.add('text-red-500');
+                e.target.value = e.target.value.substring(0, 500);
+                charCount.textContent = '500 / 500';
+            } else {
+                charCount.classList.remove('text-red-500');
+            }
+        });
+
+        // Real-time validation
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showError(input, errorId, show) {
+            const errorEl = document.getElementById(errorId);
+            if (show) {
+                input.classList.add('input-error');
+                input.classList.remove('input-success');
+                errorEl.classList.add('show');
+            } else {
+                input.classList.remove('input-error');
+                input.classList.add('input-success');
+                errorEl.classList.remove('show');
+            }
+        }
+
+        nameInput.addEventListener('blur', () => {
+            showError(nameInput, 'name-error', nameInput.value.trim() === '');
+        });
+
+        emailInput.addEventListener('blur', () => {
+            showError(emailInput, 'email-error', !validateEmail(emailInput.value));
+        });
+
+        messageInput.addEventListener('blur', () => {
+            showError(messageInput, 'message-error', messageInput.value.trim() === '');
+        });
+
+        // Toast Notification
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastTitle = document.getElementById('toast-title');
+            const toastMessage = document.getElementById('toast-message');
+            
+            toast.className = `toast ${type}`;
+            toastIcon.className = type === 'success' 
+                ? 'fa-solid fa-check-circle text-xl text-accent' 
+                : 'fa-solid fa-circle-exclamation text-xl text-red-500';
+            toastTitle.textContent = title;
+            toastMessage.textContent = message;
+            
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // Form Submit
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validate
+            let valid = true;
+            
+            if (nameInput.value.trim() === '') {
+                showError(nameInput, 'name-error', true);
+                valid = false;
+            }
+            
+            if (!validateEmail(emailInput.value)) {
+                showError(emailInput, 'email-error', true);
+                valid = false;
+            }
+            
+            if (messageInput.value.trim() === '') {
+                showError(messageInput, 'message-error', true);
+                valid = false;
+            }
+            
+            if (!valid) {
+                showToast('Oops!', 'Please fix the errors in the form.', 'error');
+                return;
+            }
+
+            // Loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            // Simulate API call
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Success
+            submitBtn.classList.remove('loading');
+            submitBtn.disabled = false;
+            
+            showToast('Message Sent!', 'We\'ll get back to you within 2 hours.');
+            form.reset();
+            charCount.textContent = '0 / 500';
+            
+            // Clear success states
+            [nameInput, emailInput, messageInput].forEach(input => {
+                input.classList.remove('input-success');
+            });
+        });
+
+        // Add ripple effect to button
+        submitBtn.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            const ripple = document.createElement('span');
+            ripple.style.cssText = `
+                position: absolute;
+                background: rgba(255,255,255,0.3);
+                border-radius: 50%;
+                transform: scale(0);
+                animation: ripple 0.6s ease-out;
+                pointer-events: none;
+                left: ${x}px;
+                top: ${y}px;
+                width: 100px;
+                height: 100px;
+                margin-left: -50px;
+                margin-top: -50px;
+            `;
+            
+            this.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // Add ripple keyframes dynamically
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes ripple {
+                to {
+                    transform: scale(4);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
